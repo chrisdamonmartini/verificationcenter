@@ -1,0 +1,6 @@
+npx create-react-app fleet-maintenance-dashboard --template typescript
+cd fleet-maintenance-dashboard
+npm install tailwindcss postcss autoprefixer
+npm install recharts d3 @mantine/core @mantine/hooks @mantine/dates
+npm install date-fns uuid
+npx tailwindcss init -p 
