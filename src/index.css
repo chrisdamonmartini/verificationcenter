@@ -37,18 +37,29 @@ body {
 /* Settings tab layout fixes */
 .settings-container {
   height: 100%;
+  width: 100%;
+  max-width: 100%;
 }
 
 .settings-tabs {
   min-height: 500px;
+  width: 100%;
 }
 
 .tab-content {
   min-height: 500px;
+  width: 100%;
+  padding: 0 !important;
 }
 
 .settings-card {
   height: 100%;
+  width: 100%;
+}
+
+.teamcenter-settings {
+  width: 100%;
+  max-width: 100%;
 }
 
 .teamcenter-settings .ant-card-body {
@@ -57,29 +68,48 @@ body {
 
 .requirements-preview-card {
   margin-top: 16px;
+  width: 100%;
 }
 
 .requirements-preview-card .ant-table-wrapper {
   overflow-x: auto;
+  width: 100%;
 }
 
 .requirements-preview-card .ant-empty {
   margin: 32px 0;
 }
 
-/* Ensure consistent menu width */
-.teamcenter-settings, 
-.ant-tabs-tabpane {
+/* Fix Row and Col spacing issues */
+.teamcenter-settings .ant-row {
+  margin-left: 0 !important;
+  margin-right: 0 !important;
   width: 100%;
 }
 
-/* Ensure tab content doesn't cause layout shifts */
+.teamcenter-settings .ant-col {
+  padding-left: 0 !important;
+  padding-right: 0 !important;
+}
+
+/* Fix for setting tabs content width */
 .ant-tabs-content {
+  width: 100%;
   height: 100%;
 }
 
 .ant-tabs-tabpane {
+  width: 100%;
   outline: none;
+}
+
+/* Fix card margins and paddings */
+.ant-card {
+  margin-bottom: 16px;
+}
+
+.teamcenter-settings .ant-card-head {
+  min-height: 48px;
 }
 
 /* Military-inspired styling */

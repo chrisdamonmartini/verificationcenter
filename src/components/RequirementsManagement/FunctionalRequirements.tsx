@@ -1,18 +1,16 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState } from 'react';
 import { FaSearch, FaFilter, FaEdit, FaTrash, FaPlus, FaSort, FaSortUp, FaSortDown, FaEye, FaFileExport, FaFileImport, FaExchangeAlt, FaLink } from 'react-icons/fa';
-import { useProduct } from '../../context/ProductContext';
-import { getRequirementsData } from '../../data';
 
 // Define the functional requirement interface
 interface FunctionalRequirement {
   id: string;
   title: string;
   description: string;
-  systemRequirement: string;
-  priority: string;
-  status: string;
+  systemRequirement: string | null; // Reference to parent system requirement
+  priority: 'Critical' | 'High' | 'Medium' | 'Low';
+  status: 'Draft' | 'Approved' | 'Rejected' | 'Under Review' | 'Implemented' | 'Verified';
   category: string;
-  functionality: string;
+  functionality: string; // Type of functionality
   inputs: string[];
   outputs: string[];
   constraints: string;
@@ -21,23 +19,183 @@ interface FunctionalRequirement {
   updatedBy: string | null;
   updatedDate: string | null;
   version: string;
-  dependsOn: string[];
+  dependsOn: string[]; // Dependencies on other functional requirements
   verificationCriteria: string;
   tags: string[];
 }
 
 const FunctionalRequirements: React.FC = () => {
-  // Use product context
-  const { productType, productName } = useProduct();
-  
-  // Local state for requirements
-  const [functionalRequirements, setFunctionalRequirements] = useState<FunctionalRequirement[]>([]);
-  
-  // Load requirements based on product type
-  useEffect(() => {
-    const data = getRequirementsData(productType);
-    setFunctionalRequirements(data.functionalRequirements);
-  }, [productType]);
+  // Sample data for functional requirements
+  const [functionalRequirements, setFunctionalRequirements] = useState<FunctionalRequirement[]>([
+    {
+      id: 'FUNC-REQ-001',
+      title: 'User Authentication',
+      description: 'The system shall authenticate users based on username and password credentials.',
+      systemRequirement: 'SYS-REQ-008',
+      priority: 'Critical',
+      status: 'Approved',
+      category: 'Security',
+      functionality: 'Authentication',
+      inputs: ['Username', 'Password'],
+      outputs: ['Authentication Token', 'User Session'],
+      constraints: 'Authentication must complete within 3 seconds',
+      createdBy: 'Jennifer Lee',
+      createdDate: '2023-04-10',
+      updatedBy: 'David Wilson',
+      updatedDate: '2023-05-15',
+      version: '1.3',
+      dependsOn: [],
+      verificationCriteria: 'Successful login with valid credentials, rejection of invalid credentials',
+      tags: ['Security', 'Authentication', 'User']
+    },
+    {
+      id: 'FUNC-REQ-002',
+      title: 'Data Encryption',
+      description: 'The system shall encrypt all sensitive data using AES-256 encryption.',
+      systemRequirement: 'SYS-REQ-008',
+      priority: 'Critical',
+      status: 'Approved',
+      category: 'Security',
+      functionality: 'Data Protection',
+      inputs: ['Unencrypted Data'],
+      outputs: ['Encrypted Data'],
+      constraints: 'Encryption/decryption must not add more than 100ms to processing time',
+      createdBy: 'Jennifer Lee',
+      createdDate: '2023-04-12',
+      updatedBy: null,
+      updatedDate: null,
+      version: '1.0',
+      dependsOn: [],
+      verificationCriteria: 'Data stored in database is encrypted; data in transit is encrypted',
+      tags: ['Security', 'Encryption', 'Data Protection']
+    },
+    {
+      id: 'FUNC-REQ-003',
+      title: 'Navigation Route Calculation',
+      description: 'The system shall calculate optimal routes based on current traffic conditions.',
+      systemRequirement: 'SYS-REQ-001',
+      priority: 'High',
+      status: 'Implemented',
+      category: 'Navigation',
+      functionality: 'Route Planning',
+      inputs: ['Start Location', 'Destination', 'Traffic Data'],
+      outputs: ['Route', 'ETA', 'Distance'],
+      constraints: 'Route calculation must complete within 5 seconds',
+      createdBy: 'Michael Chen',
+      createdDate: '2023-04-15',
+      updatedBy: 'Sarah Johnson',
+      updatedDate: '2023-06-10',
+      version: '2.1',
+      dependsOn: ['FUNC-REQ-007'],
+      verificationCriteria: 'Routes avoid high traffic areas; calculations complete in required time',
+      tags: ['Navigation', 'Algorithm', 'Performance']
+    },
+    {
+      id: 'FUNC-REQ-004',
+      title: 'Real-time Traffic Updates',
+      description: 'The system shall provide real-time traffic updates every 5 minutes.',
+      systemRequirement: 'SYS-REQ-002',
+      priority: 'Medium',
+      status: 'Implemented',
+      category: 'Navigation',
+      functionality: 'Data Acquisition',
+      inputs: ['Traffic API', 'Geographic Location'],
+      outputs: ['Traffic Status', 'Incident Reports'],
+      constraints: 'Updates must not consume more than 10MB of data per hour',
+      createdBy: 'Michael Chen',
+      createdDate: '2023-04-18',
+      updatedBy: 'Sarah Johnson',
+      updatedDate: '2023-06-12',
+      version: '1.5',
+      dependsOn: [],
+      verificationCriteria: 'Traffic data is updated within specified intervals; data usage within limits',
+      tags: ['Navigation', 'Real-time', 'Data']
+    },
+    {
+      id: 'FUNC-REQ-005',
+      title: 'User Preference Storage',
+      description: 'The system shall store and retrieve user preferences across sessions.',
+      systemRequirement: 'SYS-REQ-010',
+      priority: 'Medium',
+      status: 'Approved',
+      category: 'User Experience',
+      functionality: 'Data Storage',
+      inputs: ['User ID', 'Preferences Data'],
+      outputs: ['Success/Failure Status'],
+      constraints: 'Preferences must be restored within 1 second of login',
+      createdBy: 'Emily Roberts',
+      createdDate: '2023-04-25',
+      updatedBy: null,
+      updatedDate: null,
+      version: '1.0',
+      dependsOn: ['FUNC-REQ-001'],
+      verificationCriteria: 'User preferences persist across logout/login cycles',
+      tags: ['User Experience', 'Storage', 'Preferences']
+    },
+    {
+      id: 'FUNC-REQ-006',
+      title: 'Route Guidance Voice Instructions',
+      description: 'The system shall provide voice-guided turn-by-turn navigation instructions.',
+      systemRequirement: 'SYS-REQ-003',
+      priority: 'High',
+      status: 'Under Review',
+      category: 'Navigation',
+      functionality: 'User Interface',
+      inputs: ['Current Location', 'Route Data', 'User Settings'],
+      outputs: ['Voice Prompts', 'Visual Instructions'],
+      constraints: 'Voice instructions must be delivered 100 meters before required action',
+      createdBy: 'Robert Kim',
+      createdDate: '2023-05-02',
+      updatedBy: 'Michael Chen',
+      updatedDate: '2023-06-15',
+      version: '1.4',
+      dependsOn: ['FUNC-REQ-003'],
+      verificationCriteria: 'Voice prompts are clear and timely; multiple language support',
+      tags: ['Navigation', 'Voice', 'User Interface']
+    },
+    {
+      id: 'FUNC-REQ-007',
+      title: 'Location Services',
+      description: 'The system shall determine current location using GPS, network, and sensor fusion.',
+      systemRequirement: 'SYS-REQ-001',
+      priority: 'Critical',
+      status: 'Verified',
+      category: 'Navigation',
+      functionality: 'Positioning',
+      inputs: ['GPS Signal', 'Network Data', 'Sensor Data'],
+      outputs: ['Location Coordinates', 'Accuracy Estimate'],
+      constraints: 'Must function in GPS-denied environments with reduced accuracy',
+      createdBy: 'Michael Chen',
+      createdDate: '2023-04-05',
+      updatedBy: 'Robert Kim',
+      updatedDate: '2023-06-20',
+      version: '2.2',
+      dependsOn: [],
+      verificationCriteria: 'Location accuracy meets specification in various environments',
+      tags: ['Navigation', 'GPS', 'Sensors']
+    },
+    {
+      id: 'FUNC-REQ-008',
+      title: 'System Error Reporting',
+      description: 'The system shall log and report errors with appropriate severity levels.',
+      systemRequirement: 'SYS-REQ-012',
+      priority: 'Medium',
+      status: 'Implemented',
+      category: 'System Operations',
+      functionality: 'Error Handling',
+      inputs: ['Error Event', 'System Context'],
+      outputs: ['Error Log', 'User Notification'],
+      constraints: 'Critical errors must trigger immediate admin notification',
+      createdBy: 'David Wilson',
+      createdDate: '2023-05-10',
+      updatedBy: null,
+      updatedDate: null,
+      version: '1.1',
+      dependsOn: [],
+      verificationCriteria: 'Errors are properly logged with correct severity; notifications work',
+      tags: ['Error Handling', 'Logging', 'Monitoring']
+    }
+  ]);
 
   // State for filtering and sorting
   const [searchTerm, setSearchTerm] = useState('');

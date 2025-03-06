@@ -34,12 +34,18 @@ const Settings: React.FC = () => {
   const [autoSave, setAutoSave] = React.useState(true);
 
   return (
-    <div className="settings-container" style={{ padding: '20px', minHeight: 'calc(100vh - 200px)' }}>
+    <div className="settings-container" style={{ padding: '20px', minHeight: 'calc(100vh - 200px)', width: '100%' }}>
       <Title level={2}>
         <SettingOutlined /> Settings
       </Title>
       
-      <Tabs defaultActiveKey="general" size="large" className="settings-tabs">
+      <Tabs 
+        defaultActiveKey="general" 
+        size="large" 
+        className="settings-tabs"
+        style={{ width: '100%' }}
+        tabBarStyle={{ marginBottom: 0 }}
+      >
         <TabPane 
           tab={
             <span>
@@ -47,9 +53,10 @@ const Settings: React.FC = () => {
             </span>
           } 
           key="general"
+          style={{ width: '100%' }}
         >
-          <div className="tab-content" style={{ padding: '20px 0' }}>
-            <Row gutter={[24, 24]}>
+          <div className="tab-content" style={{ padding: '20px 0', width: '100%' }}>
+            <Row gutter={[24, 24]} style={{ width: '100%', margin: 0 }}>
               <Col xs={24} lg={12}>
                 <Card 
                   title={
@@ -57,7 +64,7 @@ const Settings: React.FC = () => {
                       <DatabaseOutlined /> Product Configuration
                     </span>
                   }
-                  style={{ marginBottom: '20px' }}
+                  style={{ marginBottom: '20px', width: '100%' }}
                 >
                   <div style={{ marginBottom: '20px' }}>
                     <Title level={4}>Active Product</Title>
@@ -105,7 +112,7 @@ const Settings: React.FC = () => {
                       <UserOutlined /> User Preferences
                     </span>
                   }
-                  style={{ marginBottom: '20px' }}
+                  style={{ marginBottom: '20px', width: '100%' }}
                 >
                   <div style={{ marginBottom: '16px' }}>
                     <Row align="middle" justify="space-between">
@@ -215,6 +222,7 @@ const Settings: React.FC = () => {
                       <InfoCircleOutlined />
                     </Tooltip>
                   }
+                  style={{ width: '100%' }}
                 >
                   <div>
                     <Text>Security settings are managed by your organization administrator.</Text>
@@ -237,8 +245,9 @@ const Settings: React.FC = () => {
             </span>
           } 
           key="teamcenter"
+          style={{ width: '100%' }}
         >
-          <div className="tab-content" style={{ padding: '20px 0' }}>
+          <div className="tab-content" style={{ padding: '20px 0', width: '100%' }}>
             <TeamcenterSettings />
           </div>
         </TabPane>

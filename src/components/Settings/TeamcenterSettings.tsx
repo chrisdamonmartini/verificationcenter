@@ -93,9 +93,9 @@ const TeamcenterSettings: React.FC = () => {
   };
 
   return (
-    <div className="teamcenter-settings">
-      <Row gutter={[24, 24]}>
-        <Col xs={24}>
+    <div className="teamcenter-settings" style={{ width: '100%' }}>
+      <Row gutter={[24, 24]} style={{ width: '100%', margin: 0 }}>
+        <Col xs={24} style={{ paddingLeft: 0, paddingRight: 0 }}>
           <Card
             title={
               <Space>
@@ -104,6 +104,8 @@ const TeamcenterSettings: React.FC = () => {
               </Space>
             }
             extra={getConnectionStatusBadge()}
+            style={{ width: '100%' }}
+            bodyStyle={{ padding: '16px' }}
           >
             {connectionError && (
               <Alert
@@ -115,12 +117,13 @@ const TeamcenterSettings: React.FC = () => {
               />
             )}
 
-            <Row gutter={[24, 24]}>
-              <Col xs={24} lg={12}>
+            <Row gutter={[24, 24]} style={{ width: '100%', margin: 0 }}>
+              <Col xs={24} lg={12} style={{ paddingLeft: 0, paddingRight: 12 }}>
                 <Card
                   type="inner"
                   title="Connection Settings"
                   className="settings-card"
+                  style={{ width: '100%' }}
                   extra={
                     isAuthenticated ? (
                       <Button
@@ -151,6 +154,7 @@ const TeamcenterSettings: React.FC = () => {
                     onValuesChange={(changedValues) => {
                       updateSettings(changedValues);
                     }}
+                    style={{ width: '100%' }}
                   >
                     <Form.Item
                       name="serverUrl"
@@ -169,7 +173,7 @@ const TeamcenterSettings: React.FC = () => {
                       label="Instance"
                       rules={[{ required: true, message: 'Please select an instance' }]}
                     >
-                      <Select disabled={isAuthenticated}>
+                      <Select disabled={isAuthenticated} style={{ width: '100%' }}>
                         <Option value="production">Production</Option>
                         <Option value="development">Development</Option>
                         <Option value="testing">Testing</Option>
@@ -213,11 +217,12 @@ const TeamcenterSettings: React.FC = () => {
                 </Card>
               </Col>
 
-              <Col xs={24} lg={12}>
+              <Col xs={24} lg={12} style={{ paddingLeft: 12, paddingRight: 0 }}>
                 <Card
                   type="inner"
                   title="Integration Settings"
                   className="settings-card"
+                  style={{ width: '100%' }}
                   extra={
                     <Button
                       type="primary"
@@ -237,33 +242,34 @@ const TeamcenterSettings: React.FC = () => {
                     onValuesChange={(changedValues) => {
                       updateIntegrationSettings(changedValues);
                     }}
+                    style={{ width: '100%' }}
                   >
-                    <Row gutter={16}>
+                    <Row gutter={16} style={{ width: '100%', margin: 0 }}>
                       <Col span={24}>
                         <Paragraph>
                           <Text strong>Data Synchronization Options</Text>
                         </Paragraph>
                       </Col>
 
-                      <Col span={12}>
+                      <Col span={12} style={{ paddingLeft: 0, paddingRight: 8 }}>
                         <Form.Item name="syncRequirements" valuePropName="checked" label="Requirements">
                           <Switch disabled={!isAuthenticated} />
                         </Form.Item>
                       </Col>
 
-                      <Col span={12}>
+                      <Col span={12} style={{ paddingLeft: 8, paddingRight: 0 }}>
                         <Form.Item name="syncTestData" valuePropName="checked" label="Test Data">
                           <Switch disabled={!isAuthenticated} />
                         </Form.Item>
                       </Col>
 
-                      <Col span={12}>
+                      <Col span={12} style={{ paddingLeft: 0, paddingRight: 8 }}>
                         <Form.Item name="syncVerificationMatrix" valuePropName="checked" label="Verification Matrix">
                           <Switch disabled={!isAuthenticated} />
                         </Form.Item>
                       </Col>
 
-                      <Col span={12}>
+                      <Col span={12} style={{ paddingLeft: 8, paddingRight: 0 }}>
                         <Form.Item
                           name="enableBidirectionalSync"
                           valuePropName="checked"
@@ -280,27 +286,28 @@ const TeamcenterSettings: React.FC = () => {
                       </Col>
                     </Row>
 
-                    <Divider />
+                    <Divider style={{ margin: '12px 0' }} />
 
-                    <Row gutter={16}>
+                    <Row gutter={16} style={{ width: '100%', margin: 0 }}>
                       <Col span={24}>
                         <Paragraph>
                           <Text strong>Automatic Synchronization</Text>
                         </Paragraph>
                       </Col>
 
-                      <Col span={12}>
+                      <Col span={12} style={{ paddingLeft: 0, paddingRight: 8 }}>
                         <Form.Item name="autoSync" valuePropName="checked" label="Enable Auto-Sync">
                           <Switch disabled={!isAuthenticated} />
                         </Form.Item>
                       </Col>
 
-                      <Col span={12}>
+                      <Col span={12} style={{ paddingLeft: 8, paddingRight: 0 }}>
                         <Form.Item name="syncInterval" label="Sync Interval (minutes)">
                           <InputNumber
                             min={5}
                             max={1440}
                             disabled={!isAuthenticated || !integrationSettings.autoSync}
+                            style={{ width: '100%' }}
                           />
                         </Form.Item>
                       </Col>
@@ -312,14 +319,14 @@ const TeamcenterSettings: React.FC = () => {
 
             {isAuthenticated && (
               <>
-                <Divider />
+                <Divider style={{ margin: '16px 0' }} />
                 <TeamcenterRequirementsPreview />
               </>
             )}
           </Card>
         </Col>
         
-        <Col xs={24}>
+        <Col xs={24} style={{ paddingLeft: 0, paddingRight: 0 }}>
           <Card 
             title={
               <span>
@@ -327,6 +334,7 @@ const TeamcenterSettings: React.FC = () => {
               </span>
             }
             className="settings-card"
+            style={{ width: '100%' }}
           >
             <Paragraph>
               This integration connects your verification center to Siemens Teamcenter PLM system, allowing synchronization of

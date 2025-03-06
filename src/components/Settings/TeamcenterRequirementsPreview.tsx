@@ -145,8 +145,9 @@ const TeamcenterRequirementsPreview: React.FC = () => {
           </Space>
         }
         className="settings-card requirements-preview-card"
+        style={{ width: '100%' }}
       >
-        <div className="min-h-[200px] flex items-center justify-center">
+        <div className="min-h-[200px] flex items-center justify-center" style={{ width: '100%' }}>
           <Empty
             image={Empty.PRESENTED_IMAGE_SIMPLE}
             description={
@@ -172,6 +173,7 @@ const TeamcenterRequirementsPreview: React.FC = () => {
         </Space>
       }
       className="settings-card requirements-preview-card"
+      style={{ width: '100%' }}
       extra={
         <Space>
           {lastSynced && (
@@ -190,19 +192,22 @@ const TeamcenterRequirementsPreview: React.FC = () => {
         </Space>
       }
     >
-      <div className="min-h-[300px]">
-        <Spin spinning={loading}>
+      <div className="min-h-[300px]" style={{ width: '100%' }}>
+        <Spin spinning={loading} style={{ width: '100%' }}>
           {requirements.length > 0 ? (
-            <Table 
-              columns={columns} 
-              dataSource={requirements}
-              rowKey="id"
-              pagination={{ pageSize: 5 }}
-              size="small"
-              scroll={{ x: 'max-content' }}
-            />
+            <div style={{ width: '100%', overflowX: 'auto' }}>
+              <Table 
+                columns={columns} 
+                dataSource={requirements}
+                rowKey="id"
+                pagination={{ pageSize: 5 }}
+                size="small"
+                scroll={{ x: 'max-content' }}
+                style={{ width: '100%' }}
+              />
+            </div>
           ) : (
-            <div className="h-[300px] flex items-center justify-center">
+            <div className="h-[300px] flex items-center justify-center" style={{ width: '100%' }}>
               <Empty 
                 description={
                   <Space direction="vertical" align="center">
