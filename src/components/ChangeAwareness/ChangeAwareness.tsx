@@ -68,6 +68,15 @@ const ChangeAwareness: React.FC = () => {
   ]);
   const [activeTab, setActiveTab] = useState('overview');
 
+  // Extract the current tab from the URL if it exists
+  React.useEffect(() => {
+    const path = window.location.pathname;
+    if (path.includes('/change-awareness/')) {
+      const tab = path.split('/').pop() || 'overview';
+      setActiveTab(tab);
+    }
+  }, []);
+
   // Mock data for the dashboard overview
   const changeSummary = {
     total: 42,
