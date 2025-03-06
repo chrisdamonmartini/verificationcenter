@@ -608,52 +608,6 @@ const FunctionsChanges: React.FC = () => {
         </Paragraph>
       </Card>
       
-      <Card className="mb-4">
-        <div className="mb-4">
-          <Row gutter={24}>
-            <Col xs={24} md={8}>
-              <Title level={5}>Filter by Date Range</Title>
-              <RangePicker style={{ width: '100%' }} />
-            </Col>
-            <Col xs={24} md={8}>
-              <Title level={5}>Filter by Category</Title>
-              <Select
-                mode="multiple"
-                style={{ width: '100%' }}
-                placeholder="Select categories"
-                defaultValue={['decomposition', 'allocation', 'interface', 'behavior', 'performance']}
-              >
-                <Option value="decomposition">Decomposition</Option>
-                <Option value="allocation">Allocation</Option>
-                <Option value="interface">Interface</Option>
-                <Option value="behavior">Behavior</Option>
-                <Option value="performance">Performance</Option>
-              </Select>
-            </Col>
-            <Col xs={24} md={8}>
-              <Title level={5}>Filter by Status</Title>
-              <Select
-                mode="multiple"
-                style={{ width: '100%' }}
-                placeholder="Select statuses"
-                defaultValue={['pending', 'reviewed', 'approved', 'rejected']}
-              >
-                <Option value="pending">Pending</Option>
-                <Option value="reviewed">Reviewed</Option>
-                <Option value="approved">Approved</Option>
-                <Option value="rejected">Rejected</Option>
-              </Select>
-            </Col>
-          </Row>
-          <Row style={{ marginTop: 16 }}>
-            <Col span={24} style={{ textAlign: 'right' }}>
-              <Button type="primary">Apply Filters</Button>
-              <Button style={{ marginLeft: 8 }}>Reset</Button>
-            </Col>
-          </Row>
-        </div>
-      </Card>
-      
       <Table
         columns={columns}
         dataSource={functionChanges}
