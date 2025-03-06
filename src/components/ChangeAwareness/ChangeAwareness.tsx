@@ -20,6 +20,7 @@ import OperationalScenarios from './OperationalScenarios';
 import RequirementsChanges from './RequirementsChanges';
 import FunctionsChanges from './FunctionsChanges';
 import CADDesignChanges from './CADDesignChanges';
+import EngineeringBOMChanges from './EngineeringBOMChanges';
 
 const { Title, Text, Paragraph } = Typography;
 const { TabPane } = Tabs;
@@ -27,18 +28,8 @@ const { Option } = Select;
 const { RangePicker } = DatePicker;
 
 // For now, we'll comment out the imports and use placeholders for other components
-// import EngineeringBOMChanges from './EngineeringBOMChanges';
 
 // Placeholders for sub-components that haven't been implemented yet
-const EngineeringBOMChanges = () => (
-  <div>
-    <Alert 
-      message="Engineering BOM Changes Component" 
-      description="This component will track changes to the engineering bill of materials and parts."
-      type="info"
-    />
-  </div>
-);
 
 const ChangeAwareness: React.FC = () => {
   const [timeRange, setTimeRange] = useState<[Dayjs, Dayjs] | null>(null);
