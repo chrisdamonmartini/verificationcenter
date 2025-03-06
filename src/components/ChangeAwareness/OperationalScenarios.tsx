@@ -209,7 +209,7 @@ const OperationalScenarios: React.FC = () => {
       title: 'Category',
       dataIndex: 'category',
       key: 'category',
-      render: (category) => {
+      render: (category: 'environmental' | 'operational' | 'safety' | 'performance' | 'logistics') => {
         const categoryIcons = {
           environmental: <EnvironmentOutlined />,
           operational: <ClockCircleOutlined />,

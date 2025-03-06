@@ -218,7 +218,7 @@ const RequirementsChanges: React.FC = () => {
       title: 'Category',
       dataIndex: 'category',
       key: 'category',
-      render: (category) => {
+      render: (category: 'system' | 'functional' | 'performance' | 'interface' | 'physical' | 'verification') => {
         const categoryMap: Record<string, { icon: React.ReactNode; color: string }> = {
           system: { icon: <BuildOutlined />, color: 'blue' },
           functional: { icon: <ApartmentOutlined />, color: 'purple' },
