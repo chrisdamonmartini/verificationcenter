@@ -20,8 +20,10 @@ const { TabPane } = Tabs;
 const { Option } = Select;
 const { RangePicker } = DatePicker;
 
-// For now, we'll comment out the imports and use placeholders
-// import MissionChanges from './MissionChanges';
+// Import the MissionChanges component
+import MissionChanges from './MissionChanges';
+
+// For now, we'll comment out the imports and use placeholders for other components
 // import OperationalScenarios from './OperationalScenarios';
 // import RequirementsChanges from './RequirementsChanges';
 // import FunctionsChanges from './FunctionsChanges';
@@ -29,16 +31,7 @@ const { RangePicker } = DatePicker;
 // import EngineeringBOMChanges from './EngineeringBOMChanges';
 
 // Placeholders for sub-components
-const MissionChanges = () => (
-  <div>
-    <Alert 
-      message="Mission Changes Component"
-      description="This component will display changes to mission objectives, parameters, and success criteria." 
-      type="info"
-    />
-  </div>
-);
-
+// We keep MissionChanges but replace it with the imported component
 const OperationalScenarios = () => (
   <div>
     <Alert 
@@ -95,6 +88,7 @@ const ChangeAwareness: React.FC = () => {
   const [sourceFilter, setSourceFilter] = useState<string[]>([
     'mission', 'operational', 'requirements', 'functions', 'cad', 'bom'
   ]);
+  const [activeTab, setActiveTab] = useState('overview');
 
   // Mock data for the dashboard overview
   const changeSummary = {
@@ -224,7 +218,12 @@ const ChangeAwareness: React.FC = () => {
         </Card>
       </div>
 
-      <Tabs defaultActiveKey="overview" className="changes-tabs">
+      <Tabs 
+        defaultActiveKey="overview" 
+        className="changes-tabs"
+        activeKey={activeTab}
+        onChange={setActiveTab}
+      >
         <TabPane 
           tab={<span><BranchesOutlined /> Overview</span>} 
           key="overview"
