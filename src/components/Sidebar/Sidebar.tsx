@@ -259,6 +259,12 @@ export const SidebarData = [
         icon: <FieldTimeOutlined />
       }
     ]
+  },
+  {
+    title: 'Settings',
+    path: '/settings',
+    icon: <SettingOutlined />,
+    subNav: []
   }
 ];
 

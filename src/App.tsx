@@ -37,6 +37,8 @@ import VerificationStatusComponent from './components/ReportsAnalytics/Verificat
 import ResourceUtilizationComponent from './components/ReportsAnalytics/ResourceUtilization';
 import CostAnalysisComponent from './components/ReportsAnalytics/CostAnalysis';
 import SchedulePerformanceComponent from './components/ReportsAnalytics/SchedulePerformance';
+// Import Settings component
+import Settings from './components/Settings/Settings';
 
 // Define a type for requirements
 interface Requirement {
@@ -345,6 +347,10 @@ function App() {
             </button>
           </div>
         );
+        
+      // Settings
+      case 'settings':
+        return <Settings />;
         
       default:
         return (
