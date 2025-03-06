@@ -6,7 +6,6 @@ import {
   BellOutlined,
   FileProtectOutlined,
   ProjectOutlined,
-  ExperimentOutlined,
   CheckCircleOutlined,
   FundOutlined,
   FileSearchOutlined,
