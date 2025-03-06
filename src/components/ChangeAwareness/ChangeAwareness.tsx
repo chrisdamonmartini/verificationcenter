@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { Tabs, Card, Typography, Badge, Space, Alert, Timeline, Row, Col, Select, DatePicker, Button, Statistic } from 'antd';
+import { Tabs, Card, Typography, Badge, Space, Alert, Timeline, Row, Col, Select, DatePicker, Button } from 'antd';
 import type { Dayjs } from 'dayjs';
 import {
   BellOutlined,
@@ -43,22 +43,6 @@ const ChangeAwareness: React.FC = () => {
     }
   }, []);
 
-  // Mock data for the dashboard overview
-  const changeSummary = {
-    total: 42,
-    critical: 5,
-    major: 12,
-    minor: 25,
-    byDomain: {
-      mission: 6,
-      operational: 8,
-      requirements: 14,
-      functions: 7,
-      cad: 4,
-      bom: 3
-    }
-  };
-
   return (
     <div className="change-awareness-container">
       <div className="header-section" style={{ marginBottom: 16 }}>
@@ -66,49 +50,6 @@ const ChangeAwareness: React.FC = () => {
           <BellOutlined /> Change Awareness
         </Title>
       </div>
-
-      <Row gutter={[16, 8]} style={{ marginBottom: 16 }}>
-        <Col xs={24} sm={12} md={8} lg={6}>
-          <Card bodyStyle={{ padding: '12px 24px' }}>
-            <Statistic
-              title="Total Changes"
-              value={changeSummary.total}
-              prefix={<BellOutlined />}
-              valueStyle={{ color: '#1890ff' }}
-            />
-          </Card>
-        </Col>
-        <Col xs={24} sm={12} md={8} lg={6}>
-          <Card bodyStyle={{ padding: '12px 24px' }}>
-            <Statistic
-              title="Critical Changes"
-              value={changeSummary.critical}
-              prefix={<WarningOutlined style={{ color: '#ff4d4f' }} />}
-              valueStyle={{ color: '#ff4d4f' }}
-            />
-          </Card>
-        </Col>
-        <Col xs={24} sm={12} md={8} lg={6}>
-          <Card bodyStyle={{ padding: '12px 24px' }}>
-            <Statistic
-              title="Major Changes"
-              value={changeSummary.major}
-              prefix={<InfoCircleOutlined style={{ color: '#faad14' }} />}
-              valueStyle={{ color: '#faad14' }}
-            />
-          </Card>
-        </Col>
-        <Col xs={24} sm={12} md={8} lg={6}>
-          <Card bodyStyle={{ padding: '12px 24px' }}>
-            <Statistic
-              title="Minor Changes"
-              value={changeSummary.minor}
-              prefix={<InfoCircleOutlined style={{ color: '#52c41a' }} />}
-              valueStyle={{ color: '#52c41a' }}
-            />
-          </Card>
-        </Col>
-      </Row>
 
       <Tabs 
         defaultActiveKey="overview" 
