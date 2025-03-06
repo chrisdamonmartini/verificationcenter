@@ -320,6 +320,31 @@ interface SidebarProps {
 
 const Sidebar: React.FC<SidebarProps> = ({ currentView, onNavigate }) => {
   const [collapsed, setCollapsed] = useState(false);
+  const [expandedItems, setExpandedItems] = useState<string[]>([]);
+
+  // Toggle submenu expansion
+  const toggleSubNav = (path: string) => {
+    if (expandedItems.includes(path)) {
+      setExpandedItems(expandedItems.filter(item => item !== path));
+    } else {
+      setExpandedItems([...expandedItems, path]);
+    }
+  };
+
+  // Check if this is a parent of the current active view
+  const isParentOfActiveView = (path: string) => {
+    const pathWithoutSlash = path.replace('/', '');
+    return currentView.startsWith(pathWithoutSlash) && pathWithoutSlash !== currentView;
+  };
+
+  // Auto-expand parent of active view
+  React.useEffect(() => {
+    SidebarData.forEach(item => {
+      if (isParentOfActiveView(item.path) && !expandedItems.includes(item.path)) {
+        setExpandedItems(prev => [...prev, item.path]);
+      }
+    });
+  }, [currentView]);
 
   return (
     <div 
@@ -344,17 +369,59 @@ const Sidebar: React.FC<SidebarProps> = ({ currentView, onNavigate }) => {
       <nav>
         {SidebarData.map((item, index) => {
           const itemPath = item.path === '/' ? 'dashboard' : item.path.replace('/', '');
+          const isActive = currentView === itemPath || isParentOfActiveView(item.path);
+          const isExpanded = expandedItems.includes(item.path);
+          const hasSubNav = item.subNav && item.subNav.length > 0;
           
           return (
-            <div
-              key={index}
-              className={`flex items-center p-3 mb-2 rounded cursor-pointer
-                ${currentView === itemPath ? 'bg-blue-700' : 'hover:bg-blue-800'}`}
-              onClick={() => onNavigate(item.path)}
-              title={collapsed ? item.title : undefined}
-            >
-              <span className={`text-xl ${collapsed ? 'mx-auto' : 'mr-4'}`}>{item.icon}</span>
-              {!collapsed && <span>{item.title}</span>}
+            <div key={index}>
+              <div
+                className={`flex items-center justify-between p-3 mb-2 rounded cursor-pointer
+                  ${isActive ? 'bg-blue-700' : 'hover:bg-blue-800'}`}
+                onClick={() => {
+                  if (hasSubNav) {
+                    toggleSubNav(item.path);
+                  } else {
+                    onNavigate(item.path);
+                  }
+                }}
+                title={collapsed ? item.title : undefined}
+              >
+                <div className="flex items-center">
+                  <span className={`text-xl ${collapsed ? 'mx-auto' : 'mr-4'}`}>{item.icon}</span>
+                  {!collapsed && <span>{item.title}</span>}
+                </div>
+                {!collapsed && hasSubNav && (
+                  <span>
+                    {isExpanded ? (
+                      <FaIcons.FaChevronDown className="text-xs" />
+                    ) : (
+                      <FaIcons.FaChevronRight className="text-xs" />
+                    )}
+                  </span>
+                )}
+              </div>
+              
+              {!collapsed && hasSubNav && isExpanded && (
+                <div className="ml-8 mt-2 mb-4">
+                  {item.subNav.map((subItem, subIndex) => {
+                    const subItemPath = subItem.path.replace('/', '');
+                    const isSubItemActive = currentView === subItemPath;
+                    
+                    return (
+                      <div
+                        key={subIndex}
+                        className={`flex items-center p-2 mb-1 rounded cursor-pointer
+                          ${isSubItemActive ? 'bg-blue-700' : 'hover:bg-blue-800'}`}
+                        onClick={() => onNavigate(subItem.path)}
+                      >
+                        <span className="text-sm mr-3">{subItem.icon}</span>
+                        <span className="text-sm">{subItem.title}</span>
+                      </div>
+                    );
+                  })}
+                </div>
+              )}
             </div>
           );
         })}
