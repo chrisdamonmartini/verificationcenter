@@ -34,6 +34,54 @@ body {
   background-color: white;
 }
 
+/* Settings tab layout fixes */
+.settings-container {
+  height: 100%;
+}
+
+.settings-tabs {
+  min-height: 500px;
+}
+
+.tab-content {
+  min-height: 500px;
+}
+
+.settings-card {
+  height: 100%;
+}
+
+.teamcenter-settings .ant-card-body {
+  padding: 16px;
+}
+
+.requirements-preview-card {
+  margin-top: 16px;
+}
+
+.requirements-preview-card .ant-table-wrapper {
+  overflow-x: auto;
+}
+
+.requirements-preview-card .ant-empty {
+  margin: 32px 0;
+}
+
+/* Ensure consistent menu width */
+.teamcenter-settings, 
+.ant-tabs-tabpane {
+  width: 100%;
+}
+
+/* Ensure tab content doesn't cause layout shifts */
+.ant-tabs-content {
+  height: 100%;
+}
+
+.ant-tabs-tabpane {
+  outline: none;
+}
+
 /* Military-inspired styling */
 @layer components {
   .dashboard-card {

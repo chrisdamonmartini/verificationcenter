@@ -34,12 +34,12 @@ const Settings: React.FC = () => {
   const [autoSave, setAutoSave] = React.useState(true);
 
   return (
-    <div style={{ padding: '20px' }}>
+    <div className="settings-container" style={{ padding: '20px', minHeight: 'calc(100vh - 200px)' }}>
       <Title level={2}>
         <SettingOutlined /> Settings
       </Title>
       
-      <Tabs defaultActiveKey="general" size="large">
+      <Tabs defaultActiveKey="general" size="large" className="settings-tabs">
         <TabPane 
           tab={
             <span>
@@ -48,184 +48,186 @@ const Settings: React.FC = () => {
           } 
           key="general"
         >
-          <Row gutter={[24, 24]} style={{ marginTop: '20px' }}>
-            <Col xs={24} lg={12}>
-              <Card 
-                title={
-                  <span>
-                    <DatabaseOutlined /> Product Configuration
-                  </span>
-                }
-                style={{ marginBottom: '20px' }}
-              >
-                <div style={{ marginBottom: '20px' }}>
-                  <Title level={4}>Active Product</Title>
-                  <Text type="secondary">
-                    Switch between different product types to see relevant verification data
-                  </Text>
+          <div className="tab-content" style={{ padding: '20px 0' }}>
+            <Row gutter={[24, 24]}>
+              <Col xs={24} lg={12}>
+                <Card 
+                  title={
+                    <span>
+                      <DatabaseOutlined /> Product Configuration
+                    </span>
+                  }
+                  style={{ marginBottom: '20px' }}
+                >
+                  <div style={{ marginBottom: '20px' }}>
+                    <Title level={4}>Active Product</Title>
+                    <Text type="secondary">
+                      Switch between different product types to see relevant verification data
+                    </Text>
+                    
+                    <div style={{ marginTop: '16px' }}>
+                      <Radio.Group onChange={handleProductChange} value={productType} size="large">
+                        <Space direction="vertical">
+                          <Radio value="missile">
+                            <Space>
+                              <RocketOutlined />
+                              <span>ATMS Block 3 (Missile System)</span>
+                            </Space>
+                          </Radio>
+                          <Radio value="fighter">
+                            <Space>
+                              <ThunderboltOutlined />
+                              <span>F/A-29E Raptor II (Fighter Aircraft)</span>
+                            </Space>
+                          </Radio>
+                        </Space>
+                      </Radio.Group>
+                    </div>
+                  </div>
                   
-                  <div style={{ marginTop: '16px' }}>
-                    <Radio.Group onChange={handleProductChange} value={productType} size="large">
-                      <Space direction="vertical">
-                        <Radio value="missile">
-                          <Space>
-                            <RocketOutlined />
-                            <span>ATMS Block 3 (Missile System)</span>
-                          </Space>
-                        </Radio>
-                        <Radio value="fighter">
-                          <Space>
-                            <ThunderboltOutlined />
-                            <span>F/A-29E Raptor II (Fighter Aircraft)</span>
-                          </Space>
-                        </Radio>
-                      </Space>
-                    </Radio.Group>
+                  <Divider />
+                  
+                  <Title level={4}>Product Details</Title>
+                  <div style={{ background: '#f5f5f5', padding: '16px', borderRadius: '4px' }}>
+                    <p><strong>Name:</strong> {productName}</p>
+                    <p><strong>Program:</strong> {productDetails.program}</p>
+                    <p><strong>Version:</strong> {productDetails.version}</p>
+                    <p><strong>Development Stage:</strong> {productDetails.stage}</p>
+                    <p><strong>Organization:</strong> {productDetails.organization}</p>
                   </div>
-                </div>
-                
-                <Divider />
-                
-                <Title level={4}>Product Details</Title>
-                <div style={{ background: '#f5f5f5', padding: '16px', borderRadius: '4px' }}>
-                  <p><strong>Name:</strong> {productName}</p>
-                  <p><strong>Program:</strong> {productDetails.program}</p>
-                  <p><strong>Version:</strong> {productDetails.version}</p>
-                  <p><strong>Development Stage:</strong> {productDetails.stage}</p>
-                  <p><strong>Organization:</strong> {productDetails.organization}</p>
-                </div>
-              </Card>
-            </Col>
+                </Card>
+              </Col>
 
-            <Col xs={24} lg={12}>
-              <Card 
-                title={
-                  <span>
-                    <UserOutlined /> User Preferences
-                  </span>
-                }
-                style={{ marginBottom: '20px' }}
-              >
-                <div style={{ marginBottom: '16px' }}>
-                  <Row align="middle" justify="space-between">
-                    <Col>
-                      <Text strong>Dark Mode</Text>
-                      <br />
-                      <Text type="secondary">Switch between light and dark theme</Text>
-                    </Col>
-                    <Col>
-                      <Switch 
-                        checked={darkMode} 
-                        onChange={setDarkMode} 
-                      />
-                    </Col>
-                  </Row>
-                </div>
-                
-                <Divider />
-                
-                <div style={{ marginBottom: '16px' }}>
-                  <Row align="middle" justify="space-between">
-                    <Col>
-                      <Text strong>Notifications</Text>
-                      <br />
-                      <Text type="secondary">Enable or disable notifications</Text>
-                    </Col>
-                    <Col>
-                      <Switch 
-                        checked={notifications} 
-                        onChange={setNotifications} 
-                      />
-                    </Col>
-                  </Row>
-                </div>
-                
-                <Divider />
-                
-                <div style={{ marginBottom: '16px' }}>
-                  <Row align="middle" justify="space-between">
-                    <Col>
-                      <Text strong>Auto-save</Text>
-                      <br />
-                      <Text type="secondary">Save data changes automatically</Text>
-                    </Col>
-                    <Col>
-                      <Switch 
-                        checked={autoSave} 
-                        onChange={setAutoSave} 
-                      />
-                    </Col>
-                  </Row>
-                </div>
-                
-                <Divider />
-                
-                <div style={{ marginBottom: '16px' }}>
-                  <Row align="middle" justify="space-between">
-                    <Col>
-                      <Text strong>Language</Text>
-                      <br />
-                      <Text type="secondary">Set your preferred language</Text>
-                    </Col>
-                    <Col>
-                      <Select 
-                        value={language} 
-                        onChange={setLanguage}
-                        style={{ width: '150px' }}
-                      >
-                        <Option value="english">English</Option>
-                        <Option value="spanish">Spanish</Option>
-                        <Option value="french">French</Option>
-                        <Option value="german">German</Option>
-                      </Select>
-                    </Col>
-                  </Row>
-                </div>
-                
-                <Divider />
-                
-                <div style={{ marginBottom: '16px' }}>
-                  <Row align="middle" justify="space-between">
-                    <Col>
-                      <Text strong>Data Synchronization</Text>
-                      <br />
-                      <Text type="secondary">Keep data in sync across devices</Text>
-                    </Col>
-                    <Col>
-                      <Switch 
-                        checked={dataSync} 
-                        onChange={setDataSync} 
-                      />
-                    </Col>
-                  </Row>
-                </div>
-              </Card>
-            </Col>
-            
-            <Col xs={24}>
-              <Card 
-                title={
-                  <span>
-                    <LockOutlined /> Data Security Settings
-                  </span>
-                }
-                extra={
-                  <Tooltip title="These settings control how sensitive verification data is handled">
-                    <InfoCircleOutlined />
-                  </Tooltip>
-                }
-              >
-                <div>
-                  <Text>Security settings are managed by your organization administrator.</Text>
-                  <div style={{ marginTop: '16px' }}>
-                    <Button type="primary" disabled>
-                      Request Security Policy Changes
-                    </Button>
+              <Col xs={24} lg={12}>
+                <Card 
+                  title={
+                    <span>
+                      <UserOutlined /> User Preferences
+                    </span>
+                  }
+                  style={{ marginBottom: '20px' }}
+                >
+                  <div style={{ marginBottom: '16px' }}>
+                    <Row align="middle" justify="space-between">
+                      <Col>
+                        <Text strong>Dark Mode</Text>
+                        <br />
+                        <Text type="secondary">Switch between light and dark theme</Text>
+                      </Col>
+                      <Col>
+                        <Switch 
+                          checked={darkMode} 
+                          onChange={setDarkMode} 
+                        />
+                      </Col>
+                    </Row>
                   </div>
-                </div>
-              </Card>
-            </Col>
-          </Row>
+                  
+                  <Divider />
+                  
+                  <div style={{ marginBottom: '16px' }}>
+                    <Row align="middle" justify="space-between">
+                      <Col>
+                        <Text strong>Notifications</Text>
+                        <br />
+                        <Text type="secondary">Enable or disable notifications</Text>
+                      </Col>
+                      <Col>
+                        <Switch 
+                          checked={notifications} 
+                          onChange={setNotifications} 
+                        />
+                      </Col>
+                    </Row>
+                  </div>
+                  
+                  <Divider />
+                  
+                  <div style={{ marginBottom: '16px' }}>
+                    <Row align="middle" justify="space-between">
+                      <Col>
+                        <Text strong>Auto-save</Text>
+                        <br />
+                        <Text type="secondary">Save data changes automatically</Text>
+                      </Col>
+                      <Col>
+                        <Switch 
+                          checked={autoSave} 
+                          onChange={setAutoSave} 
+                        />
+                      </Col>
+                    </Row>
+                  </div>
+                  
+                  <Divider />
+                  
+                  <div style={{ marginBottom: '16px' }}>
+                    <Row align="middle" justify="space-between">
+                      <Col>
+                        <Text strong>Language</Text>
+                        <br />
+                        <Text type="secondary">Set your preferred language</Text>
+                      </Col>
+                      <Col>
+                        <Select 
+                          value={language} 
+                          onChange={setLanguage}
+                          style={{ width: '150px' }}
+                        >
+                          <Option value="english">English</Option>
+                          <Option value="spanish">Spanish</Option>
+                          <Option value="french">French</Option>
+                          <Option value="german">German</Option>
+                        </Select>
+                      </Col>
+                    </Row>
+                  </div>
+                  
+                  <Divider />
+                  
+                  <div style={{ marginBottom: '16px' }}>
+                    <Row align="middle" justify="space-between">
+                      <Col>
+                        <Text strong>Data Synchronization</Text>
+                        <br />
+                        <Text type="secondary">Keep data in sync across devices</Text>
+                      </Col>
+                      <Col>
+                        <Switch 
+                          checked={dataSync} 
+                          onChange={setDataSync} 
+                        />
+                      </Col>
+                    </Row>
+                  </div>
+                </Card>
+              </Col>
+              
+              <Col xs={24}>
+                <Card 
+                  title={
+                    <span>
+                      <LockOutlined /> Data Security Settings
+                    </span>
+                  }
+                  extra={
+                    <Tooltip title="These settings control how sensitive verification data is handled">
+                      <InfoCircleOutlined />
+                    </Tooltip>
+                  }
+                >
+                  <div>
+                    <Text>Security settings are managed by your organization administrator.</Text>
+                    <div style={{ marginTop: '16px' }}>
+                      <Button type="primary" disabled>
+                        Request Security Policy Changes
+                      </Button>
+                    </div>
+                  </div>
+                </Card>
+              </Col>
+            </Row>
+          </div>
         </TabPane>
 
         <TabPane 
@@ -236,7 +238,7 @@ const Settings: React.FC = () => {
           } 
           key="teamcenter"
         >
-          <div style={{ marginTop: '20px' }}>
+          <div className="tab-content" style={{ padding: '20px 0' }}>
             <TeamcenterSettings />
           </div>
         </TabPane>

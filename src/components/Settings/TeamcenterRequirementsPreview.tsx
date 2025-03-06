@@ -144,18 +144,21 @@ const TeamcenterRequirementsPreview: React.FC = () => {
             <span>Teamcenter Requirements</span>
           </Space>
         }
+        className="settings-card requirements-preview-card"
       >
-        <Empty
-          image={Empty.PRESENTED_IMAGE_SIMPLE}
-          description={
-            <Space direction="vertical" align="center">
-              <span>Not connected to Teamcenter</span>
-              <span style={{ fontSize: '0.8rem', color: '#999' }}>
-                Connect to Teamcenter in the settings to view requirements
-              </span>
-            </Space>
-          }
-        />
+        <div className="min-h-[200px] flex items-center justify-center">
+          <Empty
+            image={Empty.PRESENTED_IMAGE_SIMPLE}
+            description={
+              <Space direction="vertical" align="center">
+                <span>Not connected to Teamcenter</span>
+                <span style={{ fontSize: '0.8rem', color: '#999' }}>
+                  Connect to Teamcenter in the settings to view requirements
+                </span>
+              </Space>
+            }
+          />
+        </div>
       </Card>
     );
   }
@@ -168,6 +171,7 @@ const TeamcenterRequirementsPreview: React.FC = () => {
           <span>Teamcenter Requirements</span>
         </Space>
       }
+      className="settings-card requirements-preview-card"
       extra={
         <Space>
           {lastSynced && (
@@ -186,33 +190,38 @@ const TeamcenterRequirementsPreview: React.FC = () => {
         </Space>
       }
     >
-      <Spin spinning={loading}>
-        {requirements.length > 0 ? (
-          <Table 
-            columns={columns} 
-            dataSource={requirements}
-            rowKey="id"
-            pagination={{ pageSize: 5 }}
-            size="small"
-          />
-        ) : (
-          <Empty 
-            description={
-              <Space direction="vertical" align="center">
-                <span>No requirements synced from Teamcenter</span>
-                <Button 
-                  type="primary" 
-                  icon={<SyncOutlined />} 
-                  onClick={fetchRequirements}
-                  loading={loading}
-                >
-                  Sync Requirements
-                </Button>
-              </Space>
-            }
-          />
-        )}
-      </Spin>
+      <div className="min-h-[300px]">
+        <Spin spinning={loading}>
+          {requirements.length > 0 ? (
+            <Table 
+              columns={columns} 
+              dataSource={requirements}
+              rowKey="id"
+              pagination={{ pageSize: 5 }}
+              size="small"
+              scroll={{ x: 'max-content' }}
+            />
+          ) : (
+            <div className="h-[300px] flex items-center justify-center">
+              <Empty 
+                description={
+                  <Space direction="vertical" align="center">
+                    <span>No requirements synced from Teamcenter</span>
+                    <Button 
+                      type="primary" 
+                      icon={<SyncOutlined />} 
+                      onClick={fetchRequirements}
+                      loading={loading}
+                    >
+                      Sync Requirements
+                    </Button>
+                  </Space>
+                }
+              />
+            </div>
+          )}
+        </Spin>
+      </div>
     </Card>
   );
 };
