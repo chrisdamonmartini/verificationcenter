@@ -32,11 +32,6 @@ const { RangePicker } = DatePicker;
 // Placeholders for sub-components that haven't been implemented yet
 
 const ChangeAwareness: React.FC = () => {
-  const [timeRange, setTimeRange] = useState<[Dayjs, Dayjs] | null>(null);
-  const [severityFilter, setSeverityFilter] = useState<string[]>(['critical', 'major', 'minor']);
-  const [sourceFilter, setSourceFilter] = useState<string[]>([
-    'mission', 'operational', 'requirements', 'functions', 'cad', 'bom'
-  ]);
   const [activeTab, setActiveTab] = useState('overview');
 
   // Extract the current tab from the URL if it exists
@@ -61,15 +56,6 @@ const ChangeAwareness: React.FC = () => {
       functions: 7,
       cad: 4,
       bom: 3
-    }
-  };
-
-  // Handle date range change
-  const handleDateRangeChange = (dates: any, dateStrings: [string, string]) => {
-    if (dates && dates[0] && dates[1]) {
-      setTimeRange([dates[0], dates[1]]);
-    } else {
-      setTimeRange(null);
     }
   };
 
@@ -127,54 +113,6 @@ const ChangeAwareness: React.FC = () => {
           </Card>
         </Col>
       </Row>
-
-      <div className="filters-section" style={{ marginBottom: 24 }}>
-        <Card title="Filters">
-          <Row gutter={[16, 16]}>
-            <Col xs={24} md={8}>
-              <Title level={5}>Time Range</Title>
-              <RangePicker style={{ width: '100%' }} onChange={handleDateRangeChange} />
-            </Col>
-            <Col xs={24} md={8}>
-              <Title level={5}>Severity</Title>
-              <Select
-                mode="multiple"
-                style={{ width: '100%' }}
-                placeholder="Select severity levels"
-                defaultValue={severityFilter}
-                onChange={setSeverityFilter}
-              >
-                <Option value="critical">Critical</Option>
-                <Option value="major">Major</Option>
-                <Option value="minor">Minor</Option>
-              </Select>
-            </Col>
-            <Col xs={24} md={8}>
-              <Title level={5}>Source</Title>
-              <Select
-                mode="multiple"
-                style={{ width: '100%' }}
-                placeholder="Select change sources"
-                defaultValue={sourceFilter}
-                onChange={setSourceFilter}
-              >
-                <Option value="mission">Mission</Option>
-                <Option value="operational">Operational Scenarios</Option>
-                <Option value="requirements">Requirements</Option>
-                <Option value="functions">Functions</Option>
-                <Option value="cad">CAD Design</Option>
-                <Option value="bom">Engineering BOM</Option>
-              </Select>
-            </Col>
-          </Row>
-          <Row style={{ marginTop: 16 }}>
-            <Col span={24} style={{ textAlign: 'right' }}>
-              <Button type="primary">Apply Filters</Button>
-              <Button style={{ marginLeft: 8 }}>Reset</Button>
-            </Col>
-          </Row>
-        </Card>
-      </div>
 
       <Tabs 
         defaultActiveKey="overview" 
