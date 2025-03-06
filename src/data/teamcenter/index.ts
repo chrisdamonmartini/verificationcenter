@@ -73,7 +73,8 @@ export const missileTCRequirements: TCRequirement[] = [
     attributes: {
       "Required Range": "250 km",
       "Compliance": "Mandatory",
-      "Verification Level": "System"
+      "Verification Level": "System",
+      "verification_status": "Verified"
     }
   },
   {
@@ -94,7 +95,8 @@ export const missileTCRequirements: TCRequirement[] = [
     attributes: {
       "Required CEP": "<2.5 m",
       "Compliance": "Mandatory",
-      "Verification Level": "Subsystem"
+      "Verification Level": "Subsystem",
+      "verification_status": "In Progress"
     }
   },
   {
@@ -116,7 +118,8 @@ export const missileTCRequirements: TCRequirement[] = [
       "Min Temperature": "-40°C",
       "Max Temperature": "+50°C",
       "Compliance": "Mandatory",
-      "Verification Level": "System"
+      "Verification Level": "System",
+      "verification_status": "Verified"
     }
   }
 ];
@@ -141,7 +144,8 @@ export const fighterTCRequirements: TCRequirement[] = [
     attributes: {
       "Required Speed": "Mach 1.8",
       "Compliance": "Mandatory",
-      "Verification Level": "Aircraft"
+      "Verification Level": "Aircraft",
+      "verification_status": "Verified"
     }
   },
   {
@@ -162,7 +166,8 @@ export const fighterTCRequirements: TCRequirement[] = [
     attributes: {
       "Required RCS": "<0.1 m²",
       "Compliance": "Mandatory",
-      "Verification Level": "Aircraft"
+      "Verification Level": "Aircraft",
+      "verification_status": "In Progress"
     }
   },
   {
@@ -183,7 +188,8 @@ export const fighterTCRequirements: TCRequirement[] = [
     attributes: {
       "Light Conditions": "Full range",
       "Compliance": "Mandatory",
-      "Verification Level": "Subsystem"
+      "Verification Level": "Subsystem",
+      "verification_status": "Not Started"
     }
   }
 ];
@@ -398,5 +404,25 @@ export const syncWithTeamcenter = async () => {
   });
 };
 
-// Alias for backward compatibility
-export const syncTeamcenterData = syncWithTeamcenter;
+// Properly typed syncTeamcenterData function for compatibility with TeamcenterRequirementsPreview
+export const syncTeamcenterData = async (productType: 'missile' | 'fighter') => {
+  // Simulate API call delay
+  return new Promise<{
+    success: boolean;
+    data: TCRequirement[];
+    message?: string;
+  }>((resolve) => {
+    setTimeout(() => {
+      // Filter requirements based on product type
+      const requirements = productType === 'missile' 
+        ? missileTCRequirements 
+        : fighterTCRequirements;
+      
+      resolve({
+        success: true,
+        data: requirements,
+        message: 'Successfully synced requirements'
+      });
+    }, 1500);
+  });
+};
