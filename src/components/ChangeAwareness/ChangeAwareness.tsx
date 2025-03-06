@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
 import { Tabs, Card, Typography, Badge, Space, Alert, Timeline, Row, Col, Select, DatePicker, Button, Statistic } from 'antd';
-import type { Moment } from 'moment';
+import type { Dayjs } from 'dayjs';
 import {
   BellOutlined,
   BranchesOutlined,
@@ -90,7 +90,7 @@ const EngineeringBOMChanges = () => (
 );
 
 const ChangeAwareness: React.FC = () => {
-  const [timeRange, setTimeRange] = useState<[Moment, Moment] | null>(null);
+  const [timeRange, setTimeRange] = useState<[Dayjs, Dayjs] | null>(null);
   const [severityFilter, setSeverityFilter] = useState<string[]>(['critical', 'major', 'minor']);
   const [sourceFilter, setSourceFilter] = useState<string[]>([
     'mission', 'operational', 'requirements', 'functions', 'cad', 'bom'
@@ -109,6 +109,15 @@ const ChangeAwareness: React.FC = () => {
       functions: 7,
       cad: 4,
       bom: 3
+    }
+  };
+
+  // Handle date range change
+  const handleDateRangeChange = (dates: any, dateStrings: [string, string]) => {
+    if (dates && dates[0] && dates[1]) {
+      setTimeRange([dates[0], dates[1]]);
+    } else {
+      setTimeRange(null);
     }
   };
 
@@ -172,7 +181,7 @@ const ChangeAwareness: React.FC = () => {
           <Row gutter={[16, 16]}>
             <Col xs={24} md={8}>
               <Title level={5}>Time Range</Title>
-              <RangePicker style={{ width: '100%' }} onChange={(dates) => setTimeRange(dates)} />
+              <RangePicker style={{ width: '100%' }} onChange={handleDateRangeChange} />
             </Col>
             <Col xs={24} md={8}>
               <Title level={5}>Severity</Title>
