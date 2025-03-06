@@ -1,418 +1,173 @@
 import React, { useState } from 'react';
-import { Table, Card, Typography, Tag, Space, Button, Drawer, Timeline, List, Badge, Collapse, Tooltip, Select, DatePicker, Row, Col } from 'antd';
-import type { ColumnsType } from 'antd/es/table';
 import { 
-  ApartmentOutlined,
-  InfoCircleOutlined, 
-  WarningOutlined, 
+  Table, 
+  Button, 
+  Space, 
+  Tag, 
+  DatePicker, 
+  Select, 
+  Tooltip, 
+  Badge, 
+  Typography 
+} from 'antd';
+import { 
+  SearchOutlined, 
+  ThunderboltOutlined, 
+  ApartmentOutlined, 
+  NodeIndexOutlined, 
+  PartitionOutlined, 
+  ApiOutlined, 
+  BlockOutlined, 
+  ClockCircleOutlined,
+  InfoCircleOutlined,
+  WarningOutlined,
   CheckCircleOutlined,
-  DownOutlined,
-  RightOutlined,
-  SearchOutlined,
-  CalendarOutlined,
-  UserOutlined,
-  FileTextOutlined,
-  RocketOutlined,
-  NodeIndexOutlined,
-  PartitionOutlined,
-  ApiOutlined,
-  BlockOutlined,
-  ClockCircleOutlined
+  RightOutlined
 } from '@ant-design/icons';
+import type { ColumnsType } from 'antd/es/table';
 
-const { Title, Text, Paragraph } = Typography;
-const { Panel } = Collapse;
-const { Option } = Select;
 const { RangePicker } = DatePicker;
+const { Title, Text } = Typography;
+const { Option } = Select;
 
 interface FunctionChange {
   id: string;
   functionId: string;
   title: string;
   description: string;
+  category: 'decomposition' | 'allocation' | 'interface' | 'behavior' | 'performance';
   changeType: 'added' | 'modified' | 'removed';
   severity: 'critical' | 'major' | 'minor';
   date: string;
-  author: string;
-  oldValue?: string;
-  newValue?: string;
-  impactedItems: {
-    requirements: number;
-    components: number;
-    interfaces: number;
-    tests: number;
-  };
   status: 'reviewed' | 'pending' | 'approved' | 'rejected';
-  category: 'decomposition' | 'allocation' | 'interface' | 'behavior' | 'performance';
+  impactCount: number;
 }
 
 const FunctionsChanges: React.FC = () => {
-  const [selectedChange, setSelectedChange] = useState<FunctionChange | null>(null);
-  const [drawerVisible, setDrawerVisible] = useState(false);
-  const [expandedRowKeys, setExpandedRowKeys] = useState<string[]>([]);
+  // State for filters
+  const [dateRange, setDateRange] = useState<[string, string] | null>(null);
+  const [selectedFunctions, setSelectedFunctions] = useState<string[]>([]);
+  const [currentPage, setCurrentPage] = useState(1);
 
   // Sample data for function changes
   const functionChanges: FunctionChange[] = [
     {
-      id: 'FC-001',
+      id: 'FUNC-001',
       functionId: 'FUNC-101',
       title: 'Updated signal processing algorithm',
       description: 'The signal processing algorithm was updated to improve detection reliability in high-noise environments.',
+      category: 'performance',
       changeType: 'modified',
       severity: 'major',
       date: '2025-02-28',
-      author: 'Maria Johnson',
-      oldValue: 'SNR threshold: 10dB',
-      newValue: 'SNR threshold: 7dB',
-      impactedItems: {
-        requirements: 3,
-        components: 2,
-        interfaces: 1,
-        tests: 4
-      },
       status: 'approved',
-      category: 'performance'
+      impactCount: 10
     },
     {
-      id: 'FC-002',
+      id: 'FUNC-002',
       functionId: 'FUNC-205',
       title: 'Added error recovery function',
       description: 'Added a new function to handle error recovery after communication loss.',
+      category: 'behavior',
       changeType: 'added',
       severity: 'major',
       date: '2025-02-25',
-      author: 'Alex Chen',
-      impactedItems: {
-        requirements: 2,
-        components: 3,
-        interfaces: 2,
-        tests: 5
-      },
       status: 'pending',
-      category: 'behavior'
+      impactCount: 12
     },
     {
-      id: 'FC-003',
+      id: 'FUNC-003',
       functionId: 'FUNC-118',
       title: 'Reassigned function to different subsystem',
       description: 'Navigation function reassigned from guidance subsystem to flight control subsystem.',
+      category: 'allocation',
       changeType: 'modified',
       severity: 'critical',
       date: '2025-02-20',
-      author: 'Robert Smith',
-      oldValue: 'Guidance Subsystem',
-      newValue: 'Flight Control Subsystem',
-      impactedItems: {
-        requirements: 0,
-        components: 4,
-        interfaces: 6,
-        tests: 3
-      },
       status: 'reviewed',
-      category: 'allocation'
+      impactCount: 13
     },
     {
-      id: 'FC-004',
+      id: 'FUNC-004',
       functionId: 'FUNC-322',
       title: 'Removed redundant data validation',
       description: 'Removed redundant data validation that was causing performance bottlenecks.',
+      category: 'behavior',
       changeType: 'removed',
       severity: 'minor',
       date: '2025-02-18',
-      author: 'Sophia Kim',
-      oldValue: 'Multiple validation checks',
-      newValue: 'Single validation at entry point',
-      impactedItems: {
-        requirements: 1,
-        components: 1,
-        interfaces: 0,
-        tests: 2
-      },
       status: 'approved',
-      category: 'behavior'
+      impactCount: 4
     },
     {
-      id: 'FC-005',
+      id: 'FUNC-005',
       functionId: 'FUNC-156',
       title: 'Modified interface parameters',
       description: 'Updated interface parameters for the altitude control function.',
+      category: 'interface',
       changeType: 'modified',
       severity: 'major',
       date: '2025-02-15',
-      author: 'David Wilson',
-      oldValue: '3 input parameters',
-      newValue: '5 input parameters',
-      impactedItems: {
-        requirements: 2,
-        components: 1,
-        interfaces: 3,
-        tests: 4
-      },
       status: 'approved',
-      category: 'interface'
+      impactCount: 10
     }
   ];
 
-  const handleViewDetails = (record: FunctionChange) => {
-    setSelectedChange(record);
-    setDrawerVisible(true);
-  };
+  // Sample data for function options in filter
+  const functionOptions = [
+    { value: 'FUNC-100', label: 'FUNC-100 - Signal Processing' },
+    { value: 'FUNC-200', label: 'FUNC-200 - Error Recovery' },
+    { value: 'FUNC-115', label: 'FUNC-115 - Navigation Control' },
+    { value: 'FUNC-320', label: 'FUNC-320 - Data Validation' },
+    { value: 'FUNC-150', label: 'FUNC-150 - Altitude Control' }
+  ];
 
-  const handleExpand = (expanded: boolean, record: FunctionChange) => {
-    if (expanded) {
-      setExpandedRowKeys([...expandedRowKeys, record.id]);
+  const handleDateRangeChange = (dates: any, dateStrings: [string, string]) => {
+    if (dates) {
+      setDateRange(dateStrings);
     } else {
-      setExpandedRowKeys(expandedRowKeys.filter(key => key !== record.id));
+      setDateRange(null);
     }
   };
 
-  const expandedRowRender = (record: FunctionChange) => {
-    return (
-      <div className="p-4">
-        <Paragraph>
-          <strong>Detailed Description:</strong> {record.description}
-        </Paragraph>
-        
-        {record.oldValue && record.newValue && (
-          <div className="my-3">
-            <div className="mb-1"><strong>Changes:</strong></div>
-            <div className="grid grid-cols-2 gap-4">
-              <Card size="small" title="Before Change" className="bg-gray-50">
-                <div className="text-red-500">
-                  <MinusCircleOutlined /> {record.oldValue}
-                </div>
-              </Card>
-              <Card size="small" title="After Change" className="bg-gray-50">
-                <div className="text-green-500">
-                  <PlusCircleOutlined /> {record.newValue}
-                </div>
-              </Card>
-            </div>
-          </div>
-        )}
-        
-        <div className="my-3">
-          <div className="mb-1"><strong>Impacted Items:</strong></div>
-          <div className="grid grid-cols-4 gap-2">
-            <Card size="small" className="text-center">
-              <Statistic
-                title="Requirements"
-                value={record.impactedItems.requirements}
-                valueStyle={{ color: record.impactedItems.requirements > 0 ? '#ff4d4f' : '#8c8c8c' }}
-              />
-            </Card>
-            <Card size="small" className="text-center">
-              <Statistic
-                title="Components"
-                value={record.impactedItems.components}
-                valueStyle={{ color: record.impactedItems.components > 0 ? '#ff4d4f' : '#8c8c8c' }}
-              />
-            </Card>
-            <Card size="small" className="text-center">
-              <Statistic
-                title="Interfaces"
-                value={record.impactedItems.interfaces}
-                valueStyle={{ color: record.impactedItems.interfaces > 0 ? '#ff4d4f' : '#8c8c8c' }}
-              />
-            </Card>
-            <Card size="small" className="text-center">
-              <Statistic
-                title="Tests"
-                value={record.impactedItems.tests}
-                valueStyle={{ color: record.impactedItems.tests > 0 ? '#ff4d4f' : '#8c8c8c' }}
-              />
-            </Card>
-          </div>
-        </div>
-        
-        <div className="mt-4 flex justify-end">
-          <Button type="primary" onClick={() => handleViewDetails(record)}>
-            View Full Details
-          </Button>
-        </div>
-      </div>
-    );
-  };
-
-  const renderDrawer = () => {
-    if (!selectedChange) return null;
-
-    return (
-      <Drawer
-        title={`Function Change Details: ${selectedChange.title}`}
-        placement="right"
-        width={600}
-        onClose={() => setDrawerVisible(false)}
-        open={drawerVisible}
-      >
-        <div className="mb-6">
-          <div className="flex items-center mb-4">
-            <Title level={4}>{selectedChange.title}</Title>
-            <div className="ml-auto">
-              {renderStatusTag(selectedChange.status)}
-            </div>
-          </div>
-
-          <div className="mb-4">
-            <Tag color="blue">ID: {selectedChange.functionId}</Tag>
-            <Tag color={getChangeTypeColor(selectedChange.changeType)}>
-              {getChangeTypeIcon(selectedChange.changeType)}
-              {selectedChange.changeType.toUpperCase()}
-            </Tag>
-            {renderCategoryTag(selectedChange.category)}
-            {renderSeverityTag(selectedChange.severity)}
-          </div>
-
-          <div className="mb-4">
-            <Text type="secondary" className="flex items-center">
-              <CalendarOutlined className="mr-2" /> {selectedChange.date}
-            </Text>
-            <Text type="secondary" className="flex items-center ml-4">
-              <UserOutlined className="mr-2" /> {selectedChange.author}
-            </Text>
-          </div>
-        </div>
-
-        <Card title="Description" className="mb-4">
-          <Paragraph>{selectedChange.description}</Paragraph>
-        </Card>
-
-        {selectedChange.oldValue && selectedChange.newValue && (
-          <Card title="Changes" className="mb-4">
-            <div className="grid grid-cols-2 gap-4">
-              <div>
-                <div className="mb-2 font-semibold">Before:</div>
-                <div className="p-3 bg-gray-50 border border-gray-200 rounded text-red-500">
-                  <MinusCircleOutlined /> {selectedChange.oldValue}
-                </div>
-              </div>
-              <div>
-                <div className="mb-2 font-semibold">After:</div>
-                <div className="p-3 bg-gray-50 border border-gray-200 rounded text-green-500">
-                  <PlusCircleOutlined /> {selectedChange.newValue}
-                </div>
-              </div>
-            </div>
-          </Card>
-        )}
-
-        <Card title="Impact Analysis" className="mb-4">
-          <div className="grid grid-cols-2 gap-4 mb-4">
-            <Card size="small" className="text-center">
-              <Statistic
-                title="Requirements"
-                value={selectedChange.impactedItems.requirements}
-                valueStyle={{ color: selectedChange.impactedItems.requirements > 0 ? '#ff4d4f' : '#8c8c8c' }}
-              />
-            </Card>
-            <Card size="small" className="text-center">
-              <Statistic
-                title="Components"
-                value={selectedChange.impactedItems.components}
-                valueStyle={{ color: selectedChange.impactedItems.components > 0 ? '#ff4d4f' : '#8c8c8c' }}
-              />
-            </Card>
-          </div>
-          <div className="grid grid-cols-2 gap-4">
-            <Card size="small" className="text-center">
-              <Statistic
-                title="Interfaces"
-                value={selectedChange.impactedItems.interfaces}
-                valueStyle={{ color: selectedChange.impactedItems.interfaces > 0 ? '#ff4d4f' : '#8c8c8c' }}
-              />
-            </Card>
-            <Card size="small" className="text-center">
-              <Statistic
-                title="Tests"
-                value={selectedChange.impactedItems.tests}
-                valueStyle={{ color: selectedChange.impactedItems.tests > 0 ? '#ff4d4f' : '#8c8c8c' }}
-              />
-            </Card>
-          </div>
-        </Card>
-
-        <Card title="Change Timeline" className="mb-4">
-          <Timeline mode="left">
-            <Timeline.Item 
-              color="green" 
-              label="2025-02-10"
-              dot={<ClockCircleOutlined />}
-            >
-              Change request submitted
-            </Timeline.Item>
-            <Timeline.Item 
-              color="blue" 
-              label="2025-02-15"
-            >
-              Impact analysis completed
-            </Timeline.Item>
-            <Timeline.Item 
-              color="gold" 
-              label="2025-02-18"
-            >
-              Change review meeting
-            </Timeline.Item>
-            <Timeline.Item 
-              color="red" 
-              label="2025-02-20"
-            >
-              Change implementation
-            </Timeline.Item>
-            <Timeline.Item 
-              color="purple" 
-              label="2025-02-25"
-            >
-              Verification completed
-            </Timeline.Item>
-          </Timeline>
-        </Card>
-
-        <div className="flex justify-end mt-6">
-          <Space>
-            <Button>Reject</Button>
-            <Button type="primary">Approve</Button>
-          </Space>
-        </div>
-      </Drawer>
-    );
+  const handleFunctionChange = (value: string[]) => {
+    setSelectedFunctions(value);
   };
 
   const columns: ColumnsType<FunctionChange> = [
     {
+      title: 'ID',
+      dataIndex: 'id',
+      key: 'id',
+      width: 120
+    },
+    {
       title: 'Function ID',
       dataIndex: 'functionId',
       key: 'functionId',
-      render: (text) => <Code>{text}</Code>,
-      width: 140
+      width: 120
     },
     {
       title: 'Category',
       dataIndex: 'category',
       key: 'category',
-      render: (category: 'decomposition' | 'allocation' | 'interface' | 'behavior' | 'performance') => {
-        const categoryIcons = {
-          decomposition: <NodeIndexOutlined />,
-          allocation: <PartitionOutlined />,
-          interface: <ApiOutlined />,
-          behavior: <ApartmentOutlined />,
-          performance: <BlockOutlined />
+      render: (category) => {
+        const categoryConfig: Record<string, { color: string, icon: React.ReactNode, text: string }> = {
+          decomposition: { color: 'green', icon: <NodeIndexOutlined />, text: 'DECOMPOSITION' },
+          allocation: { color: 'blue', icon: <PartitionOutlined />, text: 'ALLOCATION' },
+          interface: { color: 'purple', icon: <ApiOutlined />, text: 'INTERFACE' },
+          behavior: { color: 'cyan', icon: <ApartmentOutlined />, text: 'BEHAVIOR' },
+          performance: { color: 'orange', icon: <BlockOutlined />, text: 'PERFORMANCE' }
         };
-        
-        const colors = {
-          decomposition: 'green',
-          allocation: 'blue',
-          interface: 'purple',
-          behavior: 'cyan',
-          performance: 'orange'
-        };
-        
+
+        const config = categoryConfig[category];
         return (
-          <Tag color={colors[category]} icon={categoryIcons[category]}>
-            {category.toUpperCase()}
+          <Tag color={config.color} icon={config.icon}>
+            {config.text}
           </Tag>
         );
       },
-      width: 140,
+      width: 150,
       filters: [
         { text: 'Decomposition', value: 'decomposition' },
         { text: 'Allocation', value: 'allocation' },
@@ -428,21 +183,29 @@ const FunctionsChanges: React.FC = () => {
       key: 'title',
       render: (text, record) => (
         <div>
-          <div>{text}</div>
-          <div className="text-xs text-gray-500">
-            <CalendarOutlined className="mr-1" /> {record.date}
-          </div>
+          {text}
+          <Tooltip title="View detailed information about this change">
+            <InfoCircleOutlined style={{ marginLeft: 8, color: '#1890ff' }} />
+          </Tooltip>
         </div>
-      )
+      ),
+      width: 300
     },
     {
-      title: 'Change Type',
+      title: 'Type',
       dataIndex: 'changeType',
       key: 'changeType',
       render: (type) => {
+        const typeConfig: Record<string, { color: string, text: string, prefix: string }> = {
+          added: { color: '#52c41a', text: 'ADDED', prefix: '+ ' },
+          modified: { color: '#faad14', text: 'MODIFIED', prefix: '⟳ ' },
+          removed: { color: '#f5222d', text: 'REMOVED', prefix: '- ' }
+        };
+
+        const config = typeConfig[type];
         return (
-          <Tag color={getChangeTypeColor(type)} icon={getChangeTypeIcon(type)}>
-            {type.toUpperCase()}
+          <Tag color={config.color}>
+            {config.prefix}{config.text}
           </Tag>
         );
       },
@@ -458,7 +221,23 @@ const FunctionsChanges: React.FC = () => {
       title: 'Severity',
       dataIndex: 'severity',
       key: 'severity',
-      render: (severity) => renderSeverityTag(severity),
+      render: (severity) => {
+        const severityConfig: Record<string, { color: string, icon: React.ReactNode, text: string }> = {
+          critical: { color: '#f5222d', icon: <Badge status="error" />, text: 'CRITICAL' },
+          major: { color: '#faad14', icon: <Badge status="warning" />, text: 'MAJOR' },
+          minor: { color: '#52c41a', icon: <Badge status="success" />, text: 'MINOR' }
+        };
+
+        const config = severityConfig[severity];
+        return (
+          <div style={{ display: 'flex', alignItems: 'center' }}>
+            {config.icon}
+            <span style={{ marginLeft: 8, color: config.color }}>
+              {config.text}
+            </span>
+          </div>
+        );
+      },
       width: 120,
       filters: [
         { text: 'Critical', value: 'critical' },
@@ -468,184 +247,128 @@ const FunctionsChanges: React.FC = () => {
       onFilter: (value, record) => record.severity === value
     },
     {
+      title: 'Date',
+      dataIndex: 'date',
+      key: 'date',
+      sorter: (a, b) => new Date(a.date).getTime() - new Date(b.date).getTime(),
+      sortDirections: ['descend', 'ascend'],
+      width: 120
+    },
+    {
       title: 'Status',
       dataIndex: 'status',
       key: 'status',
-      render: (status) => renderStatusTag(status),
+      render: (status) => {
+        const statusConfig: Record<string, { color: string, dot: React.ReactNode }> = {
+          approved: { color: '#52c41a', dot: <span style={{ marginRight: 6, color: '#52c41a' }}>●</span> },
+          pending: { color: '#faad14', dot: <span style={{ marginRight: 6, color: '#faad14' }}>●</span> },
+          reviewed: { color: '#1890ff', dot: <span style={{ marginRight: 6, color: '#1890ff' }}>●</span> },
+          rejected: { color: '#f5222d', dot: <span style={{ marginRight: 6, color: '#f5222d' }}>●</span> }
+        };
+
+        const config = statusConfig[status];
+        return (
+          <div>
+            {config.dot}
+            <span style={{ textTransform: 'capitalize' }}>{status}</span>
+          </div>
+        );
+      },
       width: 120,
       filters: [
+        { text: 'Approved', value: 'approved' },
         { text: 'Pending', value: 'pending' },
         { text: 'Reviewed', value: 'reviewed' },
-        { text: 'Approved', value: 'approved' },
         { text: 'Rejected', value: 'rejected' }
       ],
       onFilter: (value, record) => record.status === value
     },
     {
-      title: 'Action',
-      key: 'action',
+      title: 'Impact',
+      key: 'impact',
       render: (_, record) => (
-        <Button type="link" onClick={() => handleViewDetails(record)}>
-          Details
-        </Button>
+        <Tag color="volcano">
+          {record.impactCount} affected items
+        </Tag>
       ),
-      width: 100
+      width: 150
     }
   ];
 
-  const renderStatusTag = (status: string) => {
-    let color = '';
-    let icon = null;
-    
-    switch (status) {
-      case 'pending':
-        color = 'gold';
-        icon = <ClockCircleOutlined />;
-        break;
-      case 'reviewed':
-        color = 'blue';
-        icon = <InfoCircleOutlined />;
-        break;
-      case 'approved':
-        color = 'green';
-        icon = <CheckCircleOutlined />;
-        break;
-      case 'rejected':
-        color = 'red';
-        icon = <WarningOutlined />;
-        break;
-    }
-    
+  const expandedRowRender = (record: FunctionChange) => {
     return (
-      <Tag color={color} icon={icon}>
-        {status.toUpperCase()}
-      </Tag>
+      <div style={{ padding: '16px' }}>
+        <p><strong>Detailed Description:</strong> {record.description}</p>
+        <p><strong>Change Reason:</strong> Functionality improvement and system optimization</p>
+        <div style={{ marginTop: '16px' }}>
+          <h4>Impacted Items:</h4>
+          <ul>
+            <li>Requirements: 3</li>
+            <li>Components: 4</li>
+            <li>Interfaces: 2</li>
+            <li>Tests: 1</li>
+          </ul>
+        </div>
+      </div>
     );
-  };
-
-  const renderSeverityTag = (severity: string) => {
-    let color = '';
-    let icon = null;
-    
-    switch (severity) {
-      case 'critical':
-        color = 'red';
-        icon = <WarningOutlined />;
-        break;
-      case 'major':
-        color = 'orange';
-        icon = <InfoCircleOutlined />;
-        break;
-      case 'minor':
-        color = 'green';
-        icon = <InfoCircleOutlined />;
-        break;
-    }
-    
-    return (
-      <Tag color={color} icon={icon}>
-        {severity.toUpperCase()}
-      </Tag>
-    );
-  };
-
-  const renderCategoryTag = (category: string) => {
-    const categoryIcons: Record<string, React.ReactNode> = {
-      decomposition: <NodeIndexOutlined />,
-      allocation: <PartitionOutlined />,
-      interface: <ApiOutlined />,
-      behavior: <ApartmentOutlined />,
-      performance: <BlockOutlined />
-    };
-    
-    const colors: Record<string, string> = {
-      decomposition: 'green',
-      allocation: 'blue',
-      interface: 'purple',
-      behavior: 'cyan',
-      performance: 'orange'
-    };
-    
-    return (
-      <Tag color={colors[category]} icon={categoryIcons[category]}>
-        {category.toUpperCase()}
-      </Tag>
-    );
-  };
-
-  const getChangeTypeColor = (type: string) => {
-    switch (type) {
-      case 'added':
-        return 'green';
-      case 'modified':
-        return 'blue';
-      case 'removed':
-        return 'red';
-      default:
-        return 'default';
-    }
-  };
-
-  const getChangeTypeIcon = (type: string) => {
-    switch (type) {
-      case 'added':
-        return <PlusCircleOutlined />;
-      case 'modified':
-        return <EditOutlined />;
-      case 'removed':
-        return <MinusCircleOutlined />;
-      default:
-        return null;
-    }
   };
 
   return (
     <div className="functions-changes-container">
-      <Card title={<div className="flex items-center"><ApartmentOutlined className="mr-2" /> Function Changes</div>} className="mb-4">
-        <Paragraph>
-          Track and analyze changes to functional decomposition, allocation and interfaces.
-          This view shows all modifications to system functions and their impacts on requirements, components, interfaces, and tests.
-        </Paragraph>
-      </Card>
-      
+      <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: 16 }}>
+        <Title level={5} style={{ margin: 0, display: 'flex', alignItems: 'center' }}>
+          <ApartmentOutlined style={{ marginRight: 8 }} /> Function Changes
+        </Title>
+        <Space>
+          <Button icon={<SearchOutlined />}>Advanced Search</Button>
+          <Button type="primary" icon={<ThunderboltOutlined />}>Impact Report</Button>
+        </Space>
+      </div>
+
+      <div style={{ display: 'flex', gap: 16, marginBottom: 16 }}>
+        <div style={{ flex: 1 }}>
+          <Text strong>Filter by Date Range</Text>
+          <RangePicker 
+            style={{ width: '100%', marginTop: 8 }} 
+            onChange={handleDateRangeChange}
+          />
+        </div>
+        <div style={{ flex: 1 }}>
+          <Text strong>Filter by Function</Text>
+          <Select
+            mode="multiple"
+            style={{ width: '100%', marginTop: 8 }}
+            placeholder="Select Functions"
+            onChange={handleFunctionChange}
+            options={functionOptions}
+            allowClear
+          />
+        </div>
+      </div>
+
       <Table
         columns={columns}
         dataSource={functionChanges}
         rowKey="id"
         expandable={{
           expandedRowRender,
-          expandedRowKeys,
-          onExpand: handleExpand,
-          expandIcon: ({ expanded, onExpand, record }) =>
+          expandIcon: ({ expanded, onExpand, record }) => 
             expanded ? (
-              <DownOutlined onClick={e => onExpand(record, e)} />
+              <RightOutlined rotate={90} onClick={e => onExpand(record, e)} style={{ cursor: 'pointer' }} />
             ) : (
-              <RightOutlined onClick={e => onExpand(record, e)} />
+              <RightOutlined onClick={e => onExpand(record, e)} style={{ cursor: 'pointer' }} />
             )
         }}
+        size="middle"
+        pagination={{
+          current: currentPage,
+          onChange: setCurrentPage,
+          showSizeChanger: false,
+          simple: true
+        }}
       />
-      
-      {renderDrawer()}
     </div>
   );
 };
-
-// Utility components
-const Code = ({ children }: { children: React.ReactNode }) => (
-  <span className="px-2 py-1 bg-gray-100 rounded font-mono text-sm">{children}</span>
-);
-
-// Simple icon components
-const PlusCircleOutlined = () => <span style={{ marginRight: 5 }}>+</span>;
-const MinusCircleOutlined = () => <span style={{ marginRight: 5 }}>-</span>;
-const EditOutlined = () => <span style={{ marginRight: 5 }}>✎</span>;
-
-// Simple Statistic component
-const Statistic = ({ title, value, valueStyle }: any) => (
-  <div>
-    <div className="text-xs text-gray-500">{title}</div>
-    <div className="text-xl font-bold" style={valueStyle}>{value}</div>
-  </div>
-);
 
 export default FunctionsChanges; 
