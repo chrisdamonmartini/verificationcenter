@@ -14,14 +14,13 @@ import {
   WarningOutlined,
   CheckCircleOutlined
 } from '@ant-design/icons';
+// Import the MissionChanges component
+import MissionChanges from './MissionChanges';
 
 const { Title, Text, Paragraph } = Typography;
 const { TabPane } = Tabs;
 const { Option } = Select;
 const { RangePicker } = DatePicker;
-
-// Import the MissionChanges component
-import MissionChanges from './MissionChanges';
 
 // For now, we'll comment out the imports and use placeholders for other components
 // import OperationalScenarios from './OperationalScenarios';
