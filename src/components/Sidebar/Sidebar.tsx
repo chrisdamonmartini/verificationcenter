@@ -48,7 +48,7 @@ export const SidebarData = [
     subNav: []
   },
   {
-    title: 'Requirements Management',
+    title: 'Requirements Mgmt.',
     path: '/requirements',
     icon: <AuditOutlined />,
     subNav: [
@@ -217,7 +217,7 @@ export const SidebarData = [
     ]
   },
   {
-    title: 'Compliance Assessment',
+    title: 'Assess Compliance',
     path: '/compliance',
     icon: <ImIcons.ImCheckmark />,
     subNav: [
