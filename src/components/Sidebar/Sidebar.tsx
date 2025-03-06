@@ -1,45 +1,19 @@
 import React, { useState } from 'react';
 import * as FaIcons from 'react-icons/fa';
-import * as BiIcons from 'react-icons/bi';
-import * as GoIcons from 'react-icons/go';
-import * as AiIcons from 'react-icons/ai';
-import * as MdIcons from 'react-icons/md';
-import * as GiIcons from 'react-icons/gi';
-import * as TbIcons from 'react-icons/tb';
-import * as VscIcons from 'react-icons/vsc';
-import * as ImIcons from 'react-icons/im';
 import * as BsIcons from 'react-icons/bs';
-import { motion } from 'framer-motion';
-import { 
+import {
   HomeOutlined,
-  RocketOutlined,
-  FundOutlined,
-  ExperimentOutlined,
-  ApartmentOutlined,
-  NodeIndexOutlined,
-  SettingOutlined,
-  FileSearchOutlined,
-  AuditOutlined,
-  BranchesOutlined,
-  ProjectOutlined,
-  CheckCircleOutlined,
-  WarningOutlined,
-  DatabaseOutlined,
-  FileProtectOutlined,
-  ClusterOutlined,
-  BuildOutlined,
-  CalculatorOutlined,
-  SolutionOutlined,
-  TeamOutlined,
-  ScheduleOutlined,
-  TableOutlined,
-  PieChartOutlined,
-  BarChartOutlined,
-  DollarOutlined,
-  FieldTimeOutlined,
   BellOutlined,
-  ClockCircleOutlined,
-  ToolOutlined
+  FileProtectOutlined,
+  ProjectOutlined,
+  ExperimentOutlined,
+  CheckCircleOutlined,
+  FundOutlined,
+  FileSearchOutlined,
+  DatabaseOutlined,
+  AuditOutlined,
+  BarChartOutlined,
+  SettingOutlined
 } from '@ant-design/icons';
 
 // Updated navigation items for Verification Management - Flattened structure
@@ -119,9 +93,6 @@ interface SidebarProps {
 const Sidebar: React.FC<SidebarProps> = ({ currentView, onNavigate }) => {
   const [collapsed, setCollapsed] = useState(false);
   
-  // Simplified Sidebar function - removed submenu expansion logic
-  // Items will directly navigate to their respective routes
-
   // Check if this is the current active view
   const isActiveView = (path: string) => {
     const pathWithoutSlash = path.replace('/', '');
@@ -152,7 +123,7 @@ const Sidebar: React.FC<SidebarProps> = ({ currentView, onNavigate }) => {
         {/* Main Items - without submenu functionality */}
         {SidebarData.map((item, index) => {
           const itemPath = item.path === '/' ? 'dashboard' : item.path.replace('/', '');
-          const isActive = currentView === itemPath;
+          const isActive = isActiveView(item.path);
           
           return (
             <div 
