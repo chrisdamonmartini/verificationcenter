@@ -55,7 +55,7 @@ export const SidebarData = [
     icon: <BellOutlined />
   },
   {
-    title: 'Requirements Management',
+    title: 'Requirements Mgmt.',
     path: '/requirements',
     icon: <FileProtectOutlined />
   },
