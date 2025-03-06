@@ -16,6 +16,8 @@ import {
 } from '@ant-design/icons';
 // Import the MissionChanges component
 import MissionChanges from './MissionChanges';
+import OperationalScenarios from './OperationalScenarios';
+import RequirementsChanges from './RequirementsChanges';
 
 const { Title, Text, Paragraph } = Typography;
 const { TabPane } = Tabs;
@@ -23,34 +25,11 @@ const { Option } = Select;
 const { RangePicker } = DatePicker;
 
 // For now, we'll comment out the imports and use placeholders for other components
-// import OperationalScenarios from './OperationalScenarios';
-// import RequirementsChanges from './RequirementsChanges';
 // import FunctionsChanges from './FunctionsChanges';
 // import CADDesignChanges from './CADDesignChanges';
 // import EngineeringBOMChanges from './EngineeringBOMChanges';
 
-// Placeholders for sub-components
-// We keep MissionChanges but replace it with the imported component
-const OperationalScenarios = () => (
-  <div>
-    <Alert 
-      message="Operational Scenarios Component" 
-      description="This component will track changes to operational scenarios, use cases, and conditions."
-      type="info"
-    />
-  </div>
-);
-
-const RequirementsChanges = () => (
-  <div>
-    <Alert 
-      message="Requirements Changes Component" 
-      description="This component will monitor modifications to system and verification requirements."
-      type="info"
-    />
-  </div>
-);
-
+// Placeholders for sub-components that haven't been implemented yet
 const FunctionsChanges = () => (
   <div>
     <Alert 
