@@ -36,7 +36,10 @@ import {
   PieChartOutlined,
   BarChartOutlined,
   DollarOutlined,
-  FieldTimeOutlined
+  FieldTimeOutlined,
+  BellOutlined,
+  ClockCircleOutlined,
+  ToolOutlined
 } from '@ant-design/icons';
 
 // Updated navigation items for Verification Management
@@ -46,6 +49,48 @@ export const SidebarData = [
     path: '/',
     icon: <HomeOutlined />,
     subNav: []
+  },
+  {
+    title: 'Change Awareness',
+    path: '/change-awareness',
+    icon: <BellOutlined />,
+    subNav: [
+      {
+        title: 'Overview',
+        path: '/change-awareness/overview',
+        icon: <BranchesOutlined />
+      },
+      {
+        title: 'Mission',
+        path: '/change-awareness/mission',
+        icon: <RocketOutlined />
+      },
+      {
+        title: 'Operational Scenarios',
+        path: '/change-awareness/operational',
+        icon: <ClockCircleOutlined />
+      },
+      {
+        title: 'Requirements',
+        path: '/change-awareness/requirements',
+        icon: <FileProtectOutlined />
+      },
+      {
+        title: 'Functions',
+        path: '/change-awareness/functions',
+        icon: <ApartmentOutlined />
+      },
+      {
+        title: 'CAD Design',
+        path: '/change-awareness/cad',
+        icon: <BuildOutlined />
+      },
+      {
+        title: 'Engineering BOM',
+        path: '/change-awareness/bom',
+        icon: <ToolOutlined />
+      }
+    ]
   },
   {
     title: 'Requirements Mgmt.',

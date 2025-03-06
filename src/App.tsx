@@ -42,6 +42,8 @@ import Settings from './components/Settings/Settings';
 // Import context providers
 import { ProductProvider } from './context/ProductContext';
 import { TeamcenterProvider } from './context/TeamcenterContext';
+// Import Change Awareness components
+import ChangeAwareness from './components/ChangeAwareness/ChangeAwareness';
 
 // Define a type for requirements
 interface Requirement {
@@ -354,6 +356,18 @@ function App() {
       // Settings
       case 'settings':
         return <Settings />;
+
+      // Change Awareness
+      case 'change-awareness':
+      case 'change-awareness/overview':
+        return <ChangeAwareness />;
+      case 'change-awareness/mission':
+      case 'change-awareness/operational':
+      case 'change-awareness/requirements':
+      case 'change-awareness/functions':
+      case 'change-awareness/cad':
+      case 'change-awareness/bom':
+        return <ChangeAwareness />;
         
       default:
         return (
