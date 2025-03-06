@@ -61,19 +61,15 @@ const ChangeAwareness: React.FC = () => {
 
   return (
     <div className="change-awareness-container">
-      <div className="header-section" style={{ marginBottom: 24 }}>
+      <div className="header-section" style={{ marginBottom: 16 }}>
         <Title level={2}>
           <BellOutlined /> Change Awareness
         </Title>
-        <Paragraph>
-          Track and analyze changes across all domains of the verification process to ensure
-          awareness of upstream modifications and their downstream impacts.
-        </Paragraph>
       </div>
 
-      <Row gutter={[16, 16]} style={{ marginBottom: 24 }}>
+      <Row gutter={[16, 8]} style={{ marginBottom: 16 }}>
         <Col xs={24} sm={12} md={8} lg={6}>
-          <Card>
+          <Card bodyStyle={{ padding: '12px 24px' }}>
             <Statistic
               title="Total Changes"
               value={changeSummary.total}
@@ -83,7 +79,7 @@ const ChangeAwareness: React.FC = () => {
           </Card>
         </Col>
         <Col xs={24} sm={12} md={8} lg={6}>
-          <Card>
+          <Card bodyStyle={{ padding: '12px 24px' }}>
             <Statistic
               title="Critical Changes"
               value={changeSummary.critical}
@@ -93,7 +89,7 @@ const ChangeAwareness: React.FC = () => {
           </Card>
         </Col>
         <Col xs={24} sm={12} md={8} lg={6}>
-          <Card>
+          <Card bodyStyle={{ padding: '12px 24px' }}>
             <Statistic
               title="Major Changes"
               value={changeSummary.major}
@@ -103,7 +99,7 @@ const ChangeAwareness: React.FC = () => {
           </Card>
         </Col>
         <Col xs={24} sm={12} md={8} lg={6}>
-          <Card>
+          <Card bodyStyle={{ padding: '12px 24px' }}>
             <Statistic
               title="Minor Changes"
               value={changeSummary.minor}
