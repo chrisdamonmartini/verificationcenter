@@ -14,10 +14,11 @@ import {
   WarningOutlined,
   CheckCircleOutlined
 } from '@ant-design/icons';
-// Import the MissionChanges component
+// Import the components
 import MissionChanges from './MissionChanges';
 import OperationalScenarios from './OperationalScenarios';
 import RequirementsChanges from './RequirementsChanges';
+import FunctionsChanges from './FunctionsChanges';
 
 const { Title, Text, Paragraph } = Typography;
 const { TabPane } = Tabs;
@@ -25,21 +26,10 @@ const { Option } = Select;
 const { RangePicker } = DatePicker;
 
 // For now, we'll comment out the imports and use placeholders for other components
-// import FunctionsChanges from './FunctionsChanges';
 // import CADDesignChanges from './CADDesignChanges';
 // import EngineeringBOMChanges from './EngineeringBOMChanges';
 
 // Placeholders for sub-components that haven't been implemented yet
-const FunctionsChanges = () => (
-  <div>
-    <Alert 
-      message="Functions Changes Component" 
-      description="This component will track changes to functional decomposition and allocations."
-      type="info"
-    />
-  </div>
-);
-
 const CADDesignChanges = () => (
   <div>
     <Alert 
