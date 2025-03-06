@@ -37,6 +37,8 @@ import VerificationStatusComponent from './components/ReportsAnalytics/Verificat
 import ResourceUtilizationComponent from './components/ReportsAnalytics/ResourceUtilization';
 import CostAnalysisComponent from './components/ReportsAnalytics/CostAnalysis';
 import SchedulePerformanceComponent from './components/ReportsAnalytics/SchedulePerformance';
+import { ProductProvider } from './context/ProductContext';
+import Settings from './components/Settings/Settings';
 
 // Define a type for requirements
 interface Requirement {
@@ -346,6 +348,9 @@ function App() {
           </div>
         );
         
+      case 'settings':
+        return <Settings />;
+        
       default:
         return (
           <div className="bg-white p-6 rounded-lg shadow-lg">
@@ -362,43 +367,45 @@ function App() {
   };
 
   return (
-    <div className="flex flex-col h-screen bg-gray-100">
-      {/* Header */}
-      <header className="bg-blue-900 text-white py-2 px-4 flex items-center">
-        {/* VERIFICATIONCENTER Logo */}
-        <div className="flex items-center">
-          <FaIcons.FaClipboardCheck className="text-white mr-2 text-2xl" />
-          <span className="font-bold text-lg mr-8">VERIFICATIONCENTER</span>
-        </div>
-        
-        {/* Spacer to push right-side buttons to the end */}
-        <div className="flex-grow"></div>
-        
-        <div className="flex items-center space-x-4">
-          <button className="p-2 hover:bg-blue-800 rounded-full">
-            <FaIcons.FaSearch className="text-xl" />
-          </button>
-          <button className="p-2 hover:bg-blue-800 rounded-full relative">
-            <FaIcons.FaBell className="text-xl" />
-            <span className="absolute top-0 right-0 h-4 w-4 bg-red-500 rounded-full text-xs flex items-center justify-center">3</span>
-          </button>
-          <button className="p-2 hover:bg-blue-800 rounded-full">
-            <FaIcons.FaUserCircle className="text-xl" />
-          </button>
-        </div>
-      </header>
+    <ProductProvider>
+      <div className="flex flex-col h-screen bg-gray-100">
+        {/* Header */}
+        <header className="bg-blue-900 text-white py-2 px-4 flex items-center">
+          {/* VERIFICATIONCENTER Logo */}
+          <div className="flex items-center">
+            <FaIcons.FaClipboardCheck className="text-white mr-2 text-2xl" />
+            <span className="font-bold text-lg mr-8">VERIFICATIONCENTER</span>
+          </div>
+          
+          {/* Spacer to push right-side buttons to the end */}
+          <div className="flex-grow"></div>
+          
+          <div className="flex items-center space-x-4">
+            <button className="p-2 hover:bg-blue-800 rounded-full">
+              <FaIcons.FaSearch className="text-xl" />
+            </button>
+            <button className="p-2 hover:bg-blue-800 rounded-full relative">
+              <FaIcons.FaBell className="text-xl" />
+              <span className="absolute top-0 right-0 h-4 w-4 bg-red-500 rounded-full text-xs flex items-center justify-center">3</span>
+            </button>
+            <button className="p-2 hover:bg-blue-800 rounded-full">
+              <FaIcons.FaUserCircle className="text-xl" />
+            </button>
+          </div>
+        </header>
 
-      {/* Main Content */}
-      <div className="flex flex-grow overflow-hidden">
-        {/* Sidebar */}
-        <Sidebar currentView={activeView} onNavigate={handleNavigation} />
-        
-        {/* Main Content Area */}
-        <main className="flex-grow p-4 overflow-auto">
-          {renderContent()}
-        </main>
+        {/* Main Content */}
+        <div className="flex flex-grow overflow-hidden">
+          {/* Sidebar */}
+          <Sidebar currentView={activeView} onNavigate={handleNavigation} />
+          
+          {/* Main Content Area */}
+          <main className="flex-grow p-4 overflow-auto">
+            {renderContent()}
+          </main>
+        </div>
       </div>
-    </div>
+    </ProductProvider>
   );
 }
 

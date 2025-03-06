@@ -1,232 +1,44 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { FaSearch, FaFilter, FaEdit, FaTrash, FaPlus, FaSort, FaSortUp, FaSortDown, FaEye, FaFileExport, FaFileImport } from 'react-icons/fa';
+import { useProduct } from '../../context/ProductContext';
+import { getRequirementsData } from '../../data';
 
 // Define the requirement interface
 interface Requirement {
   id: string;
   title: string;
   description: string;
-  type: string;
-  priority: 'Critical' | 'High' | 'Medium' | 'Low';
-  status: 'Draft' | 'Approved' | 'Rejected' | 'Under Review' | 'Implemented' | 'Verified';
-  source: string;
-  verification: string;
+  priority: string;
+  status: string;
   category: string;
   createdBy: string;
   createdDate: string;
   updatedBy: string | null;
   updatedDate: string | null;
-  parentRequirement: string | null;
-  childRequirements: string[];
   version: string;
-  rationale: string;
   tags: string[];
+  verificationMethod?: string;
+  // Other optional properties
+  type?: string;
+  source?: string;
+  verification?: string;
+  parentRequirement?: string | null;
+  childRequirements?: string[];
+  rationale?: string;
 }
 
 const SystemRequirements: React.FC = () => {
-  // Sample data for demonstration
-  const [requirements, setRequirements] = useState<Requirement[]>([
-    {
-      id: 'SYS-REQ-001',
-      title: 'System Navigation Accuracy',
-      description: 'The system shall provide navigation accuracy within 5 meters CEP under normal operating conditions.',
-      type: 'Functional',
-      priority: 'High',
-      status: 'Approved',
-      source: 'Stakeholder Requirements',
-      verification: 'Test',
-      category: 'Performance',
-      createdBy: 'John Smith',
-      createdDate: '2023-05-15',
-      updatedBy: 'Sarah Johnson',
-      updatedDate: '2023-06-02',
-      parentRequirement: null,
-      childRequirements: ['SYS-REQ-005', 'SYS-REQ-006'],
-      version: '1.2',
-      rationale: 'Necessary for accurate positioning in urban environments',
-      tags: ['Navigation', 'Performance', 'Accuracy']
-    },
-    {
-      id: 'SYS-REQ-002',
-      title: 'System Operation Duration',
-      description: 'The system shall operate continuously for at least 12 hours without performance degradation.',
-      type: 'Functional',
-      priority: 'Critical',
-      status: 'Approved',
-      source: 'System Specification',
-      verification: 'Test',
-      category: 'Performance',
-      createdBy: 'John Smith',
-      createdDate: '2023-05-15',
-      updatedBy: 'Sarah Johnson',
-      updatedDate: '2023-06-10',
-      parentRequirement: null,
-      childRequirements: ['SYS-REQ-007', 'SYS-REQ-008'],
-      version: '1.1',
-      rationale: 'Required for full-day operations without recharging',
-      tags: ['Power', 'Performance', 'Duration']
-    },
-    {
-      id: 'SYS-REQ-003',
-      title: 'Environmental Operating Conditions',
-      description: 'The system shall withstand temperature ranges from -20°C to +50°C without performance degradation.',
-      type: 'Non-Functional',
-      priority: 'High',
-      status: 'Approved',
-      source: 'System Specification',
-      verification: 'Test',
-      category: 'Environmental',
-      createdBy: 'Emily Chen',
-      createdDate: '2023-05-18',
-      updatedBy: null,
-      updatedDate: null,
-      parentRequirement: null,
-      childRequirements: ['SYS-REQ-009', 'SYS-REQ-010'],
-      version: '1.0',
-      rationale: 'System must operate in diverse climate conditions',
-      tags: ['Environmental', 'Temperature', 'Robustness']
-    },
-    {
-      id: 'SYS-REQ-004',
-      title: 'EMI/EMC Compliance',
-      description: 'The system shall comply with EMI/EMC requirements as specified in MIL-STD-461.',
-      type: 'Compliance',
-      priority: 'Medium',
-      status: 'Under Review',
-      source: 'Regulatory Requirements',
-      verification: 'Test',
-      category: 'Compliance',
-      createdBy: 'Robert Lee',
-      createdDate: '2023-05-20',
-      updatedBy: 'Sarah Johnson',
-      updatedDate: '2023-06-15',
-      parentRequirement: null,
-      childRequirements: [],
-      version: '1.0',
-      rationale: 'Required for military certification',
-      tags: ['EMI', 'EMC', 'Compliance', 'Military']
-    },
-    {
-      id: 'SYS-REQ-005',
-      title: 'GPS Receiver Sensitivity',
-      description: 'The GPS receiver shall have a minimum sensitivity of -160 dBm for acquisition and -172 dBm for tracking.',
-      type: 'Functional',
-      priority: 'High',
-      status: 'Approved',
-      source: 'Derived',
-      verification: 'Test',
-      category: 'Performance',
-      createdBy: 'John Smith',
-      createdDate: '2023-05-22',
-      updatedBy: null,
-      updatedDate: null,
-      parentRequirement: 'SYS-REQ-001',
-      childRequirements: [],
-      version: '1.0',
-      rationale: 'Necessary for reliable navigation in challenging environments',
-      tags: ['GPS', 'Sensitivity', 'Navigation']
-    },
-    {
-      id: 'SYS-REQ-006',
-      title: 'Position Update Rate',
-      description: 'The system shall update position information at a rate of at least 10 Hz.',
-      type: 'Functional',
-      priority: 'Medium',
-      status: 'Approved',
-      source: 'Derived',
-      verification: 'Test',
-      category: 'Performance',
-      createdBy: 'John Smith',
-      createdDate: '2023-05-22',
-      updatedBy: null,
-      updatedDate: null,
-      parentRequirement: 'SYS-REQ-001',
-      childRequirements: [],
-      version: '1.0',
-      rationale: 'Required for real-time navigation applications',
-      tags: ['Update Rate', 'Navigation', 'Real-time']
-    },
-    {
-      id: 'SYS-REQ-007',
-      title: 'Battery Capacity',
-      description: 'The system battery shall have a minimum capacity of 10,000 mAh.',
-      type: 'Functional',
-      priority: 'High',
-      status: 'Approved',
-      source: 'Derived',
-      verification: 'Inspection',
-      category: 'Performance',
-      createdBy: 'Emily Chen',
-      createdDate: '2023-05-25',
-      updatedBy: null,
-      updatedDate: null,
-      parentRequirement: 'SYS-REQ-002',
-      childRequirements: [],
-      version: '1.0',
-      rationale: 'Required to support 12-hour operation',
-      tags: ['Battery', 'Power', 'Capacity']
-    },
-    {
-      id: 'SYS-REQ-008',
-      title: 'Power Management',
-      description: 'The system shall implement power management features to optimize battery usage.',
-      type: 'Functional',
-      priority: 'Medium',
-      status: 'Draft',
-      source: 'Derived',
-      verification: 'Demonstration',
-      category: 'Performance',
-      createdBy: 'Emily Chen',
-      createdDate: '2023-05-25',
-      updatedBy: 'Robert Lee',
-      updatedDate: '2023-06-20',
-      parentRequirement: 'SYS-REQ-002',
-      childRequirements: [],
-      version: '0.2',
-      rationale: 'Necessary to extend battery life in various usage scenarios',
-      tags: ['Power Management', 'Battery', 'Optimization']
-    },
-    {
-      id: 'SYS-REQ-009',
-      title: 'Low Temperature Operation',
-      description: 'The system shall maintain full functionality at temperatures as low as -20°C.',
-      type: 'Non-Functional',
-      priority: 'High',
-      status: 'Draft',
-      source: 'Derived',
-      verification: 'Test',
-      category: 'Environmental',
-      createdBy: 'Emily Chen',
-      createdDate: '2023-05-28',
-      updatedBy: null,
-      updatedDate: null,
-      parentRequirement: 'SYS-REQ-003',
-      childRequirements: [],
-      version: '0.1',
-      rationale: 'Required for cold weather operations',
-      tags: ['Temperature', 'Cold', 'Environmental']
-    },
-    {
-      id: 'SYS-REQ-010',
-      title: 'High Temperature Operation',
-      description: 'The system shall maintain full functionality at temperatures up to +50°C.',
-      type: 'Non-Functional',
-      priority: 'High',
-      status: 'Draft',
-      source: 'Derived',
-      verification: 'Test',
-      category: 'Environmental',
-      createdBy: 'Emily Chen',
-      createdDate: '2023-05-28',
-      updatedBy: null,
-      updatedDate: null,
-      parentRequirement: 'SYS-REQ-003',
-      childRequirements: [],
-      version: '0.1',
-      rationale: 'Required for hot weather operations',
-      tags: ['Temperature', 'Heat', 'Environmental']
-    }
-  ]);
+  // Use product context
+  const { productType, productName } = useProduct();
+  
+  // Local state for requirements
+  const [requirements, setRequirements] = useState<Requirement[]>([]);
+  
+  // Load requirements based on product type
+  useEffect(() => {
+    const data = getRequirementsData(productType);
+    setRequirements(data.systemRequirements);
+  }, [productType]);
 
   // State for search and filters
   const [searchTerm, setSearchTerm] = useState('');
@@ -661,7 +473,7 @@ const SystemRequirements: React.FC = () => {
                         </div>
                       )}
                       
-                      {selectedRequirement.childRequirements.length > 0 && (
+                      {selectedRequirement.childRequirements && selectedRequirement.childRequirements.length > 0 && (
                         <div>
                           <p className="text-sm text-gray-500 mb-1">Child Requirements</p>
                           <div className="flex flex-wrap gap-2">
@@ -674,7 +486,7 @@ const SystemRequirements: React.FC = () => {
                         </div>
                       )}
                       
-                      {!selectedRequirement.parentRequirement && selectedRequirement.childRequirements.length === 0 && (
+                      {!selectedRequirement.parentRequirement && selectedRequirement.childRequirements && selectedRequirement.childRequirements.length === 0 && (
                         <p className="text-gray-500">No relationships defined</p>
                       )}
                     </div>
