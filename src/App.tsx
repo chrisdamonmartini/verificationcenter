@@ -3,8 +3,7 @@ import './App.css';
 import * as FaIcons from 'react-icons/fa';
 import * as BiIcons from 'react-icons/bi';
 import * as GiIcons from 'react-icons/gi';
-import NewSidebar from './components/Sidebar/Sidebar';
-// import Sidebar from './components/Old_Sidebar_Delete'; // Comment out old sidebar
+import Sidebar from './components/Sidebar/Sidebar';
 import { motion } from 'framer-motion';
 import VerificationDashboard from './components/VerificationDashboard';
 import VerificationMatrixView from './components/VerificationMatrix/VerificationMatrixView';
@@ -312,6 +311,7 @@ function App() {
         return <DataCollectionTab />;
         
       // Compliance Assessment
+      case 'compliance-assessment':
       case 'compliance/closure':
         return <VerificationClosureTab />;
       case 'compliance/reports':
@@ -320,6 +320,7 @@ function App() {
         return <VerificationClosureTab />;
         
       // Reports & Analytics
+      case 'reports-analytics':
       case 'reports/status':
         return <VerificationStatus />;
       case 'reports/resources':
@@ -416,8 +417,8 @@ function App() {
 
           {/* Main Content */}
           <div className="flex flex-grow overflow-hidden">
-            {/* Sidebar - Using the new implementation */}
-            <NewSidebar currentView={activeView} onNavigate={handleNavigation} />
+            {/* Sidebar */}
+            <Sidebar currentView={activeView} onNavigate={handleNavigation} />
             
             {/* Main Content Area */}
             <main className="flex-grow p-4 overflow-auto">
