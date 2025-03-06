@@ -19,6 +19,7 @@ import MissionChanges from './MissionChanges';
 import OperationalScenarios from './OperationalScenarios';
 import RequirementsChanges from './RequirementsChanges';
 import FunctionsChanges from './FunctionsChanges';
+import CADDesignChanges from './CADDesignChanges';
 
 const { Title, Text, Paragraph } = Typography;
 const { TabPane } = Tabs;
@@ -26,20 +27,9 @@ const { Option } = Select;
 const { RangePicker } = DatePicker;
 
 // For now, we'll comment out the imports and use placeholders for other components
-// import CADDesignChanges from './CADDesignChanges';
 // import EngineeringBOMChanges from './EngineeringBOMChanges';
 
 // Placeholders for sub-components that haven't been implemented yet
-const CADDesignChanges = () => (
-  <div>
-    <Alert 
-      message="CAD Design Changes Component" 
-      description="This component will display modifications to CAD models and design parameters."
-      type="info"
-    />
-  </div>
-);
-
 const EngineeringBOMChanges = () => (
   <div>
     <Alert 
