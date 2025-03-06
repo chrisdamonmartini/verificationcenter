@@ -48,7 +48,7 @@ export const SidebarData = [
     icon: <CheckCircleOutlined />
   },
   {
-    title: 'Simulation',
+    title: 'Analysis',
     path: '/simulation',
     icon: <FundOutlined />
   },
