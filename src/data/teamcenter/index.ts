@@ -397,3 +397,6 @@ export const syncWithTeamcenter = async () => {
     }, 1500);
   });
 };
+
+// Alias for backward compatibility
+export const syncTeamcenterData = syncWithTeamcenter;

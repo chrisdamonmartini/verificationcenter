@@ -7,6 +7,14 @@ export type ProductType = 'missile' | 'fighter';
 interface ProductContextType {
   productType: ProductType;
   setProductType: (type: ProductType) => void;
+  productName: string;
+  productDetails: {
+    program: string;
+    version: string;
+    stage: string;
+    organization: string;
+  };
+  // Keep these methods for backward compatibility
   getProductName: () => string;
   getProductDetails: () => {
     name: string;
@@ -47,10 +55,40 @@ export const ProductProvider: React.FC<{ children: ReactNode }> = ({ children })
     }
   };
 
+  // Get product details for legacy interface
+  const getProductDetailsLegacy = () => {
+    if (productType === 'missile') {
+      return {
+        name: 'ATMS Block 3',
+        program: 'Advanced Tactical Missile System',
+        version: 'Block 3',
+        stage: 'Development',
+        organization: 'Defense Systems Division'
+      };
+    } else {
+      return {
+        name: 'F/A-29E Raptor II',
+        program: 'Advanced Tactical Fighter',
+        version: '2.3',
+        stage: 'Testing',
+        organization: 'Aerospace Division'
+      };
+    }
+  };
+
+  const details = getProductDetailsLegacy();
+
   // Value object that will be passed to consumers
   const value = {
     productType,
     setProductType,
+    productName: details.name,
+    productDetails: {
+      program: details.program,
+      version: details.version,
+      stage: details.stage,
+      organization: details.organization
+    },
     getProductName,
     getProductDetails
   };

@@ -1,19 +1,19 @@
 import React, { createContext, useContext, useState, ReactNode } from 'react';
 import { syncWithTeamcenter } from '../data/teamcenter';
 
-// Define connection status types
+// Types
 export type ConnectionStatus = 'disconnected' | 'connecting' | 'connected' | 'error';
 
-// Interface for Teamcenter connection settings
 export interface TeamcenterSettings {
   serverUrl: string;
   username: string;
   password: string;
+  useSSO: boolean; // Added back for compatibility
+  instance: string; // Added back for compatibility
   autoSync: boolean;
   syncInterval: number; // in minutes
 }
 
-// Interface for Teamcenter integration settings
 export interface IntegrationSettings {
   importRequirements: boolean;
   exportRequirements: boolean;
@@ -21,12 +21,20 @@ export interface IntegrationSettings {
   exportTestCases: boolean;
   syncVerificationResults: boolean;
   autoMapFields: boolean;
+  // For compatibility with existing components
+  syncRequirements: boolean;
+  syncTestData: boolean;
+  syncVerificationMatrix: boolean;
+  autoSync: boolean;
+  syncInterval: number;
+  enableBidirectionalSync: boolean;
 }
 
-// Interface for Teamcenter context
+// Context type definition
 interface TeamcenterContextType {
   connectionStatus: ConnectionStatus;
-  errorMessage: string | null;
+  connectionError: string | null; // Keep original name for compatibility
+  errorMessage: string | null; // Alias for connectionError
   lastSyncTime: Date | null;
   isAuthenticated: boolean;
   settings: TeamcenterSettings;
@@ -46,6 +54,8 @@ const defaultSettings: TeamcenterSettings = {
   serverUrl: 'https://teamcenter.example.com/api',
   username: '',
   password: '',
+  useSSO: false,
+  instance: 'production',
   autoSync: false,
   syncInterval: 60,
 };
@@ -57,9 +67,16 @@ const defaultIntegrationSettings: IntegrationSettings = {
   exportTestCases: false,
   syncVerificationResults: true,
   autoMapFields: true,
+  // Legacy properties
+  syncRequirements: true,
+  syncTestData: true,
+  syncVerificationMatrix: true,
+  autoSync: false,
+  syncInterval: 60,
+  enableBidirectionalSync: false
 };
 
-// Create context with default values
+// Create the context
 const TeamcenterContext = createContext<TeamcenterContextType | undefined>(undefined);
 
 // Provider component
@@ -84,7 +101,7 @@ export const TeamcenterProvider: React.FC<{ children: ReactNode }> = ({ children
 
   // Connect to Teamcenter
   const connect = async (): Promise<boolean> => {
-    if (!settings.serverUrl || !settings.username || !settings.password) {
+    if (!settings.serverUrl || !settings.username || (!settings.password && !settings.useSSO)) {
       setErrorMessage('Server URL, username, and password are required');
       return false;
     }
@@ -147,6 +164,7 @@ export const TeamcenterProvider: React.FC<{ children: ReactNode }> = ({ children
   // Context value
   const value: TeamcenterContextType = {
     connectionStatus,
+    connectionError: errorMessage, // Alias for backward compatibility
     errorMessage,
     lastSyncTime,
     isAuthenticated,
@@ -166,7 +184,7 @@ export const TeamcenterProvider: React.FC<{ children: ReactNode }> = ({ children
   );
 };
 
-// Hook for using the Teamcenter context
+// Custom hook for using the Teamcenter context
 export const useTeamcenter = (): TeamcenterContextType => {
   const context = useContext(TeamcenterContext);
   
