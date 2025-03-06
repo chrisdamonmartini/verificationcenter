@@ -44,11 +44,6 @@ export const SidebarData = [
     icon: <BsIcons.BsTable />
   },
   {
-    title: 'Verification Methods',
-    path: '/verification-methods',
-    icon: <ExperimentOutlined />
-  },
-  {
     title: 'Test Management',
     path: '/test-management',
     icon: <CheckCircleOutlined />
@@ -69,7 +64,7 @@ export const SidebarData = [
     icon: <DatabaseOutlined />
   },
   {
-    title: 'Compliance Assessment',
+    title: 'Access Compliance',
     path: '/compliance-assessment',
     icon: <AuditOutlined />
   },
