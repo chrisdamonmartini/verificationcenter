@@ -52,9 +52,44 @@ interface AutomationWorkflow {
   results?: string;
 }
 
+// HPC cluster status interface
+interface HPCCluster {
+  id: string;
+  name: string;
+  status: 'Online' | 'Degraded' | 'Offline' | 'Maintenance';
+  totalNodes: number;
+  activeNodes: number;
+  cpuUsage: number;
+  memoryUsage: number;
+  storageUsage: number;
+  jobsRunning: number;
+  jobsQueued: number;
+  uptime: string;
+  lastMaintenance: string;
+  nextMaintenance: string;
+}
+
+// HPC Job interface
+interface HPCJob {
+  id: string;
+  name: string;
+  user: string;
+  status: 'Running' | 'Queued' | 'Completed' | 'Failed' | 'Canceled';
+  priority: 'Low' | 'Normal' | 'High' | 'Critical';
+  startTime: string;
+  endTime?: string;
+  estimatedCompletion?: string;
+  progress: number;
+  nodesAllocated: number;
+  cpuCores: number;
+  memoryAllocated: string;
+  cluster: string;
+  analysisId?: string;
+}
+
 const ModelsManagement: React.FC = () => {
   // Active tab state
-  const [activeTab, setActiveTab] = useState<'Activities' | 'Models' | 'Automation'>('Activities');
+  const [activeTab, setActiveTab] = useState<'Analyses' | 'Models' | 'Automation' | 'HPCStatus'>('Analyses');
   
   // Filter states
   const [searchQuery, setSearchQuery] = useState('');
@@ -62,6 +97,8 @@ const ModelsManagement: React.FC = () => {
   const [typeFilter, setTypeFilter] = useState('All');
   const [validationFilter, setValidationFilter] = useState('All');
   const [automationFilter, setAutomationFilter] = useState('All');
+  const [clusterFilter, setClusterFilter] = useState('All Clusters');
+  const [jobStatusFilter, setJobStatusFilter] = useState('All Statuses');
 
   // Sample analysis data
   const analysisItems: AnalysisItem[] = [
@@ -339,6 +376,164 @@ const ModelsManagement: React.FC = () => {
     }
   ];
 
+  // Sample HPC clusters data
+  const hpcClusters: HPCCluster[] = [
+    {
+      id: 'HPC-001',
+      name: 'High-Performance Compute Cluster',
+      status: 'Online',
+      totalNodes: 32,
+      activeNodes: 28,
+      cpuUsage: 76,
+      memoryUsage: 62,
+      storageUsage: 58,
+      jobsRunning: 5,
+      jobsQueued: 3,
+      uptime: '45 days, 12 hours',
+      lastMaintenance: '2023-03-15',
+      nextMaintenance: '2023-06-15'
+    },
+    {
+      id: 'HPC-002',
+      name: 'FEA Workstation Cluster',
+      status: 'Degraded',
+      totalNodes: 8,
+      activeNodes: 8,
+      cpuUsage: 92,
+      memoryUsage: 87,
+      storageUsage: 63,
+      jobsRunning: 2,
+      jobsQueued: 4,
+      uptime: '32 days, 8 hours',
+      lastMaintenance: '2023-04-01',
+      nextMaintenance: '2023-07-01'
+    },
+    {
+      id: 'HPC-003',
+      name: 'CI/CD Pipeline Environment',
+      status: 'Degraded',
+      totalNodes: 4,
+      activeNodes: 3,
+      cpuUsage: 35,
+      memoryUsage: 42,
+      storageUsage: 29,
+      jobsRunning: 1,
+      jobsQueued: 0,
+      uptime: '12 days, 6 hours',
+      lastMaintenance: '2023-04-25',
+      nextMaintenance: '2023-07-25'
+    },
+    {
+      id: 'HPC-004',
+      name: 'Data Analytics Cluster',
+      status: 'Offline',
+      totalNodes: 12,
+      activeNodes: 0,
+      cpuUsage: 0,
+      memoryUsage: 0,
+      storageUsage: 72,
+      jobsRunning: 0,
+      jobsQueued: 0,
+      uptime: '0 days, 0 hours',
+      lastMaintenance: '2023-05-10',
+      nextMaintenance: '2023-05-12'
+    }
+  ];
+
+  // Sample HPC jobs data
+  const hpcJobs: HPCJob[] = [
+    {
+      id: 'JOB-001',
+      name: 'Aerodynamic CFD Analysis - Full Wing',
+      user: 'John Smith',
+      status: 'Running',
+      priority: 'High',
+      startTime: '2023-05-11 08:34',
+      estimatedCompletion: '2023-05-11 16:30',
+      progress: 67,
+      nodesAllocated: 8,
+      cpuCores: 256,
+      memoryAllocated: '1024 GB',
+      cluster: 'High-Performance Compute Cluster',
+      analysisId: 'AN-001'
+    },
+    {
+      id: 'JOB-002',
+      name: 'Structural FEA - Full Airframe',
+      user: 'Sarah Johnson',
+      status: 'Queued',
+      priority: 'Normal',
+      startTime: 'Pending',
+      estimatedCompletion: 'Estimated 8h runtime',
+      progress: 0,
+      nodesAllocated: 4,
+      cpuCores: 128,
+      memoryAllocated: '512 GB',
+      cluster: 'FEA Workstation Cluster',
+      analysisId: 'AN-002'
+    },
+    {
+      id: 'JOB-003',
+      name: 'Thermal Analysis Batch - Engine Components',
+      user: 'Michael Brown',
+      status: 'Running',
+      priority: 'Normal',
+      startTime: '2023-05-11 10:15',
+      estimatedCompletion: '2023-05-11 14:45',
+      progress: 42,
+      nodesAllocated: 2,
+      cpuCores: 64,
+      memoryAllocated: '256 GB',
+      cluster: 'High-Performance Compute Cluster',
+      analysisId: 'AN-002'
+    },
+    {
+      id: 'JOB-004',
+      name: 'Control System Simulation',
+      user: 'Lisa Garcia',
+      status: 'Running',
+      priority: 'Low',
+      startTime: '2023-05-11 09:00',
+      estimatedCompletion: '2023-05-11 12:00',
+      progress: 85,
+      nodesAllocated: 1,
+      cpuCores: 32,
+      memoryAllocated: '128 GB',
+      cluster: 'CI/CD Pipeline Environment',
+      analysisId: 'AN-004'
+    },
+    {
+      id: 'JOB-005',
+      name: 'Environmental Impact Simulation',
+      user: 'Robert Wilson',
+      status: 'Failed',
+      priority: 'Normal',
+      startTime: '2023-05-10 14:30',
+      endTime: '2023-05-10 15:45',
+      progress: 34,
+      nodesAllocated: 4,
+      cpuCores: 128,
+      memoryAllocated: '512 GB',
+      cluster: 'High-Performance Compute Cluster',
+      analysisId: 'AN-005'
+    },
+    {
+      id: 'JOB-006',
+      name: 'Multi-physics Simulation - Wing Loading',
+      user: 'John Smith',
+      status: 'Completed',
+      priority: 'Critical',
+      startTime: '2023-05-10 08:00',
+      endTime: '2023-05-10 16:45',
+      progress: 100,
+      nodesAllocated: 12,
+      cpuCores: 384,
+      memoryAllocated: '1536 GB',
+      cluster: 'High-Performance Compute Cluster',
+      analysisId: 'AN-001'
+    }
+  ];
+
   // Filter the models based on search and filters
   const filteredModels = simulationModels.filter(model => {
     const matchesSearch = 
@@ -356,6 +551,13 @@ const ModelsManagement: React.FC = () => {
   // Filter automations based on status filter
   const filteredAutomations = automationWorkflows.filter(workflow => {
     return automationFilter === 'All' || workflow.status === automationFilter;
+  });
+
+  // Filter HPC jobs based on status and cluster filters
+  const filteredJobs = hpcJobs.filter(job => {
+    const matchesStatus = jobStatusFilter === 'All Statuses' || job.status === jobStatusFilter;
+    const matchesCluster = clusterFilter === 'All Clusters' || job.cluster === clusterFilter;
+    return matchesStatus && matchesCluster;
   });
 
   // Function to get the status badge color
@@ -436,6 +638,56 @@ const ModelsManagement: React.FC = () => {
     }
   };
 
+  // Function to get the HPC cluster status badge color
+  const getClusterStatusBadgeColor = (status: string) => {
+    switch(status) {
+      case 'Online':
+        return 'bg-green-100 text-green-800';
+      case 'Degraded':
+        return 'bg-yellow-100 text-yellow-800';
+      case 'Offline':
+        return 'bg-red-100 text-red-800';
+      case 'Maintenance':
+        return 'bg-blue-100 text-blue-800';
+      default:
+        return 'bg-gray-100 text-gray-800';
+    }
+  };
+
+  // Function to get the HPC job status badge color
+  const getJobStatusBadgeColor = (status: string) => {
+    switch(status) {
+      case 'Running':
+        return 'bg-blue-100 text-blue-800';
+      case 'Queued':
+        return 'bg-purple-100 text-purple-800';
+      case 'Completed':
+        return 'bg-green-100 text-green-800';
+      case 'Failed':
+        return 'bg-red-100 text-red-800';
+      case 'Canceled':
+        return 'bg-gray-100 text-gray-800';
+      default:
+        return 'bg-gray-100 text-gray-800';
+    }
+  };
+
+  // Function to get the job priority badge color
+  const getJobPriorityBadgeColor = (priority: string) => {
+    switch(priority) {
+      case 'Critical':
+        return 'bg-red-100 text-red-800';
+      case 'High':
+        return 'bg-orange-100 text-orange-800';
+      case 'Normal':
+        return 'bg-blue-100 text-blue-800';
+      case 'Low':
+        return 'bg-gray-100 text-gray-800';
+      default:
+        return 'bg-gray-100 text-gray-800';
+    }
+  };
+
   return (
     <div className="bg-white p-6 rounded-lg shadow-lg">
       <div className="flex justify-between items-center mb-6">
@@ -446,14 +698,14 @@ const ModelsManagement: React.FC = () => {
       <div className="border-b border-gray-200 mb-6">
         <nav className="-mb-px flex space-x-8">
           <button
-            onClick={() => setActiveTab('Activities')}
+            onClick={() => setActiveTab('Analyses')}
             className={`py-4 px-1 border-b-2 font-medium text-sm ${
-              activeTab === 'Activities'
+              activeTab === 'Analyses'
                 ? 'border-blue-500 text-blue-600'
                 : 'border-transparent text-gray-500 hover:text-gray-700 hover:border-gray-300'
             }`}
           >
-            Activities
+            Analyses
           </button>
           <button
             onClick={() => setActiveTab('Models')}
@@ -475,12 +727,22 @@ const ModelsManagement: React.FC = () => {
           >
             Automation
           </button>
+          <button
+            onClick={() => setActiveTab('HPCStatus')}
+            className={`py-4 px-1 border-b-2 font-medium text-sm ${
+              activeTab === 'HPCStatus'
+                ? 'border-blue-500 text-blue-600'
+                : 'border-transparent text-gray-500 hover:text-gray-700 hover:border-gray-300'
+            }`}
+          >
+            HPC Status
+          </button>
         </nav>
       </div>
 
       {/* Tab Content */}
       <div>
-        {activeTab === 'Activities' && (
+        {activeTab === 'Analyses' && (
           <div>
             {/* Analysis Dashboard */}
             <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4 mb-6">
@@ -1107,6 +1369,381 @@ const ModelsManagement: React.FC = () => {
                       ))}
                   </tbody>
                 </table>
+              </div>
+            </div>
+          </div>
+        )}
+
+        {activeTab === 'HPCStatus' && (
+          <div>
+            {/* HPC Status Dashboard */}
+            <div className="mb-6">
+              <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
+                <div className="bg-blue-50 p-4 rounded-lg shadow-sm">
+                  <div className="flex items-center justify-between mb-2">
+                    <h3 className="font-medium">Total Clusters</h3>
+                    <FaIcons.FaServer className="text-blue-500" />
+                  </div>
+                  <p className="text-3xl font-bold">{hpcClusters.length}</p>
+                </div>
+                <div className="bg-green-50 p-4 rounded-lg shadow-sm">
+                  <div className="flex items-center justify-between mb-2">
+                    <h3 className="font-medium">Active Nodes</h3>
+                    <FaIcons.FaDesktop className="text-green-500" />
+                  </div>
+                  <p className="text-3xl font-bold">{hpcClusters.reduce((acc, cluster) => acc + cluster.activeNodes, 0)}</p>
+                </div>
+                <div className="bg-purple-50 p-4 rounded-lg shadow-sm">
+                  <div className="flex items-center justify-between mb-2">
+                    <h3 className="font-medium">Running Jobs</h3>
+                    <FaIcons.FaPlay className="text-purple-500" />
+                  </div>
+                  <p className="text-3xl font-bold">{hpcJobs.filter(job => job.status === 'Running').length}</p>
+                </div>
+                <div className="bg-yellow-50 p-4 rounded-lg shadow-sm">
+                  <div className="flex items-center justify-between mb-2">
+                    <h3 className="font-medium">Queued Jobs</h3>
+                    <FaIcons.FaClock className="text-yellow-500" />
+                  </div>
+                  <p className="text-3xl font-bold">{hpcJobs.filter(job => job.status === 'Queued').length}</p>
+                </div>
+              </div>
+            </div>
+
+            {/* HPC Clusters Status */}
+            <div className="mb-6">
+              <h2 className="text-lg font-medium mb-4">HPC Environment Status</h2>
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                {hpcClusters.map(cluster => (
+                  <div key={cluster.id} className="border rounded-lg overflow-hidden shadow-sm">
+                    <div className="p-4 border-b bg-gray-50 flex justify-between items-center">
+                      <div>
+                        <h3 className="font-medium">{cluster.name}</h3>
+                        <p className="text-sm text-gray-500">ID: {cluster.id}</p>
+                      </div>
+                      <span className={`px-2 py-1 rounded-full text-xs font-medium ${getClusterStatusBadgeColor(cluster.status)}`}>
+                        {cluster.status}
+                      </span>
+                    </div>
+                    <div className="p-4">
+                      <div className="grid grid-cols-2 gap-4 mb-4">
+                        <div>
+                          <p className="text-sm text-gray-500 mb-1">Nodes</p>
+                          <p className="font-medium">{cluster.activeNodes} / {cluster.totalNodes} Online</p>
+                        </div>
+                        <div>
+                          <p className="text-sm text-gray-500 mb-1">Jobs</p>
+                          <p className="font-medium">{cluster.jobsRunning} Running, {cluster.jobsQueued} Queued</p>
+                        </div>
+                      </div>
+                      <div className="mb-4">
+                        <div className="flex justify-between text-sm mb-1">
+                          <span>CPU Usage</span>
+                          <span>{cluster.cpuUsage}%</span>
+                        </div>
+                        <div className="w-full bg-gray-200 rounded-full h-2">
+                          <div 
+                            className={`h-2 rounded-full ${
+                              cluster.cpuUsage > 90 ? 'bg-red-500' : 
+                              cluster.cpuUsage > 70 ? 'bg-yellow-500' : 'bg-green-500'
+                            }`}
+                            style={{ width: `${cluster.cpuUsage}%` }}
+                          ></div>
+                        </div>
+                      </div>
+                      <div className="mb-4">
+                        <div className="flex justify-between text-sm mb-1">
+                          <span>Memory Usage</span>
+                          <span>{cluster.memoryUsage}%</span>
+                        </div>
+                        <div className="w-full bg-gray-200 rounded-full h-2">
+                          <div 
+                            className={`h-2 rounded-full ${
+                              cluster.memoryUsage > 90 ? 'bg-red-500' : 
+                              cluster.memoryUsage > 70 ? 'bg-yellow-500' : 'bg-green-500'
+                            }`}
+                            style={{ width: `${cluster.memoryUsage}%` }}
+                          ></div>
+                        </div>
+                      </div>
+                      <div className="mb-4">
+                        <div className="flex justify-between text-sm mb-1">
+                          <span>Storage Usage</span>
+                          <span>{cluster.storageUsage}%</span>
+                        </div>
+                        <div className="w-full bg-gray-200 rounded-full h-2">
+                          <div 
+                            className={`h-2 rounded-full ${
+                              cluster.storageUsage > 90 ? 'bg-red-500' : 
+                              cluster.storageUsage > 70 ? 'bg-yellow-500' : 'bg-green-500'
+                            }`}
+                            style={{ width: `${cluster.storageUsage}%` }}
+                          ></div>
+                        </div>
+                      </div>
+                      <div className="grid grid-cols-2 gap-4 text-sm">
+                        <div>
+                          <p className="text-gray-500">Uptime</p>
+                          <p>{cluster.uptime}</p>
+                        </div>
+                        <div>
+                          <p className="text-gray-500">Next Maintenance</p>
+                          <p>{cluster.nextMaintenance}</p>
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+                ))}
+              </div>
+            </div>
+
+            {/* Running Jobs Table */}
+            <div className="mb-6">
+              <div className="flex justify-between items-center mb-4">
+                <h2 className="text-lg font-medium">HPC Jobs</h2>
+                <div className="flex space-x-4 items-center">
+                  <select
+                    className="border rounded-lg px-4 py-2"
+                    value={jobStatusFilter}
+                    onChange={e => setJobStatusFilter(e.target.value)}
+                  >
+                    <option value="All Statuses">All Statuses</option>
+                    <option value="Running">Running</option>
+                    <option value="Queued">Queued</option>
+                    <option value="Completed">Completed</option>
+                    <option value="Failed">Failed</option>
+                  </select>
+                  <select
+                    className="border rounded-lg px-4 py-2"
+                    value={clusterFilter}
+                    onChange={e => setClusterFilter(e.target.value)}
+                  >
+                    <option value="All Clusters">All Clusters</option>
+                    {hpcClusters.map(cluster => (
+                      <option key={cluster.id} value={cluster.name}>{cluster.name}</option>
+                    ))}
+                  </select>
+                </div>
+              </div>
+              <div className="overflow-x-auto">
+                <table className="min-w-full bg-white border">
+                  <thead>
+                    <tr className="bg-gray-50 border-b">
+                      <th className="py-3 px-4 text-left font-medium text-gray-600">Job ID</th>
+                      <th className="py-3 px-4 text-left font-medium text-gray-600">Name</th>
+                      <th className="py-3 px-4 text-left font-medium text-gray-600">Status</th>
+                      <th className="py-3 px-4 text-left font-medium text-gray-600">Progress</th>
+                      <th className="py-3 px-4 text-left font-medium text-gray-600">Priority</th>
+                      <th className="py-3 px-4 text-left font-medium text-gray-600">Start Time</th>
+                      <th className="py-3 px-4 text-left font-medium text-gray-600">Estimated End</th>
+                      <th className="py-3 px-4 text-left font-medium text-gray-600">Resource</th>
+                      <th className="py-3 px-4 text-left font-medium text-gray-600">Assigned To</th>
+                      <th className="py-3 px-4 text-center font-medium text-gray-600">Actions</th>
+                    </tr>
+                  </thead>
+                  <tbody>
+                    {filteredJobs.map((job, index) => (
+                      <tr key={job.id} className={`border-b ${index % 2 === 0 ? 'bg-gray-50' : 'bg-white'}`}>
+                        <td className="py-3 px-4 text-blue-600 font-medium">{job.id}</td>
+                        <td className="py-3 px-4">
+                          <div>
+                            <p className="font-medium">{job.name}</p>
+                            {job.analysisId && (
+                              <p className="text-xs text-gray-500">Analysis ID: {job.analysisId}</p>
+                            )}
+                          </div>
+                        </td>
+                        <td className="py-3 px-4">
+                          <span className={`px-2 py-1 rounded-full text-xs font-medium ${getJobStatusBadgeColor(job.status)}`}>
+                            {job.status}
+                          </span>
+                        </td>
+                        <td className="py-3 px-4">
+                          {job.status !== 'Queued' && (
+                            <div>
+                              <div className="w-full bg-gray-200 rounded-full h-2 mb-1">
+                                <div 
+                                  className={`h-2 rounded-full ${
+                                    job.status === 'Completed' ? 'bg-green-500' :
+                                    job.status === 'Failed' ? 'bg-red-500' : 'bg-blue-500'
+                                  }`}
+                                  style={{ width: `${job.progress}%` }}
+                                ></div>
+                              </div>
+                              <span className="text-xs text-gray-500">{job.progress}%</span>
+                            </div>
+                          )}
+                          {job.status === 'Queued' && (
+                            <span className="text-xs text-gray-500">Waiting to start</span>
+                          )}
+                        </td>
+                        <td className="py-3 px-4">
+                          <span className={`px-2 py-1 rounded-full text-xs font-medium ${getJobPriorityBadgeColor(job.priority)}`}>
+                            {job.priority}
+                          </span>
+                        </td>
+                        <td className="py-3 px-4">{job.startTime}</td>
+                        <td className="py-3 px-4">{job.endTime || job.estimatedCompletion || 'N/A'}</td>
+                        <td className="py-3 px-4">
+                          <div>
+                            <p className="text-sm">{job.cluster}</p>
+                            <p className="text-xs text-gray-500">{job.nodesAllocated} nodes, {job.cpuCores} cores</p>
+                          </div>
+                        </td>
+                        <td className="py-3 px-4">{job.user}</td>
+                        <td className="py-3 px-4">
+                          <div className="flex justify-center space-x-2">
+                            {(job.status === 'Running' || job.status === 'Queued') && (
+                              <button className="text-red-600 hover:text-red-800" title="Cancel Job">
+                                <FaIcons.FaStop />
+                              </button>
+                            )}
+                            {job.status === 'Completed' && (
+                              <button className="text-blue-600 hover:text-blue-800" title="View Results">
+                                <FaIcons.FaChartBar />
+                              </button>
+                            )}
+                            {job.status === 'Failed' && (
+                              <button className="text-yellow-600 hover:text-yellow-800" title="View Logs">
+                                <FaIcons.FaFileAlt />
+                              </button>
+                            )}
+                            <button className="text-gray-600 hover:text-gray-800" title="Job Details">
+                              <FaIcons.FaInfoCircle />
+                            </button>
+                          </div>
+                        </td>
+                      </tr>
+                    ))}
+                  </tbody>
+                </table>
+              </div>
+            </div>
+
+            {/* Resource Allocation */}
+            <div className="mb-6">
+              <h2 className="text-lg font-medium mb-4">Resource Allocation</h2>
+              <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
+                <div className="border rounded-lg p-4">
+                  <div className="flex items-center mb-3">
+                    <FaIcons.FaMemory className="text-blue-500 mr-2 text-xl" />
+                    <h3 className="font-medium">Memory Distribution</h3>
+                  </div>
+                  <div className="w-full bg-gray-200 rounded-full h-4 mb-2">
+                    <div className="flex h-4 rounded-full overflow-hidden">
+                      <div className="bg-green-500 h-4" style={{ width: '45%' }}></div>
+                      <div className="bg-blue-500 h-4" style={{ width: '30%' }}></div>
+                      <div className="bg-purple-500 h-4" style={{ width: '15%' }}></div>
+                      <div className="bg-gray-500 h-4" style={{ width: '10%' }}></div>
+                    </div>
+                  </div>
+                  <div className="grid grid-cols-2 gap-2 text-xs">
+                    <div className="flex items-center">
+                      <div className="w-3 h-3 bg-green-500 mr-1 rounded-sm"></div>
+                      <span>Aerodynamic CFD (45%)</span>
+                    </div>
+                    <div className="flex items-center">
+                      <div className="w-3 h-3 bg-blue-500 mr-1 rounded-sm"></div>
+                      <span>Structural Analysis (30%)</span>
+                    </div>
+                    <div className="flex items-center">
+                      <div className="w-3 h-3 bg-purple-500 mr-1 rounded-sm"></div>
+                      <span>Thermal Analysis (15%)</span>
+                    </div>
+                    <div className="flex items-center">
+                      <div className="w-3 h-3 bg-gray-500 mr-1 rounded-sm"></div>
+                      <span>Other (10%)</span>
+                    </div>
+                  </div>
+                </div>
+                <div className="border rounded-lg p-4">
+                  <div className="flex items-center mb-3">
+                    <FaIcons.FaMicrochip className="text-blue-500 mr-2 text-xl" />
+                    <h3 className="font-medium">CPU Core Distribution</h3>
+                  </div>
+                  <div className="w-full bg-gray-200 rounded-full h-4 mb-2">
+                    <div className="flex h-4 rounded-full overflow-hidden">
+                      <div className="bg-green-500 h-4" style={{ width: '55%' }}></div>
+                      <div className="bg-blue-500 h-4" style={{ width: '25%' }}></div>
+                      <div className="bg-purple-500 h-4" style={{ width: '10%' }}></div>
+                      <div className="bg-gray-500 h-4" style={{ width: '10%' }}></div>
+                    </div>
+                  </div>
+                  <div className="grid grid-cols-2 gap-2 text-xs">
+                    <div className="flex items-center">
+                      <div className="w-3 h-3 bg-green-500 mr-1 rounded-sm"></div>
+                      <span>Aerodynamic CFD (55%)</span>
+                    </div>
+                    <div className="flex items-center">
+                      <div className="w-3 h-3 bg-blue-500 mr-1 rounded-sm"></div>
+                      <span>Structural Analysis (25%)</span>
+                    </div>
+                    <div className="flex items-center">
+                      <div className="w-3 h-3 bg-purple-500 mr-1 rounded-sm"></div>
+                      <span>Thermal Analysis (10%)</span>
+                    </div>
+                    <div className="flex items-center">
+                      <div className="w-3 h-3 bg-gray-500 mr-1 rounded-sm"></div>
+                      <span>Other (10%)</span>
+                    </div>
+                  </div>
+                </div>
+                <div className="border rounded-lg p-4">
+                  <div className="flex items-center mb-3">
+                    <FaIcons.FaHistory className="text-blue-500 mr-2 text-xl" />
+                    <h3 className="font-medium">Historical Usage</h3>
+                  </div>
+                  <div className="flex items-center justify-between mb-2">
+                    <span className="text-sm">This Month</span>
+                    <span className="text-sm font-medium">85%</span>
+                  </div>
+                  <div className="w-full bg-gray-200 rounded-full h-2 mb-3">
+                    <div className="bg-blue-500 h-2 rounded-full" style={{ width: '85%' }}></div>
+                  </div>
+                  <div className="flex items-center justify-between mb-2">
+                    <span className="text-sm">Last Month</span>
+                    <span className="text-sm font-medium">72%</span>
+                  </div>
+                  <div className="w-full bg-gray-200 rounded-full h-2 mb-3">
+                    <div className="bg-blue-500 h-2 rounded-full" style={{ width: '72%' }}></div>
+                  </div>
+                  <div className="flex items-center justify-between mb-2">
+                    <span className="text-sm">3 Month Average</span>
+                    <span className="text-sm font-medium">68%</span>
+                  </div>
+                  <div className="w-full bg-gray-200 rounded-full h-2">
+                    <div className="bg-blue-500 h-2 rounded-full" style={{ width: '68%' }}></div>
+                  </div>
+                </div>
+                <div className="border rounded-lg p-4">
+                  <div className="flex items-center mb-3">
+                    <FaIcons.FaCalendarAlt className="text-blue-500 mr-2 text-xl" />
+                    <h3 className="font-medium">Maintenance Schedule</h3>
+                  </div>
+                  <div className="space-y-3">
+                    <div className="flex items-center justify-between">
+                      <div>
+                        <p className="text-sm font-medium">Data Analytics Cluster</p>
+                        <p className="text-xs text-gray-500">Hardware Upgrade</p>
+                      </div>
+                      <span className="text-xs font-medium text-red-500">In Progress</span>
+                    </div>
+                    <div className="border-t pt-2 flex items-center justify-between">
+                      <div>
+                        <p className="text-sm font-medium">High-Performance Cluster</p>
+                        <p className="text-xs text-gray-500">Routine Maintenance</p>
+                      </div>
+                      <span className="text-xs font-medium">Jun 15</span>
+                    </div>
+                    <div className="border-t pt-2 flex items-center justify-between">
+                      <div>
+                        <p className="text-sm font-medium">FEA Workstation Cluster</p>
+                        <p className="text-xs text-gray-500">Software Updates</p>
+                      </div>
+                      <span className="text-xs font-medium">Jul 01</span>
+                    </div>
+                  </div>
+                </div>
               </div>
             </div>
           </div>

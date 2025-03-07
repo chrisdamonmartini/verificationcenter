@@ -53,11 +53,6 @@ export const SidebarData = [
     icon: <FileSearchOutlined />
   },
   {
-    title: 'Data Management',
-    path: '/data-management',
-    icon: <DatabaseOutlined />
-  },
-  {
     title: 'Access Compliance',
     path: '/compliance-assessment',
     icon: <AuditOutlined />
