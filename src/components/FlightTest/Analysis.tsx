@@ -82,13 +82,47 @@ export const Analysis: React.FC<AnalysisProps> = () => {
   // Mock data for metrics
   const metrics: TestMetrics[] = [
     {
+      date: '2024-02-15',
+      completionRate: 65,
+      testPointsCompleted: 28,
+      issuesIdentified: 5,
+      avgTestDuration: 3.1
+    },
+    {
+      date: '2024-02-22',
+      completionRate: 72,
+      testPointsCompleted: 35,
+      issuesIdentified: 4,
+      avgTestDuration: 2.8
+    },
+    {
       date: '2024-03-01',
-      completionRate: 85,
-      testPointsCompleted: 42,
+      completionRate: 78,
+      testPointsCompleted: 38,
+      issuesIdentified: 3,
+      avgTestDuration: 2.6
+    },
+    {
+      date: '2024-03-08',
+      completionRate: 82,
+      testPointsCompleted: 40,
       issuesIdentified: 3,
       avgTestDuration: 2.5
     },
-    // Add more data points...
+    {
+      date: '2024-03-15',
+      completionRate: 85,
+      testPointsCompleted: 42,
+      issuesIdentified: 2,
+      avgTestDuration: 2.4
+    },
+    {
+      date: '2024-03-22',
+      completionRate: 90,
+      testPointsCompleted: 45,
+      issuesIdentified: 2,
+      avgTestDuration: 2.3
+    }
   ];
 
   const efficiencyData: TestEfficiency[] = [
@@ -362,24 +396,6 @@ export const Analysis: React.FC<AnalysisProps> = () => {
         ))}
       </div>
 
-      {/* Trend Analysis */}
-      <div className="bg-white rounded-lg shadow-sm p-6">
-        <h4 className="font-medium mb-4">Performance Trends</h4>
-        <div className="h-[300px]">
-          <ResponsiveContainer width="100%" height="100%">
-            <LineChart data={metrics}>
-              <CartesianGrid strokeDasharray="3 3" />
-              <XAxis dataKey="date" />
-              <YAxis />
-              <Tooltip />
-              <Legend />
-              <Line type="monotone" dataKey="completionRate" stroke="#3B82F6" name="Completion Rate" />
-              <Line type="monotone" dataKey="testPointsCompleted" stroke="#10B981" name="Test Points" />
-            </LineChart>
-          </ResponsiveContainer>
-        </div>
-      </div>
-
       {/* Grid of Pie Charts */}
       <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
         {renderPieChart(testRequestStatusData, 'Test Request Status')}
@@ -388,46 +404,6 @@ export const Analysis: React.FC<AnalysisProps> = () => {
         {renderPieChart(flightTestDelaysData, 'Flight Test Delays')}
         {renderPieChart(flightTestEffectivenessData, 'Flight Test Effectiveness')}
         {renderPieChart(flightTestEfficiencyData, 'Flight Test Efficiency')}
-      </div>
-
-      {/* Approval Times Chart */}
-      <div className="bg-white rounded-lg shadow-sm p-6">
-        <h4 className="font-medium mb-4 text-center">Approval Times</h4>
-        <div className="h-[300px]">
-          <ResponsiveContainer width="100%" height="100%">
-            <ComposedChart
-              data={approvalTimesData}
-              margin={{ top: 20, right: 30, left: 20, bottom: 40 }}
-            >
-              <CartesianGrid strokeDasharray="3 3" vertical={false} />
-              <XAxis 
-                dataKey="name" 
-              />
-              <YAxis
-                domain={[0, 80]}
-                ticks={[0, 20, 40, 60, 80]}
-              />
-              <Tooltip
-                formatter={(value, name) => [`${value} hours`, name]}
-              />
-              <Legend
-                verticalAlign="bottom" 
-                height={36}
-                payload={[
-                  { value: '-2σ', type: 'rect', color: '#000' },
-                  { value: 'Worse Case', type: 'rect', color: '#000' },
-                  { value: 'Best Case', type: 'rect', color: '#000' },
-                  { value: '+2σ', type: 'rect', color: '#000' }
-                ]}
-              />
-              <Bar
-                dataKey="median"
-                name="Approval Time"
-                shape={<BoxPlot />}
-              />
-            </ComposedChart>
-          </ResponsiveContainer>
-        </div>
       </div>
 
       {/* Test Point Burndown Chart */}
@@ -466,6 +442,64 @@ export const Analysis: React.FC<AnalysisProps> = () => {
                 dot={{ r: 3 }}
               />
             </LineChart>
+          </ResponsiveContainer>
+        </div>
+      </div>
+
+      {/* Trend Analysis */}
+      <div className="bg-white rounded-lg shadow-sm p-6">
+        <h4 className="font-medium mb-4">Performance Trends</h4>
+        <div className="h-[300px]">
+          <ResponsiveContainer width="100%" height="100%">
+            <LineChart data={metrics}>
+              <CartesianGrid strokeDasharray="3 3" />
+              <XAxis dataKey="date" />
+              <YAxis domain={[0, 100]} />
+              <Tooltip />
+              <Legend />
+              <Line type="monotone" dataKey="completionRate" stroke="#3B82F6" name="Completion Rate" strokeWidth={2} dot={{ r: 3 }} />
+              <Line type="monotone" dataKey="testPointsCompleted" stroke="#10B981" name="Test Points" strokeWidth={2} dot={{ r: 3 }} />
+            </LineChart>
+          </ResponsiveContainer>
+        </div>
+      </div>
+
+      {/* Approval Times Chart */}
+      <div className="bg-white rounded-lg shadow-sm p-6">
+        <h4 className="font-medium mb-4 text-center">Approval Times</h4>
+        <div className="h-[300px]">
+          <ResponsiveContainer width="100%" height="100%">
+            <ComposedChart
+              data={approvalTimesData}
+              margin={{ top: 20, right: 30, left: 20, bottom: 40 }}
+            >
+              <CartesianGrid strokeDasharray="3 3" vertical={false} />
+              <XAxis 
+                dataKey="name" 
+              />
+              <YAxis
+                domain={[0, 80]}
+                ticks={[0, 20, 40, 60, 80]}
+              />
+              <Tooltip
+                formatter={(value, name) => [`${value} hours`, name]}
+              />
+              <Legend
+                verticalAlign="bottom" 
+                height={36}
+                payload={[
+                  { value: '-2σ', type: 'rect', color: '#000' },
+                  { value: 'Worse Case', type: 'rect', color: '#000' },
+                  { value: 'Best Case', type: 'rect', color: '#000' },
+                  { value: '+2σ', type: 'rect', color: '#000' }
+                ]}
+              />
+              <Bar
+                dataKey="median"
+                name="Approval Time"
+                shape={<BoxPlot />}
+              />
+            </ComposedChart>
           </ResponsiveContainer>
         </div>
       </div>
