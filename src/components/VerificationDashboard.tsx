@@ -1,6 +1,7 @@
 import React from 'react';
 import * as FaIcons from 'react-icons/fa';
 import * as GiIcons from 'react-icons/gi';
+import ChangeTracker from './ChangeTracker';
 
 const VerificationDashboard: React.FC = () => {
   return (
@@ -137,6 +138,11 @@ const VerificationDashboard: React.FC = () => {
             </li>
           </ul>
         </div>
+      </div>
+      
+      {/* Changes Over Time Tracking */}
+      <div className="mb-8">
+        <ChangeTracker />
       </div>
       
       <div className="grid grid-cols-1 lg:grid-cols-2 gap-4">
