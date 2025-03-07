@@ -75,6 +75,247 @@ const VerificationMatrixView: React.FC = () => {
       simulation: false,
       status: 'Verified'
     },
+    // Adding 20 more mock data entries
+    {
+      id: 'SR-006',
+      description: 'The system shall provide real-time data processing with latency less than 100ms',
+      category: 'Performance',
+      inspection: false,
+      analysis: true,
+      demonstration: true,
+      test: true,
+      flightTest: false,
+      simulation: true,
+      status: 'In Progress'
+    },
+    {
+      id: 'SR-007',
+      description: 'The system shall maintain data integrity during power fluctuations',
+      category: 'Reliability',
+      inspection: false,
+      analysis: true,
+      demonstration: true,
+      test: true,
+      flightTest: false,
+      simulation: true,
+      status: 'Verified'
+    },
+    {
+      id: 'SR-008',
+      description: 'The system shall be capable of operating in humidity levels of 0-95%',
+      category: 'Environmental',
+      inspection: false,
+      analysis: true,
+      demonstration: false,
+      test: true,
+      flightTest: false,
+      simulation: false,
+      status: 'Not Started'
+    },
+    {
+      id: 'SR-009',
+      description: 'The system shall provide diagnostic capabilities for common failures',
+      category: 'Maintainability',
+      inspection: true,
+      analysis: true,
+      demonstration: true,
+      test: false,
+      flightTest: false,
+      simulation: false,
+      status: 'In Progress'
+    },
+    {
+      id: 'SR-010',
+      description: 'The system shall be capable of interfacing with standard communication protocols',
+      category: 'Interoperability',
+      inspection: false,
+      analysis: true,
+      demonstration: true,
+      test: true,
+      flightTest: false,
+      simulation: true,
+      status: 'Verified'
+    },
+    {
+      id: 'SR-011',
+      description: 'The system shall maintain data security during all operations',
+      category: 'Security',
+      inspection: false,
+      analysis: true,
+      demonstration: false,
+      test: true,
+      flightTest: false,
+      simulation: true,
+      status: 'In Progress'
+    },
+    {
+      id: 'SR-012',
+      description: 'The system shall provide backup capabilities for critical functions',
+      category: 'Reliability',
+      inspection: false,
+      analysis: true,
+      demonstration: true,
+      test: true,
+      flightTest: false,
+      simulation: true,
+      status: 'Not Started'
+    },
+    {
+      id: 'SR-013',
+      description: 'The system shall support multiple user roles with appropriate access controls',
+      category: 'Security',
+      inspection: false,
+      analysis: true,
+      demonstration: true,
+      test: true,
+      flightTest: false,
+      simulation: false,
+      status: 'Failed'
+    },
+    {
+      id: 'SR-014',
+      description: 'The system shall provide audit logging for all administrative actions',
+      category: 'Security',
+      inspection: false,
+      analysis: true,
+      demonstration: true,
+      test: true,
+      flightTest: false,
+      simulation: false,
+      status: 'Verified'
+    },
+    {
+      id: 'SR-015',
+      description: 'The system shall be capable of operating in altitude ranges from sea level to 10,000 feet',
+      category: 'Environmental',
+      inspection: false,
+      analysis: true,
+      demonstration: false,
+      test: true,
+      flightTest: true,
+      simulation: false,
+      status: 'In Progress'
+    },
+    {
+      id: 'SR-016',
+      description: 'The system shall maintain accuracy during GPS signal degradation',
+      category: 'Performance',
+      inspection: false,
+      analysis: true,
+      demonstration: false,
+      test: true,
+      flightTest: true,
+      simulation: true,
+      status: 'Not Started'
+    },
+    {
+      id: 'SR-017',
+      description: 'The system shall be capable of autonomous operation for periods up to 72 hours',
+      category: 'Reliability',
+      inspection: false,
+      analysis: true,
+      demonstration: true,
+      test: true,
+      flightTest: true,
+      simulation: true,
+      status: 'Verified'
+    },
+    {
+      id: 'SR-018',
+      description: 'The system shall provide user notifications for critical events within 5 seconds',
+      category: 'Performance',
+      inspection: false,
+      analysis: true,
+      demonstration: true,
+      test: true,
+      flightTest: false,
+      simulation: true,
+      status: 'In Progress'
+    },
+    {
+      id: 'SR-019',
+      description: 'The system shall be resistant to common electromagnetic interference',
+      category: 'Environmental',
+      inspection: false,
+      analysis: true,
+      demonstration: false,
+      test: true,
+      flightTest: false,
+      simulation: false,
+      status: 'Not Started'
+    },
+    {
+      id: 'SR-020',
+      description: 'The system shall implement graceful degradation for critical component failures',
+      category: 'Reliability',
+      inspection: false,
+      analysis: true,
+      demonstration: true,
+      test: true,
+      flightTest: false,
+      simulation: true,
+      status: 'Failed'
+    },
+    {
+      id: 'SR-021',
+      description: 'The system shall comply with industry standard data formats',
+      category: 'Interoperability',
+      inspection: true,
+      analysis: true,
+      demonstration: true,
+      test: true,
+      flightTest: false,
+      simulation: false,
+      status: 'Verified'
+    },
+    {
+      id: 'SR-022',
+      description: 'The system shall provide redundant power systems for critical components',
+      category: 'Reliability',
+      inspection: true,
+      analysis: true,
+      demonstration: true,
+      test: true,
+      flightTest: false,
+      simulation: false,
+      status: 'In Progress'
+    },
+    {
+      id: 'SR-023',
+      description: 'The system shall support modular component replacement within 30 minutes',
+      category: 'Maintainability',
+      inspection: true,
+      analysis: false,
+      demonstration: true,
+      test: false,
+      flightTest: false,
+      simulation: false,
+      status: 'Verified'
+    },
+    {
+      id: 'SR-024',
+      description: 'The system shall accommodate software updates without operational interruption',
+      category: 'Maintainability',
+      inspection: false,
+      analysis: true,
+      demonstration: true,
+      test: true,
+      flightTest: false,
+      simulation: false,
+      status: 'Not Started'
+    },
+    {
+      id: 'SR-025',
+      description: 'The system shall process and store up to 10TB of mission data',
+      category: 'Performance',
+      inspection: false,
+      analysis: true,
+      demonstration: false,
+      test: true,
+      flightTest: false,
+      simulation: true,
+      status: 'In Progress'
+    }
   ];
 
   // Helper function to render status badge
@@ -369,13 +610,6 @@ const VerificationMatrixView: React.FC = () => {
                   <span>Flight Test {renderSortIndicator('flightTest')}</span>
                 </div>
               </th>
-              <th 
-                className="py-3 px-4 text-left font-medium text-gray-600 cursor-pointer"
-                onClick={() => handleSort('status')}
-              >
-                Status {renderSortIndicator('status')}
-              </th>
-              <th className="py-3 px-4 text-center font-medium text-gray-600">Actions</th>
             </tr>
           </thead>
           <tbody>
@@ -395,20 +629,6 @@ const VerificationMatrixView: React.FC = () => {
                 </td>
                 <td className="py-3 px-4 text-center">
                   {renderMethodStatus(item.flightTest, item.status, item.id, 'flightTest')}
-                </td>
-                <td className="py-3 px-4">{renderStatusBadge(item.status)}</td>
-                <td className="py-3 px-4 text-center">
-                  <div className="flex justify-center space-x-2">
-                    <button className="text-blue-600 hover:text-blue-800">
-                      <FaIcons.FaEye />
-                    </button>
-                    <button className="text-green-600 hover:text-green-800">
-                      <FaIcons.FaEdit />
-                    </button>
-                    <button className="text-red-600 hover:text-red-800">
-                      <FaIcons.FaTrash />
-                    </button>
-                  </div>
                 </td>
               </tr>
             ))}
