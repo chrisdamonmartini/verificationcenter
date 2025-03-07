@@ -320,6 +320,36 @@ const VerificationMatrixView: React.FC = () => {
         </table>
       </div>
       
+      {/* Legend for verification method icons */}
+      <div className="mt-6 mb-4 p-4 bg-yellow-100 rounded-lg">
+        <h3 className="font-semibold text-lg mb-2">Legend for the Icon to use within the Matrix: (use similar from available library)</h3>
+        <div className="grid grid-cols-1 md:grid-cols-2 gap-2">
+          <div className="flex items-center">
+            <FaIcons.FaCheck className="text-green-500 mr-2" />
+            <span>Checkmark if it is successfully completed.</span>
+          </div>
+          <div className="flex items-center">
+            <FaIcons.FaArrowRight className="text-yellow-600 mr-2" />
+            <span>if it is in process</span>
+          </div>
+          <div className="flex items-center">
+            <FaIcons.FaClock className="text-green-500 mr-2" />
+            <span>if it "on schedule"</span>
+          </div>
+          <div className="flex items-center">
+            <FaIcons.FaClock className="text-red-500 mr-2" />
+            <span>if it is "late"</span>
+          </div>
+          <div className="flex items-center">
+            <FaIcons.FaTimes className="text-red-500 mr-2" />
+            <span>if it failed</span>
+          </div>
+          <div className="flex items-center">
+            <span className="ml-6">Leave it blank if there is no verification method for that requirement</span>
+          </div>
+        </div>
+      </div>
+
       {/* Pagination controls */}
       <div className="mt-4 flex items-center justify-between">
         <div>
