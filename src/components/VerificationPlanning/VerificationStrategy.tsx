@@ -189,9 +189,9 @@ const VerificationStrategy: React.FC = () => {
 
   // State for search and filters
   const [searchTerm, setSearchTerm] = useState('');
-  const [typeFilter, setTypeFilter] = useState<string | null>(null);
-  const [statusFilter, setStatusFilter] = useState<string | null>(null);
-  const [priorityFilter, setPriorityFilter] = useState<string | null>(null);
+  const [typeFilter, setTypeFilter] = useState<VerificationActivity['type'] | null>(null);
+  const [statusFilter, setStatusFilter] = useState<VerificationActivity['status'] | null>(null);
+  const [priorityFilter, setPriorityFilter] = useState<VerificationActivity['priority'] | null>(null);
   const [phaseFilter, setPhaseFilter] = useState<string | null>(null);
   const [selectedPhase, setSelectedPhase] = useState<string | null>(null);
   const [selectedActivity, setSelectedActivity] = useState<VerificationActivity | null>(null);
@@ -323,7 +323,7 @@ const VerificationStrategy: React.FC = () => {
 
   return (
     <div className="bg-gray-50 p-6 min-h-screen">
-      <div className="max-w-7xl mx-auto">
+      <div className="w-full mx-auto">
         <h1 className="text-3xl font-bold text-gray-900 mb-6">Verification Management</h1>
         
         <Tabs defaultActiveKey="phases" className="bg-white p-4 rounded-lg shadow-md">
@@ -387,14 +387,73 @@ const VerificationStrategy: React.FC = () => {
             </div>
             
             {/* Verification Activities section */}
-            <div className="bg-white p-6 rounded-lg shadow-md mb-8">
-              <div className="flex flex-col md:flex-row md:items-center md:justify-between mb-6">
-                <h2 className="text-xl font-semibold mb-2 md:mb-0">Verification Activities</h2>
+            <div className="flex justify-between items-center mb-4">
+              <h2 className="text-xl font-semibold">Verification Activities</h2>
+              <div className="flex items-center space-x-3">
+                <div className="flex space-x-2">
+                  <div>
+                    <label className="block text-sm font-medium text-gray-700 sr-only">Type</label>
+                    <select
+                      className="mt-1 block w-full pl-3 pr-10 py-2 text-base border-gray-300 focus:outline-none focus:ring-blue-500 focus:border-blue-500 sm:text-sm rounded-md"
+                      value={typeFilter || ''}
+                      onChange={(e) => setTypeFilter(e.target.value === '' ? null : e.target.value as VerificationActivity['type'])}
+                    >
+                      <option value="">All Types</option>
+                      <option value="Test">Test</option>
+                      <option value="Analysis">Analysis</option>
+                      <option value="Demonstration">Demonstration</option>
+                      <option value="Inspection">Inspection</option>
+                      <option value="Simulation">Simulation</option>
+                    </select>
+                  </div>
+                  <div>
+                    <label className="block text-sm font-medium text-gray-700 sr-only">Status</label>
+                    <select
+                      className="mt-1 block w-full pl-3 pr-10 py-2 text-base border-gray-300 focus:outline-none focus:ring-blue-500 focus:border-blue-500 sm:text-sm rounded-md"
+                      value={statusFilter || ''}
+                      onChange={(e) => setStatusFilter(e.target.value === '' ? null : e.target.value as VerificationActivity['status'])}
+                    >
+                      <option value="">All Statuses</option>
+                      <option value="Planned">Planned</option>
+                      <option value="In Progress">In Progress</option>
+                      <option value="Completed">Completed</option>
+                      <option value="Blocked">Blocked</option>
+                      <option value="Cancelled">Cancelled</option>
+                    </select>
+                  </div>
+                  <div>
+                    <label className="block text-sm font-medium text-gray-700 sr-only">Priority</label>
+                    <select
+                      className="mt-1 block w-full pl-3 pr-10 py-2 text-base border-gray-300 focus:outline-none focus:ring-blue-500 focus:border-blue-500 sm:text-sm rounded-md"
+                      value={priorityFilter || ''}
+                      onChange={(e) => setPriorityFilter(e.target.value === '' ? null : e.target.value as VerificationActivity['priority'])}
+                    >
+                      <option value="">All Priorities</option>
+                      <option value="Low">Low</option>
+                      <option value="Medium">Medium</option>
+                      <option value="High">High</option>
+                      <option value="Critical">Critical</option>
+                    </select>
+                  </div>
+                  <div>
+                    <label className="block text-sm font-medium text-gray-700 sr-only">Phase</label>
+                    <select
+                      className="mt-1 block w-full pl-3 pr-10 py-2 text-base border-gray-300 focus:outline-none focus:ring-blue-500 focus:border-blue-500 sm:text-sm rounded-md"
+                      value={phaseFilter || ''}
+                      onChange={(e) => setPhaseFilter(e.target.value === '' ? null : e.target.value)}
+                    >
+                      <option value="">All Phases</option>
+                      {phases.map(phase => (
+                        <option key={phase.id} value={phase.id}>{phase.name}</option>
+                      ))}
+                    </select>
+                  </div>
+                </div>
                 <div className="relative">
                   <input
                     type="text"
                     placeholder="Search activities, requirements..."
-                    className="pl-10 pr-4 py-2 border border-gray-300 rounded-lg focus:ring-blue-500 focus:border-blue-500 w-full md:w-64"
+                    className="pl-10 pr-4 py-2 border border-gray-300 rounded-lg focus:ring-blue-500 focus:border-blue-500"
                     value={searchTerm}
                     onChange={(e) => setSearchTerm(e.target.value)}
                   />
@@ -402,94 +461,32 @@ const VerificationStrategy: React.FC = () => {
                     <FaSearchPlus />
                   </span>
                 </div>
-              </div>
-              
-              <div className="flex flex-wrap gap-4 mb-6">
-                <div>
-                  <label className="block text-sm font-medium text-gray-700 mb-1">Type</label>
-                  <select
-                    className="border border-gray-300 rounded-md p-2 w-full text-sm"
-                    value={typeFilter || ''}
-                    onChange={(e) => setTypeFilter(e.target.value === '' ? null : e.target.value)}
-                  >
-                    <option value="">All Types</option>
-                    <option value="Test">Test</option>
-                    <option value="Analysis">Analysis</option>
-                    <option value="Demonstration">Demonstration</option>
-                    <option value="Inspection">Inspection</option>
-                    <option value="Simulation">Simulation</option>
-                  </select>
-                </div>
-                <div>
-                  <label className="block text-sm font-medium text-gray-700 mb-1">Status</label>
-                  <select
-                    className="border border-gray-300 rounded-md p-2 w-full text-sm"
-                    value={statusFilter || ''}
-                    onChange={(e) => setStatusFilter(e.target.value === '' ? null : e.target.value)}
-                  >
-                    <option value="">All Statuses</option>
-                    <option value="Planned">Planned</option>
-                    <option value="In Progress">In Progress</option>
-                    <option value="Completed">Completed</option>
-                    <option value="Blocked">Blocked</option>
-                    <option value="Cancelled">Cancelled</option>
-                  </select>
-                </div>
-                <div>
-                  <label className="block text-sm font-medium text-gray-700 mb-1">Priority</label>
-                  <select
-                    className="border border-gray-300 rounded-md p-2 w-full text-sm"
-                    value={priorityFilter || ''}
-                    onChange={(e) => setPriorityFilter(e.target.value === '' ? null : e.target.value)}
-                  >
-                    <option value="">All Priorities</option>
-                    <option value="Critical">Critical</option>
-                    <option value="High">High</option>
-                    <option value="Medium">Medium</option>
-                    <option value="Low">Low</option>
-                  </select>
-                </div>
-                <div>
-                  <label className="block text-sm font-medium text-gray-700 mb-1">Phase</label>
-                  <select
-                    className="border border-gray-300 rounded-md p-2 w-full text-sm"
-                    value={phaseFilter || ''}
-                    onChange={(e) => setPhaseFilter(e.target.value === '' ? null : e.target.value)}
-                  >
-                    <option value="">All Phases</option>
-                    {phases.map(phase => (
-                      <option key={phase.id} value={phase.id}>{phase.name}</option>
-                    ))}
-                  </select>
-                </div>
-                <div className="flex items-end">
-                  <button 
-                    className="bg-gray-200 hover:bg-gray-300 text-gray-700 py-2 px-4 rounded-md flex items-center text-sm transition-colors"
-                    onClick={() => {
-                      setSearchTerm('');
-                      setTypeFilter(null);
-                      setStatusFilter(null);
-                      setPriorityFilter(null);
-                      setPhaseFilter(null);
-                    }}
-                  >
-                    <FaFilter className="mr-2" /> Reset Filters
-                  </button>
-                </div>
+                <button
+                  className="bg-gray-200 hover:bg-gray-300 text-gray-700 py-2 px-4 rounded-md flex items-center text-sm transition-colors"
+                  onClick={() => {
+                    setSearchTerm('');
+                    setTypeFilter(null);
+                    setStatusFilter(null);
+                    setPriorityFilter(null);
+                    setPhaseFilter(null);
+                  }}
+                >
+                  <FaFilter className="mr-2" /> Reset Filters
+                </button>
               </div>
             </div>
             
             {/* Activity list/table */}
             <div className="bg-white overflow-hidden shadow-md rounded-lg mb-8">
-              <div className="overflow-x-auto">
+              <div className="w-full overflow-x-auto">
                 <table className="min-w-full divide-y divide-gray-200">
                   <thead className="bg-gray-50">
                     <tr>
                       <th 
                         className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider cursor-pointer"
-                        onClick={() => handleSort('activity')}
+                        onClick={() => handleSort('name')}
                       >
-                        Activity {renderSortIndicator('activity')}
+                        Activity {renderSortIndicator('name')}
                       </th>
                       <th 
                         className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider cursor-pointer"
@@ -567,7 +564,7 @@ const VerificationStrategy: React.FC = () => {
                           <td className="px-6 py-4 text-sm text-gray-500">
                             {activity.assignee}
                           </td>
-                          <td className="px-6 py-4 text-right text-sm font-medium">
+                          <td className="px-6 py-4 text-center text-sm font-medium">
                             <div className="flex justify-center space-x-2">
                               <button className="text-indigo-600 hover:text-indigo-900">
                                 <FaEdit />

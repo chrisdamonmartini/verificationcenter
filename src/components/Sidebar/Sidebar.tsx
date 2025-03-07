@@ -33,7 +33,7 @@ export const SidebarData = [
     icon: <FileProtectOutlined />
   },
   {
-    title: 'Verification Management',
+    title: 'Verification Mgmt.',
     path: '/verification-planning',
     icon: <ProjectOutlined />
   },
