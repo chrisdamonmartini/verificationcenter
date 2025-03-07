@@ -38,11 +38,6 @@ export const SidebarData = [
     icon: <ProjectOutlined />
   },
   {
-    title: 'Verification Matrix',
-    path: '/verification-matrix',
-    icon: <BsIcons.BsTable />
-  },
-  {
     title: 'Test Management',
     path: '/test-management',
     icon: <CheckCircleOutlined />
