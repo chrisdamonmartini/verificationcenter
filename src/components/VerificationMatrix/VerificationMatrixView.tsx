@@ -90,13 +90,38 @@ const VerificationMatrixView: React.FC = () => {
       case 'Not Started':
         color = 'bg-gray-100 text-gray-800';
         break;
-      case 'Failed':
-        color = 'bg-red-100 text-red-800';
-        break;
       default:
         color = 'bg-blue-100 text-blue-800';
     }
-    return <span className={`px-2 py-1 rounded ${color} text-xs font-medium`}>{status}</span>;
+    return <span className={`px-2 py-1 rounded-full text-xs font-medium ${color}`}>{status}</span>;
+  };
+
+  // Helper function to render verification method icons with different statuses
+  const renderMethodStatus = (isActive: boolean, itemStatus: string, itemId: string) => {
+    if (!isActive) return null;
+    
+    // Use item ID to derive a consistent status for demo purposes
+    const hashCode = itemId.split('-')[1];
+    const lastChar = parseInt(hashCode.charAt(hashCode.length - 1)) || 0;
+    
+    if (itemStatus === 'Verified') {
+      return <FaIcons.FaCheck className="mx-auto text-green-500" />;
+    } else if (itemStatus === 'In Progress') {
+      // Different statuses based on ID to simulate variety
+      if (lastChar % 5 === 0) {
+        return <FaIcons.FaTimes className="mx-auto text-red-500" />; // Failed
+      } else if (lastChar % 5 === 1) {
+        return <FaIcons.FaClock className="mx-auto text-red-500" />; // Late
+      } else if (lastChar % 5 === 2) {
+        return <FaIcons.FaClock className="mx-auto text-green-500" />; // On Schedule
+      } else if (lastChar % 5 === 3) {
+        return <FaIcons.FaArrowRight className="mx-auto text-yellow-600" />; // In Progress
+      } else {
+        return <FaIcons.FaCheck className="mx-auto text-green-500" />; // Completed
+      }
+    } else {
+      return <FaIcons.FaArrowRight className="mx-auto text-yellow-600" />; // Default to In Progress
+    }
   };
 
   // Function to handle sort
@@ -215,6 +240,24 @@ const VerificationMatrixView: React.FC = () => {
         </div>
       </div>
       
+      {/* Status legend */}
+      <div className="flex items-center space-x-3 mb-4">
+        <FaIcons.FaCheck className="text-green-500" /> 
+        <span className="mr-4">Completed</span>
+        
+        <FaIcons.FaArrowRight className="text-yellow-600" /> 
+        <span className="mr-4">In Progress</span>
+        
+        <FaIcons.FaClock className="text-green-500" /> 
+        <span className="mr-4">On Schedule</span>
+        
+        <FaIcons.FaClock className="text-red-500" /> 
+        <span className="mr-4">Late</span>
+        
+        <FaIcons.FaTimes className="text-red-500" /> 
+        <span>Failed</span>
+      </div>
+
       <div className="overflow-x-auto">
         <table className="min-w-full bg-white border">
           <thead>
@@ -289,16 +332,16 @@ const VerificationMatrixView: React.FC = () => {
                 <td className="py-3 px-4">{item.description}</td>
                 <td className="py-3 px-4">{item.category}</td>
                 <td className="py-3 px-4 text-center">
-                  {item.analysis && <FaIcons.FaCheck className="mx-auto text-green-500" />}
+                  {renderMethodStatus(item.analysis, item.status, item.id)}
                 </td>
                 <td className="py-3 px-4 text-center">
-                  {item.test && <FaIcons.FaCheck className="mx-auto text-green-500" />}
+                  {renderMethodStatus(item.test, item.status, item.id)}
                 </td>
                 <td className="py-3 px-4 text-center">
-                  {item.demonstration && <FaIcons.FaCheck className="mx-auto text-green-500" />}
+                  {renderMethodStatus(item.demonstration, item.status, item.id)}
                 </td>
                 <td className="py-3 px-4 text-center">
-                  {item.flightTest && <FaIcons.FaCheck className="mx-auto text-green-500" />}
+                  {renderMethodStatus(item.flightTest, item.status, item.id)}
                 </td>
                 <td className="py-3 px-4">{renderStatusBadge(item.status)}</td>
                 <td className="py-3 px-4 text-center">
@@ -320,36 +363,6 @@ const VerificationMatrixView: React.FC = () => {
         </table>
       </div>
       
-      {/* Legend for verification method icons */}
-      <div className="mt-6 mb-4 p-4 bg-yellow-100 rounded-lg">
-        <h3 className="font-semibold text-lg mb-2">Legend for the Icon to use within the Matrix: (use similar from available library)</h3>
-        <div className="grid grid-cols-1 md:grid-cols-2 gap-2">
-          <div className="flex items-center">
-            <FaIcons.FaCheck className="text-green-500 mr-2" />
-            <span>Checkmark if it is successfully completed.</span>
-          </div>
-          <div className="flex items-center">
-            <FaIcons.FaArrowRight className="text-yellow-600 mr-2" />
-            <span>if it is in process</span>
-          </div>
-          <div className="flex items-center">
-            <FaIcons.FaClock className="text-green-500 mr-2" />
-            <span>if it "on schedule"</span>
-          </div>
-          <div className="flex items-center">
-            <FaIcons.FaClock className="text-red-500 mr-2" />
-            <span>if it is "late"</span>
-          </div>
-          <div className="flex items-center">
-            <FaIcons.FaTimes className="text-red-500 mr-2" />
-            <span>if it failed</span>
-          </div>
-          <div className="flex items-center">
-            <span className="ml-6">Leave it blank if there is no verification method for that requirement</span>
-          </div>
-        </div>
-      </div>
-
       {/* Pagination controls */}
       <div className="mt-4 flex items-center justify-between">
         <div>
