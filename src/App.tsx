@@ -400,10 +400,9 @@ function App() {
     <div className="flex flex-col h-screen bg-gray-100">
       {/* Header */}
       <header className="bg-blue-900 text-white py-2 px-4 flex items-center">
-            {/* VERIFICATIONCENTER Logo */}
+        {/* VERIFICATIONCENTER Logo */}
         <div className="flex items-center">
-          <img src="/verificationcenter/logo192.png" alt="Logo" className="h-8 w-8" />
-          <span className="font-bold text-lg mr-8">Verificationcenter</span>
+          <span className="font-bold text-xl mr-2">Verificationcenter</span>
         </div>
         
         {/* Spacer to push right-side buttons to the end */}

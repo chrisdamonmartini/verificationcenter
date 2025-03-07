@@ -334,92 +334,85 @@ const SystemRequirements: React.FC = () => {
       <div className="w-full mx-auto">
         <h1 className="text-3xl font-bold text-gray-900 mb-6">System Requirements</h1>
         
-        {/* Controls */}
-        <div className="bg-white p-6 rounded-lg shadow-md mb-6">
-          <div className="flex flex-col md:flex-row md:items-center md:justify-between mb-6">
-            <div className="mb-4 md:mb-0">
-              <h2 className="text-xl font-semibold">Requirements Management</h2>
-              <p className="text-gray-600">Manage and track system requirements</p>
-            </div>
-            <div className="flex space-x-2">
-              <button className="bg-gray-200 hover:bg-gray-300 text-gray-700 px-4 py-2 rounded-md flex items-center text-sm">
-                <FaFileExport className="mr-2" /> Export
-              </button>
+        {/* Filters */}
+        <div className="bg-white p-4 rounded-lg shadow-md mb-6 flex items-center space-x-4">
+          <div className="relative flex-1">
+            <label className="block text-sm font-medium text-gray-700 mb-1">Search</label>
+            <div className="relative">
+              <input
+                type="text"
+                placeholder="Search by ID, title, description, or tags..."
+                className="pl-10 pr-4 py-2 border border-gray-300 rounded-lg focus:ring-blue-500 focus:border-blue-500 w-full"
+                value={searchTerm}
+                onChange={(e) => setSearchTerm(e.target.value)}
+              />
+              <span className="absolute left-3 top-2.5 text-gray-400">
+                <FaSearch />
+              </span>
             </div>
           </div>
           
-          <div className="grid grid-cols-1 md:grid-cols-4 gap-4">
-            <div>
-              <label className="block text-sm font-medium text-gray-700 mb-1">Search</label>
-              <div className="relative">
-                <input
-                  type="text"
-                  placeholder="Search by ID, title, description, or tags..."
-                  className="pl-10 pr-4 py-2 border border-gray-300 rounded-lg focus:ring-blue-500 focus:border-blue-500 w-full"
-                  value={searchTerm}
-                  onChange={(e) => setSearchTerm(e.target.value)}
-                />
-                <span className="absolute left-3 top-2.5 text-gray-400">
-                  <FaSearch />
-                </span>
-              </div>
-            </div>
-            
-            <div>
-              <label className="block text-sm font-medium text-gray-700 mb-1">Status</label>
-              <select
-                className="border border-gray-300 rounded-md p-2 w-full"
-                value={statusFilter || ''}
-                onChange={(e) => setStatusFilter(e.target.value === '' ? null : e.target.value)}
-              >
-                <option value="">All Statuses</option>
-                {uniqueStatuses.map((status) => (
-                  <option key={status} value={status}>{status}</option>
-                ))}
-              </select>
-            </div>
-            
-            <div>
-              <label className="block text-sm font-medium text-gray-700 mb-1">Type</label>
-              <select
-                className="border border-gray-300 rounded-md p-2 w-full"
-                value={typeFilter || ''}
-                onChange={(e) => setTypeFilter(e.target.value === '' ? null : e.target.value)}
-              >
-                <option value="">All Types</option>
-                {uniqueTypes.map((type) => (
-                  <option key={type} value={type}>{type}</option>
-                ))}
-              </select>
-            </div>
-            
-            <div className="flex flex-col">
-              <label className="block text-sm font-medium text-gray-700 mb-1">Priority</label>
-              <div className="flex items-center h-full">
-                <select
-                  className="border border-gray-300 rounded-md p-2 w-full"
-                  value={priorityFilter || ''}
-                  onChange={(e) => setPriorityFilter(e.target.value === '' ? null : e.target.value)}
-                >
-                  <option value="">All Priorities</option>
-                  {uniquePriorities.map((priority) => (
-                    <option key={priority} value={priority}>{priority}</option>
-                  ))}
-                </select>
-                <button
-                  className="bg-gray-200 hover:bg-gray-300 text-gray-700 px-4 py-2 rounded-md flex items-center text-sm ml-2"
-                  onClick={() => {
-                    setSearchTerm('');
-                    setStatusFilter(null);
-                    setTypeFilter(null);
-                    setPriorityFilter(null);
-                    setCategoryFilter(null);
-                  }}
-                >
-                  <FaFilter className="mr-2" /> Reset Filters
-                </button>
-              </div>
-            </div>
+          <div className="w-40">
+            <label className="block text-sm font-medium text-gray-700 mb-1">Status</label>
+            <select
+              className="border border-gray-300 rounded-md p-2 w-full"
+              value={statusFilter || ''}
+              onChange={(e) => setStatusFilter(e.target.value === '' ? null : e.target.value)}
+            >
+              <option value="">All Statuses</option>
+              {uniqueStatuses.map((status) => (
+                <option key={status} value={status}>{status}</option>
+              ))}
+            </select>
+          </div>
+          
+          <div className="w-40">
+            <label className="block text-sm font-medium text-gray-700 mb-1">Type</label>
+            <select
+              className="border border-gray-300 rounded-md p-2 w-full"
+              value={typeFilter || ''}
+              onChange={(e) => setTypeFilter(e.target.value === '' ? null : e.target.value)}
+            >
+              <option value="">All Types</option>
+              {uniqueTypes.map((type) => (
+                <option key={type} value={type}>{type}</option>
+              ))}
+            </select>
+          </div>
+          
+          <div className="w-40">
+            <label className="block text-sm font-medium text-gray-700 mb-1">Priority</label>
+            <select
+              className="border border-gray-300 rounded-md p-2 w-full"
+              value={priorityFilter || ''}
+              onChange={(e) => setPriorityFilter(e.target.value === '' ? null : e.target.value)}
+            >
+              <option value="">All Priorities</option>
+              {uniquePriorities.map((priority) => (
+                <option key={priority} value={priority}>{priority}</option>
+              ))}
+            </select>
+          </div>
+          
+          <div className="pt-6">
+            <button
+              className="bg-gray-200 hover:bg-gray-300 text-gray-700 px-4 py-2 rounded-md flex items-center text-sm"
+              onClick={() => {
+                setSearchTerm('');
+                setStatusFilter(null);
+                setTypeFilter(null);
+                setPriorityFilter(null);
+                setCategoryFilter(null);
+              }}
+            >
+              <FaFilter className="mr-2" /> Reset Filters
+            </button>
+          </div>
+          
+          <div className="pt-6 ml-auto">
+            <button className="bg-gray-200 hover:bg-gray-300 text-gray-700 px-4 py-2 rounded-md flex items-center text-sm">
+              <FaFileExport className="mr-2" /> Export
+            </button>
           </div>
         </div>
         
@@ -519,31 +512,14 @@ const SystemRequirements: React.FC = () => {
                     </td>
                     <td className="px-6 py-4 whitespace-nowrap text-right text-sm font-medium">
                       <button
-                        className="text-indigo-600 hover:text-indigo-900 mr-3"
+                        className="text-indigo-600 hover:text-indigo-900"
                         onClick={(e) => {
                           e.stopPropagation();
                           handleSelectRequirement(req);
                         }}
+                        title="View in Teamcenter"
                       >
                         <FaEye />
-                      </button>
-                      <button
-                        className="text-blue-600 hover:text-blue-900 mr-3"
-                        onClick={(e) => {
-                          e.stopPropagation();
-                          // Edit functionality would go here
-                        }}
-                      >
-                        <FaEdit />
-                      </button>
-                      <button
-                        className="text-red-600 hover:text-red-900"
-                        onClick={(e) => {
-                          e.stopPropagation();
-                          // Delete functionality would go here
-                        }}
-                      >
-                        <FaTrash />
                       </button>
                     </td>
                   </tr>
