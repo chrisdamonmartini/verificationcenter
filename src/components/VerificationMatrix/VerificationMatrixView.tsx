@@ -97,31 +97,83 @@ const VerificationMatrixView: React.FC = () => {
   };
 
   // Helper function to render verification method icons with different statuses
-  const renderMethodStatus = (isActive: boolean, itemStatus: string, itemId: string) => {
+  const renderMethodStatus = (isActive: boolean, itemStatus: string, itemId: string, methodType: string) => {
     if (!isActive) return null;
     
     // Use item ID to derive a consistent status for demo purposes
     const hashCode = itemId.split('-')[1];
-    const lastChar = parseInt(hashCode.charAt(hashCode.length - 1)) || 0;
+    const lastNum = parseInt(hashCode) || 0;
     
-    if (itemStatus === 'Verified') {
-      return <FaIcons.FaCheck className="mx-auto text-green-500" />;
-    } else if (itemStatus === 'In Progress') {
-      // Different statuses based on ID to simulate variety
-      if (lastChar % 5 === 0) {
-        return <FaIcons.FaTimes className="mx-auto text-red-500" />; // Failed
-      } else if (lastChar % 5 === 1) {
-        return <FaIcons.FaClock className="mx-auto text-red-500" />; // Late
-      } else if (lastChar % 5 === 2) {
-        return <FaIcons.FaClock className="mx-auto text-green-500" />; // On Schedule
-      } else if (lastChar % 5 === 3) {
-        return <FaIcons.FaArrowRight className="mx-auto text-yellow-600" />; // In Progress
-      } else {
-        return <FaIcons.FaCheck className="mx-auto text-green-500" />; // Completed
+    // Use different logic for each method type to demonstrate progression
+    // Analysis is always independent
+    if (methodType === 'analysis') {
+      if (itemStatus === 'Verified') {
+        return <FaIcons.FaCheck className="mx-auto text-green-500" />;
+      } else if (itemStatus === 'In Progress') {
+        const statusMod = lastNum % 4;
+        if (statusMod === 0) return <FaIcons.FaArrowRight className="mx-auto text-yellow-600" />;
+        if (statusMod === 1) return <FaIcons.FaClock className="mx-auto text-green-500" />;
+        if (statusMod === 2) return <FaIcons.FaClock className="mx-auto text-red-500" />;
+        return <FaIcons.FaTimes className="mx-auto text-red-500" />;
       }
-    } else {
-      return <FaIcons.FaArrowRight className="mx-auto text-yellow-600" />; // Default to In Progress
+      return <FaIcons.FaArrowRight className="mx-auto text-yellow-600" />;
     }
+    
+    // Unit Test depends on Analysis
+    if (methodType === 'test') {
+      // If the item ID is even, Analysis is incomplete so Unit Test can't start
+      if (lastNum % 2 === 0) {
+        return null; // Can't start until Analysis is completed
+      }
+      // Analysis complete, show Unit Test status
+      if (itemStatus === 'Verified') {
+        return <FaIcons.FaCheck className="mx-auto text-green-500" />;
+      } else {
+        const statusMod = (lastNum + 1) % 4;
+        if (statusMod === 0) return <FaIcons.FaArrowRight className="mx-auto text-yellow-600" />;
+        if (statusMod === 1) return <FaIcons.FaClock className="mx-auto text-green-500" />;
+        if (statusMod === 2) return <FaIcons.FaClock className="mx-auto text-red-500" />;
+        return <FaIcons.FaTimes className="mx-auto text-red-500" />;
+      }
+    }
+    
+    // Demo depends on Unit Test
+    if (methodType === 'demonstration') {
+      // If the item ID is not divisible by 3, Unit Test is incomplete
+      if (lastNum % 3 !== 0) {
+        return null; // Can't start until Unit Test is completed
+      }
+      // Unit Test complete, show Demo status
+      if (itemStatus === 'Verified') {
+        return <FaIcons.FaCheck className="mx-auto text-green-500" />;
+      } else {
+        const statusMod = (lastNum + 2) % 4;
+        if (statusMod === 0) return <FaIcons.FaArrowRight className="mx-auto text-yellow-600" />;
+        if (statusMod === 1) return <FaIcons.FaClock className="mx-auto text-green-500" />;
+        if (statusMod === 2) return <FaIcons.FaClock className="mx-auto text-red-500" />;
+        return <FaIcons.FaTimes className="mx-auto text-red-500" />;
+      }
+    }
+    
+    // Flight Test depends on Demo
+    if (methodType === 'flightTest') {
+      // If the item ID is not divisible by 5, Demo is incomplete
+      if (lastNum % 5 !== 0) {
+        return null; // Can't start until Demo is completed
+      }
+      // Demo complete, show Flight Test status
+      if (itemStatus === 'Verified') {
+        return <FaIcons.FaCheck className="mx-auto text-green-500" />;
+      } else {
+        const statusMod = (lastNum + 3) % 4;
+        if (statusMod === 0) return <FaIcons.FaArrowRight className="mx-auto text-yellow-600" />;
+        if (statusMod === 1) return <FaIcons.FaClock className="mx-auto text-green-500" />;
+        if (statusMod === 2) return <FaIcons.FaClock className="mx-auto text-red-500" />;
+        return <FaIcons.FaTimes className="mx-auto text-red-500" />;
+      }
+    }
+    
+    return null;
   };
 
   // Function to handle sort
@@ -232,30 +284,31 @@ const VerificationMatrixView: React.FC = () => {
             ))}
           </select>
         </div>
+        
+        {/* Status legend - moved inline with filters */}
+        <div className="flex items-center space-x-3">
+          <FaIcons.FaCheck className="text-green-500" /> 
+          <span className="mr-3">Completed</span>
+          
+          <FaIcons.FaArrowRight className="text-yellow-600" /> 
+          <span className="mr-3">In Progress</span>
+          
+          <FaIcons.FaClock className="text-green-500" /> 
+          <span className="mr-3">On Schedule</span>
+          
+          <FaIcons.FaClock className="text-red-500" /> 
+          <span className="mr-3">Late</span>
+          
+          <FaIcons.FaTimes className="text-red-500" /> 
+          <span className="mr-3">Failed</span>
+        </div>
+        
         <div className="flex space-x-2">
           <button className="bg-gray-100 text-gray-700 px-4 py-2 rounded hover:bg-gray-200 flex items-center">
             <FaIcons.FaFileExport className="mr-2" />
             Export
           </button>
         </div>
-      </div>
-      
-      {/* Status legend */}
-      <div className="flex items-center space-x-3 mb-4">
-        <FaIcons.FaCheck className="text-green-500" /> 
-        <span className="mr-4">Completed</span>
-        
-        <FaIcons.FaArrowRight className="text-yellow-600" /> 
-        <span className="mr-4">In Progress</span>
-        
-        <FaIcons.FaClock className="text-green-500" /> 
-        <span className="mr-4">On Schedule</span>
-        
-        <FaIcons.FaClock className="text-red-500" /> 
-        <span className="mr-4">Late</span>
-        
-        <FaIcons.FaTimes className="text-red-500" /> 
-        <span>Failed</span>
       </div>
 
       <div className="overflow-x-auto">
@@ -332,16 +385,16 @@ const VerificationMatrixView: React.FC = () => {
                 <td className="py-3 px-4">{item.description}</td>
                 <td className="py-3 px-4">{item.category}</td>
                 <td className="py-3 px-4 text-center">
-                  {renderMethodStatus(item.analysis, item.status, item.id)}
+                  {renderMethodStatus(item.analysis, item.status, item.id, 'analysis')}
                 </td>
                 <td className="py-3 px-4 text-center">
-                  {renderMethodStatus(item.test, item.status, item.id)}
+                  {renderMethodStatus(item.test, item.status, item.id, 'test')}
                 </td>
                 <td className="py-3 px-4 text-center">
-                  {renderMethodStatus(item.demonstration, item.status, item.id)}
+                  {renderMethodStatus(item.demonstration, item.status, item.id, 'demonstration')}
                 </td>
                 <td className="py-3 px-4 text-center">
-                  {renderMethodStatus(item.flightTest, item.status, item.id)}
+                  {renderMethodStatus(item.flightTest, item.status, item.id, 'flightTest')}
                 </td>
                 <td className="py-3 px-4">{renderStatusBadge(item.status)}</td>
                 <td className="py-3 px-4 text-center">
