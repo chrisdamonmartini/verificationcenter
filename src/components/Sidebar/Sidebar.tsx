@@ -38,14 +38,14 @@ export const SidebarData = [
     icon: <ProjectOutlined />
   },
   {
-    title: 'Test Management',
-    path: '/test-management',
-    icon: <CheckCircleOutlined />
-  },
-  {
     title: 'Analysis',
     path: '/simulation',
     icon: <FundOutlined />
+  },
+  {
+    title: 'Test Management',
+    path: '/test-management',
+    icon: <CheckCircleOutlined />
   },
   {
     title: 'Test Results',

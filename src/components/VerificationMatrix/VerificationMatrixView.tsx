@@ -274,15 +274,6 @@ const VerificationMatrixView: React.FC = () => {
                 </div>
               </th>
               <th 
-                className="py-3 px-4 text-center font-medium text-gray-600 cursor-pointer"
-                onClick={() => handleSort('simulation')}
-              >
-                <div className="flex flex-col items-center">
-                  <FaIcons.FaChartLine className="mb-1" />
-                  <span>Simulation {renderSortIndicator('simulation')}</span>
-                </div>
-              </th>
-              <th 
                 className="py-3 px-4 text-left font-medium text-gray-600 cursor-pointer"
                 onClick={() => handleSort('status')}
               >
@@ -308,9 +299,6 @@ const VerificationMatrixView: React.FC = () => {
                 </td>
                 <td className="py-3 px-4 text-center">
                   {item.flightTest && <FaIcons.FaCheck className="mx-auto text-green-500" />}
-                </td>
-                <td className="py-3 px-4 text-center">
-                  {item.simulation && <FaIcons.FaCheck className="mx-auto text-green-500" />}
                 </td>
                 <td className="py-3 px-4">{renderStatusBadge(item.status)}</td>
                 <td className="py-3 px-4 text-center">
