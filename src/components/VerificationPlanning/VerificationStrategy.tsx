@@ -1,8 +1,9 @@
-import React, { useState } from 'react';
+import React, { useState, useMemo } from 'react';
 import { FaSearchPlus, FaEdit, FaTrash, FaPlus, FaFilter, FaFileDownload, FaFileUpload } from 'react-icons/fa';
 import { BiCheckCircle, BiError } from 'react-icons/bi';
 import { motion } from 'framer-motion';
 import { Tabs } from 'antd';
+import { FiChevronUp, FiChevronDown } from 'react-icons/fi';
 import VerificationMatrixView from '../VerificationMatrix/VerificationMatrixView';
 
 // Define interfaces for our verification strategy data
@@ -194,22 +195,60 @@ const VerificationStrategy: React.FC = () => {
   const [phaseFilter, setPhaseFilter] = useState<string | null>(null);
   const [selectedPhase, setSelectedPhase] = useState<string | null>(null);
   const [selectedActivity, setSelectedActivity] = useState<VerificationActivity | null>(null);
+  const [sortField, setSortField] = useState<string | null>(null);
+  const [sortDirection, setSortDirection] = useState<'asc' | 'desc'>('asc');
 
   // Filtered activities
-  const filteredActivities = activities
-    .filter(activity => 
-      (searchTerm === '' || 
+  const filteredAndSortedActivities = useMemo(() => {
+    let filtered = activities;
+    
+    // Apply text search filter
+    if (searchTerm) {
+      filtered = filtered.filter(activity => 
         activity.name.toLowerCase().includes(searchTerm.toLowerCase()) ||
         activity.description.toLowerCase().includes(searchTerm.toLowerCase()) ||
-        activity.id.toLowerCase().includes(searchTerm.toLowerCase()) ||
         activity.requirements.some(req => req.toLowerCase().includes(searchTerm.toLowerCase()))
-      ) &&
-      (typeFilter === null || activity.type === typeFilter) &&
-      (statusFilter === null || activity.status === statusFilter) &&
-      (priorityFilter === null || activity.priority === priorityFilter) &&
-      (phaseFilter === null || phases.find(p => p.id === phaseFilter)?.activities.includes(activity.id) || false) &&
-      (selectedPhase === null || phases.find(p => p.id === selectedPhase)?.activities.includes(activity.id) || false)
-    );
+      );
+    }
+    
+    // Apply type filter
+    if (typeFilter) {
+      filtered = filtered.filter(activity => activity.type === typeFilter);
+    }
+    
+    // Apply status filter
+    if (statusFilter) {
+      filtered = filtered.filter(activity => activity.status === statusFilter);
+    }
+    
+    // Apply priority filter
+    if (priorityFilter) {
+      filtered = filtered.filter(activity => activity.priority === priorityFilter);
+    }
+    
+    // Apply phase filter
+    if (phaseFilter) {
+      filtered = filtered.filter(activity => phases.find(p => p.id === phaseFilter)?.activities.includes(activity.id));
+    }
+    
+    // Apply sorting
+    if (sortField) {
+      filtered = [...filtered].sort((a, b) => {
+        const aValue = a[sortField as keyof typeof a];
+        const bValue = b[sortField as keyof typeof b];
+        
+        if (typeof aValue === 'string' && typeof bValue === 'string') {
+          return sortDirection === 'asc' 
+            ? aValue.localeCompare(bValue) 
+            : bValue.localeCompare(aValue);
+        }
+        
+        return 0;
+      });
+    }
+    
+    return filtered;
+  }, [activities, searchTerm, typeFilter, statusFilter, priorityFilter, phaseFilter, sortField, sortDirection, phases]);
 
   // Helper functions for UI elements
   const getStatusColor = (status: string) => {
@@ -260,22 +299,70 @@ const VerificationStrategy: React.FC = () => {
     setSelectedActivity(null);
   };
 
+  // Sort function for table
+  const handleSort = (field: string) => {
+    if (sortField === field) {
+      // Toggle direction if same field
+      setSortDirection(sortDirection === 'asc' ? 'desc' : 'asc');
+    } else {
+      // Set new field and default to ascending
+      setSortField(field);
+      setSortDirection('asc');
+    }
+  };
+
+  // Function to render sort indicator
+  const renderSortIndicator = (field: string) => {
+    if (sortField === field) {
+      return sortDirection === 'asc' ? 
+        <FiChevronUp className="inline ml-1" /> : 
+        <FiChevronDown className="inline ml-1" />;
+    }
+    return null;
+  };
+
   return (
     <div className="bg-gray-50 p-6 min-h-screen">
       <div className="max-w-7xl mx-auto">
-        <h1 className="text-3xl font-bold text-gray-900 mb-6">Verification Mgmt.</h1>
+        <h1 className="text-3xl font-bold text-gray-900 mb-6">Verification Management</h1>
         
-        <Tabs defaultActiveKey="strategy" className="bg-white p-4 rounded-lg shadow-md">
-          <TabPane tab="Strategy" key="strategy">
+        <Tabs defaultActiveKey="phases" className="bg-white p-4 rounded-lg shadow-md">
+          <TabPane tab="Phases" key="phases">
             {/* Verification Phases section */}
             <div className="mb-8">
               <h2 className="text-xl font-semibold mb-4">Verification Phases</h2>
-              <div className="grid grid-cols-1 lg:grid-cols-4 gap-4">
+              <div className="flex flex-nowrap overflow-x-auto pb-4">
+                <div className="flex-none mr-4 w-64 bg-white p-4 rounded-lg shadow-md">
+                  <h3 className="font-semibold text-gray-900">System Requirements Review</h3>
+                  <p className="text-sm text-gray-500 mb-2">2022-12-01 to 2023-01-15</p>
+                  <div className="flex items-center justify-between mb-2">
+                    <span className="px-2 py-1 rounded-full text-xs font-medium bg-green-100 text-green-800">Completed</span>
+                    <span className="text-sm font-medium text-gray-700">100% Complete</span>
+                  </div>
+                  <div className="w-full bg-gray-200 rounded-full h-2 mb-2">
+                    <div className="h-2 rounded-full bg-green-500" style={{ width: '100%' }}></div>
+                  </div>
+                  <p className="text-xs text-gray-600">2 activities</p>
+                </div>
+                
+                <div className="flex-none mr-4 w-64 bg-white p-4 rounded-lg shadow-md">
+                  <h3 className="font-semibold text-gray-900">Systems Design Review</h3>
+                  <p className="text-sm text-gray-500 mb-2">2023-01-15 to 2023-02-20</p>
+                  <div className="flex items-center justify-between mb-2">
+                    <span className="px-2 py-1 rounded-full text-xs font-medium bg-green-100 text-green-800">Completed</span>
+                    <span className="text-sm font-medium text-gray-700">100% Complete</span>
+                  </div>
+                  <div className="w-full bg-gray-200 rounded-full h-2 mb-2">
+                    <div className="h-2 rounded-full bg-green-500" style={{ width: '100%' }}></div>
+                  </div>
+                  <p className="text-xs text-gray-600">3 activities</p>
+                </div>
+                
                 {phases.map(phase => (
-                  <div 
+                  <div
                     key={phase.id}
                     onClick={() => handleSelectPhase(phase.id)}
-                    className={`bg-white p-4 rounded-lg shadow-md cursor-pointer transition-all ${
+                    className={`flex-none mr-4 w-64 bg-white p-4 rounded-lg shadow-md cursor-pointer transition-all ${
                       selectedPhase === phase.id ? 'ring-2 ring-blue-500 transform scale-[1.02]' : 'hover:shadow-lg'
                     }`}
                   >
@@ -288,7 +375,7 @@ const VerificationStrategy: React.FC = () => {
                       <span className="text-sm font-medium text-gray-700">{phase.completion}% Complete</span>
                     </div>
                     <div className="w-full bg-gray-200 rounded-full h-2 mb-2">
-                      <div 
+                      <div
                         className={`h-2 rounded-full ${phase.status === 'Completed' ? 'bg-green-500' : 'bg-blue-500'}`}
                         style={{ width: `${phase.completion}%` }}
                       ></div>
@@ -398,77 +485,100 @@ const VerificationStrategy: React.FC = () => {
                 <table className="min-w-full divide-y divide-gray-200">
                   <thead className="bg-gray-50">
                     <tr>
-                      <th scope="col" className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">ID</th>
-                      <th scope="col" className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Activity</th>
-                      <th scope="col" className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Type</th>
-                      <th scope="col" className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Status</th>
-                      <th scope="col" className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Priority</th>
-                      <th scope="col" className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Requirements</th>
-                      <th scope="col" className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Assignee</th>
-                      <th scope="col" className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Actions</th>
+                      <th 
+                        className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider cursor-pointer"
+                        onClick={() => handleSort('activity')}
+                      >
+                        Activity {renderSortIndicator('activity')}
+                      </th>
+                      <th 
+                        className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider cursor-pointer"
+                        onClick={() => handleSort('type')}
+                      >
+                        Type {renderSortIndicator('type')}
+                      </th>
+                      <th 
+                        className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider cursor-pointer"
+                        onClick={() => handleSort('status')}
+                      >
+                        Status {renderSortIndicator('status')}
+                      </th>
+                      <th 
+                        className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider cursor-pointer"
+                        onClick={() => handleSort('priority')}
+                      >
+                        Priority {renderSortIndicator('priority')}
+                      </th>
+                      <th 
+                        className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider cursor-pointer"
+                        onClick={() => handleSort('requirements')}
+                      >
+                        Requirements {renderSortIndicator('requirements')}
+                      </th>
+                      <th 
+                        className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider cursor-pointer"
+                        onClick={() => handleSort('assignee')}
+                      >
+                        Assignee {renderSortIndicator('assignee')}
+                      </th>
+                      <th className="px-6 py-3 text-center text-xs font-medium text-gray-500 uppercase tracking-wider">
+                        Actions
+                      </th>
                     </tr>
                   </thead>
                   <tbody className="bg-white divide-y divide-gray-200">
-                    {filteredActivities.length > 0 ? (
-                      filteredActivities.map((activity) => (
-                        <tr key={activity.id} className="hover:bg-gray-50 cursor-pointer" onClick={() => handleSelectActivity(activity)}>
-                          <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-900">{activity.id}</td>
-                          <td className="px-6 py-4 whitespace-nowrap">
+                    {filteredAndSortedActivities.length === 0 ? (
+                      <tr>
+                        <td colSpan={7} className="px-6 py-4 text-center text-sm text-gray-500">
+                          No activities found matching the current filters.
+                        </td>
+                      </tr>
+                    ) : (
+                      filteredAndSortedActivities.map(activity => (
+                        <tr 
+                          key={activity.id} 
+                          onClick={() => setSelectedActivity(activity)}
+                          className="hover:bg-gray-50 cursor-pointer"
+                        >
+                          <td className="px-6 py-4">
                             <div className="text-sm font-medium text-gray-900">{activity.name}</div>
-                            <div className="text-sm text-gray-500 truncate max-w-xs">{activity.description}</div>
+                            <div className="text-xs text-gray-500">{activity.description.length > 80 ? `${activity.description.substring(0, 80)}...` : activity.description}</div>
                           </td>
-                          <td className="px-6 py-4 whitespace-nowrap">
+                          <td className="px-6 py-4">
                             <span className={`px-2 py-1 inline-flex text-xs leading-5 font-semibold rounded-full ${getTypeColor(activity.type)}`}>
                               {activity.type}
                             </span>
                           </td>
-                          <td className="px-6 py-4 whitespace-nowrap">
+                          <td className="px-6 py-4">
                             <span className={`px-2 py-1 inline-flex text-xs leading-5 font-semibold rounded-full ${getStatusColor(activity.status)}`}>
                               {activity.status}
                             </span>
                           </td>
-                          <td className="px-6 py-4 whitespace-nowrap">
+                          <td className="px-6 py-4">
                             <span className={`px-2 py-1 inline-flex text-xs leading-5 font-semibold rounded-full ${getPriorityColor(activity.priority)}`}>
                               {activity.priority}
                             </span>
                           </td>
-                          <td className="px-6 py-4 whitespace-nowrap">
-                            <div className="flex flex-wrap gap-1">
-                              {activity.requirements.slice(0, 3).map((req) => (
-                                <span key={req} className="inline-flex items-center px-2 py-0.5 rounded text-xs font-medium bg-gray-100 text-gray-800">
-                                  {req}
-                                </span>
-                              ))}
-                              {activity.requirements.length > 3 && (
-                                <span className="inline-flex items-center px-2 py-0.5 rounded text-xs font-medium bg-gray-100 text-gray-800">
-                                  +{activity.requirements.length - 3}
-                                </span>
-                              )}
-                            </div>
+                          <td className="px-6 py-4 text-sm text-gray-500">
+                            {activity.requirements.length > 0 ? 
+                              activity.requirements.slice(0, 2).join(', ') + (activity.requirements.length > 2 ? ` +${activity.requirements.length - 2} more` : '')
+                              : 'None'}
                           </td>
-                          <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">{activity.assignee}</td>
-                          <td className="px-6 py-4 whitespace-nowrap text-right text-sm font-medium">
-                            <button className="text-blue-600 hover:text-blue-900 mr-3" onClick={(e) => {
-                              e.stopPropagation();
-                              // Edit functionality would go here
-                            }}>
-                              <FaEdit />
-                            </button>
-                            <button className="text-red-600 hover:text-red-900" onClick={(e) => {
-                              e.stopPropagation();
-                              // Delete functionality would go here
-                            }}>
-                              <FaTrash />
-                            </button>
+                          <td className="px-6 py-4 text-sm text-gray-500">
+                            {activity.assignee}
+                          </td>
+                          <td className="px-6 py-4 text-right text-sm font-medium">
+                            <div className="flex justify-center space-x-2">
+                              <button className="text-indigo-600 hover:text-indigo-900">
+                                <FaEdit />
+                              </button>
+                              <button className="text-red-600 hover:text-red-900">
+                                <FaTrash />
+                              </button>
+                            </div>
                           </td>
                         </tr>
                       ))
-                    ) : (
-                      <tr>
-                        <td colSpan={8} className="px-6 py-4 text-center text-sm text-gray-500">
-                          No verification activities found matching the criteria.
-                        </td>
-                      </tr>
                     )}
                   </tbody>
                 </table>
@@ -478,7 +588,7 @@ const VerificationStrategy: React.FC = () => {
             {/* Activity Count Summary */}
             <div className="mt-4 flex flex-wrap gap-4">
               <div className="text-sm text-gray-700">
-                Showing <span className="font-medium">{filteredActivities.length}</span> of <span className="font-medium">{activities.length}</span> activities
+                Showing <span className="font-medium">{filteredAndSortedActivities.length}</span> of <span className="font-medium">{activities.length}</span> activities
               </div>
               <div className="flex gap-2">
                 <span className="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-green-100 text-green-800">
@@ -662,7 +772,7 @@ const VerificationStrategy: React.FC = () => {
             )}
           </TabPane>
           
-          <TabPane tab="Verification Matrix" key="matrix">
+          <TabPane tab="Matrix" key="matrix">
             <VerificationMatrixView />
           </TabPane>
         </Tabs>
