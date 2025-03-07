@@ -402,7 +402,8 @@ function App() {
       <header className="bg-blue-900 text-white py-2 px-4 flex items-center">
         {/* VERIFICATIONCENTER Logo */}
         <div className="flex items-center">
-          <span className="font-bold text-xl mr-2">Verificationcenter</span>
+          <FaIcons.FaCheckCircle className="text-xl mr-2" />
+          <span className="font-bold text-xl mr-2">VERIFICATIONCENTER</span>
         </div>
         
         {/* Spacer to push right-side buttons to the end */}

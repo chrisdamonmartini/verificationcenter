@@ -332,7 +332,7 @@ const SystemRequirements: React.FC = () => {
   return (
     <div className="bg-gray-50 p-6 min-h-screen">
       <div className="w-full mx-auto">
-        <h1 className="text-3xl font-bold text-gray-900 mb-6">System Requirements</h1>
+        <h1 className="text-3xl font-bold text-gray-900 mb-2">System Requirements</h1>
         
         {/* Filters */}
         <div className="bg-white p-4 rounded-lg shadow-md mb-6 flex items-center space-x-4">
