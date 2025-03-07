@@ -22,6 +22,14 @@ interface TestEfficiency {
   variance: number;
 }
 
+// Interface for Test Point Burndown data
+interface BurndownData {
+  quarter: string;
+  plan: number;
+  actual: number | null;
+  forecast: number | null;
+}
+
 export const Analysis: React.FC<AnalysisProps> = () => {
   const [dateRange, setDateRange] = useState<'week' | 'month' | 'quarter'>('month');
   const [selectedMetric, setSelectedMetric] = useState<string>('completion');
@@ -57,6 +65,18 @@ export const Analysis: React.FC<AnalysisProps> = () => {
       actual: 28,
       variance: -16.7
     }
+  ];
+
+  // Mock data for Test Point Burndown chart
+  const burndownData: BurndownData[] = [
+    { quarter: '24Q1', plan: 1800, actual: 1780, forecast: 1780 },
+    { quarter: '24Q2', plan: 1600, actual: 1650, forecast: 1650 },
+    { quarter: '24Q3', plan: 1400, actual: 1530, forecast: 1530 },
+    { quarter: '24Q4', plan: 1100, actual: 1300, forecast: 1300 },
+    { quarter: '25Q1', plan: 800, actual: 950, forecast: 950 },
+    { quarter: '25Q2', plan: 500, actual: 650, forecast: 600 },
+    { quarter: '25Q3', plan: 200, actual: null, forecast: 300 },
+    { quarter: '25Q4', plan: 0, actual: null, forecast: 0 },
   ];
 
   return (
@@ -124,6 +144,46 @@ export const Analysis: React.FC<AnalysisProps> = () => {
               <Legend />
               <Line type="monotone" dataKey="completionRate" stroke="#3B82F6" name="Completion Rate" />
               <Line type="monotone" dataKey="testPointsCompleted" stroke="#10B981" name="Test Points" />
+            </LineChart>
+          </ResponsiveContainer>
+        </div>
+      </div>
+
+      {/* Test Point Burndown Chart */}
+      <div className="bg-white rounded-lg shadow-sm p-6">
+        <h4 className="font-medium mb-4 text-center">Test Point Burndown</h4>
+        <div className="h-[300px]">
+          <ResponsiveContainer width="100%" height="100%">
+            <LineChart data={burndownData}>
+              <CartesianGrid strokeDasharray="3 3" stroke="#f0f0f0" />
+              <XAxis dataKey="quarter" />
+              <YAxis domain={[0, 2000]} />
+              <Tooltip />
+              <Legend />
+              <Line 
+                type="monotone" 
+                dataKey="plan" 
+                stroke="#3B82F6" 
+                name="Plan" 
+                strokeWidth={2}
+                dot={{ r: 3 }}
+              />
+              <Line 
+                type="monotone" 
+                dataKey="actual" 
+                stroke="#F97316" 
+                name="Actual" 
+                strokeWidth={2}
+                dot={{ r: 3 }}
+              />
+              <Line 
+                type="monotone" 
+                dataKey="forecast" 
+                stroke="#9CA3AF" 
+                name="Forecast" 
+                strokeWidth={2}
+                dot={{ r: 3 }}
+              />
             </LineChart>
           </ResponsiveContainer>
         </div>
