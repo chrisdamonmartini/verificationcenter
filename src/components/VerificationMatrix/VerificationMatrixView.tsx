@@ -86,20 +86,6 @@ const VerificationMatrixView: React.FC = () => {
   return (
     <div className="bg-white p-6 rounded-lg shadow-lg">
       <div className="flex justify-between items-center mb-6">
-        <h2 className="text-2xl font-bold">Verification Matrix</h2>
-        <div className="flex space-x-2">
-          <button className="bg-blue-600 text-white px-4 py-2 rounded hover:bg-blue-700 flex items-center">
-            <FaIcons.FaPlus className="mr-2" />
-            Add Requirement
-          </button>
-          <button className="bg-gray-100 text-gray-700 px-4 py-2 rounded hover:bg-gray-200 flex items-center">
-            <FaIcons.FaFileExport className="mr-2" />
-            Export
-          </button>
-        </div>
-      </div>
-      
-      <div className="mb-4 flex justify-between items-center">
         <div className="flex space-x-2">
           <div className="relative">
             <input 
@@ -125,10 +111,16 @@ const VerificationMatrixView: React.FC = () => {
             <option>Failed</option>
           </select>
         </div>
-        
-        <div className="flex items-center">
-          <span className="text-sm text-gray-600 mr-2">Showing 5 of 248 requirements</span>
+        <div className="flex space-x-2">
+          <button className="bg-gray-100 text-gray-700 px-4 py-2 rounded hover:bg-gray-200 flex items-center">
+            <FaIcons.FaFileExport className="mr-2" />
+            Export
+          </button>
         </div>
+      </div>
+      
+      <div className="flex justify-end items-center mb-4">
+        <span className="text-sm text-gray-600">Showing 5 of 248 requirements</span>
       </div>
       
       <div className="overflow-x-auto">

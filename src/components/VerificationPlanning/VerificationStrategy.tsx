@@ -263,7 +263,7 @@ const VerificationStrategy: React.FC = () => {
   return (
     <div className="bg-gray-50 p-6 min-h-screen">
       <div className="max-w-7xl mx-auto">
-        <h1 className="text-3xl font-bold text-gray-900 mb-6">Verification Strategy</h1>
+        <h1 className="text-3xl font-bold text-gray-900 mb-6">Verification Mgmt.</h1>
         
         <Tabs defaultActiveKey="strategy" className="bg-white p-4 rounded-lg shadow-md">
           <TabPane tab="Strategy" key="strategy">
