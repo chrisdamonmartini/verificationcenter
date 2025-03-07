@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { LineChart, Line, XAxis, YAxis, CartesianGrid, Tooltip, Legend, ResponsiveContainer, BarChart, Bar } from 'recharts';
+import { LineChart, Line, XAxis, YAxis, CartesianGrid, Tooltip, Legend, ResponsiveContainer, BarChart, Bar, ComposedChart, Rectangle } from 'recharts';
 import * as FaIcons from 'react-icons/fa';
 import { motion } from 'framer-motion';
 
@@ -28,6 +28,16 @@ interface BurndownData {
   plan: number;
   actual: number | null;
   forecast: number | null;
+}
+
+// Interface for Approval Times data
+interface ApprovalTimeData {
+  name: string;
+  min: number;
+  worst: number;
+  median: number;
+  best: number;
+  max: number;
 }
 
 export const Analysis: React.FC<AnalysisProps> = () => {
@@ -78,6 +88,106 @@ export const Analysis: React.FC<AnalysisProps> = () => {
     { quarter: '25Q3', plan: 200, actual: null, forecast: 300 },
     { quarter: '25Q4', plan: 0, actual: null, forecast: 0 },
   ];
+
+  // Mock data for Approval Times chart
+  const approvalTimesData: ApprovalTimeData[] = [
+    { 
+      name: 'Test Request', 
+      min: 20, 
+      worst: 30, 
+      median: 45, 
+      best: 55, 
+      max: 65 
+    },
+    { 
+      name: 'Test Plan', 
+      min: 15, 
+      worst: 25, 
+      median: 35, 
+      best: 45, 
+      max: 55 
+    },
+    { 
+      name: 'Test Card', 
+      min: 25, 
+      worst: 35, 
+      median: 45, 
+      best: 55, 
+      max: 65 
+    },
+    { 
+      name: 'Mission', 
+      min: 30, 
+      worst: 40, 
+      median: 50, 
+      best: 55, 
+      max: 65 
+    }
+  ];
+
+  // Custom box plot component
+  const BoxPlot = (props: any) => {
+    const { x, y, width, height, payload, dataKey, fill } = props;
+    const data = payload;
+    
+    const baseWidth = width * 0.7; // Make the boxes slightly narrower
+    const baseX = x + (width - baseWidth) / 2;
+    
+    return (
+      <g>
+        {/* Vertical line from min to max */}
+        <line
+          x1={x + width / 2}
+          y1={y + height - height * (data.min / 80)}
+          x2={x + width / 2}
+          y2={y + height - height * (data.max / 80)}
+          stroke="#000"
+          strokeWidth={1}
+        />
+        
+        {/* Box from worst to best */}
+        <rect
+          x={baseX}
+          y={y + height - height * (data.best / 80)}
+          width={baseWidth}
+          height={height * ((data.best - data.worst) / 80)}
+          fill={data.name === 'Mission' ? '#555' : '#fff'}
+          stroke="#000"
+          strokeWidth={1}
+        />
+        
+        {/* Median line */}
+        <line
+          x1={baseX}
+          y1={y + height - height * (data.median / 80)}
+          x2={baseX + baseWidth}
+          y2={y + height - height * (data.median / 80)}
+          stroke="#000"
+          strokeWidth={2}
+        />
+        
+        {/* Min whisker */}
+        <line
+          x1={baseX + baseWidth * 0.25}
+          y1={y + height - height * (data.min / 80)}
+          x2={baseX + baseWidth * 0.75}
+          y2={y + height - height * (data.min / 80)}
+          stroke="#000"
+          strokeWidth={1}
+        />
+        
+        {/* Max whisker */}
+        <line
+          x1={baseX + baseWidth * 0.25}
+          y1={y + height - height * (data.max / 80)}
+          x2={baseX + baseWidth * 0.75}
+          y2={y + height - height * (data.max / 80)}
+          stroke="#000"
+          strokeWidth={1}
+        />
+      </g>
+    );
+  };
 
   return (
     <div className="space-y-6">
@@ -145,6 +255,46 @@ export const Analysis: React.FC<AnalysisProps> = () => {
               <Line type="monotone" dataKey="completionRate" stroke="#3B82F6" name="Completion Rate" />
               <Line type="monotone" dataKey="testPointsCompleted" stroke="#10B981" name="Test Points" />
             </LineChart>
+          </ResponsiveContainer>
+        </div>
+      </div>
+
+      {/* Approval Times Chart */}
+      <div className="bg-white rounded-lg shadow-sm p-6">
+        <h4 className="font-medium mb-4 text-center">Approval Times</h4>
+        <div className="h-[300px]">
+          <ResponsiveContainer width="100%" height="100%">
+            <ComposedChart
+              data={approvalTimesData}
+              margin={{ top: 20, right: 30, left: 20, bottom: 40 }}
+            >
+              <CartesianGrid strokeDasharray="3 3" vertical={false} />
+              <XAxis 
+                dataKey="name" 
+              />
+              <YAxis
+                domain={[0, 80]}
+                ticks={[0, 20, 40, 60, 80]}
+              />
+              <Tooltip
+                formatter={(value, name) => [`${value} hours`, name]}
+              />
+              <Legend
+                verticalAlign="bottom" 
+                height={36}
+                payload={[
+                  { value: '-2σ', type: 'rect', color: '#000' },
+                  { value: 'Worse Case', type: 'rect', color: '#000' },
+                  { value: 'Best Case', type: 'rect', color: '#000' },
+                  { value: '+2σ', type: 'rect', color: '#000' }
+                ]}
+              />
+              <Bar
+                dataKey="median"
+                name="Approval Time"
+                shape={<BoxPlot />}
+              />
+            </ComposedChart>
           </ResponsiveContainer>
         </div>
       </div>
