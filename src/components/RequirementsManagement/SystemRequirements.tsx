@@ -331,7 +331,7 @@ const SystemRequirements: React.FC = () => {
 
   return (
     <div className="bg-gray-50 p-6 min-h-screen">
-      <div className="max-w-7xl mx-auto">
+      <div className="w-full mx-auto">
         <h1 className="text-3xl font-bold text-gray-900 mb-6">System Requirements</h1>
         
         {/* Controls */}
@@ -342,20 +342,14 @@ const SystemRequirements: React.FC = () => {
               <p className="text-gray-600">Manage and track system requirements</p>
             </div>
             <div className="flex space-x-2">
-              <button className="bg-blue-600 hover:bg-blue-700 text-white px-4 py-2 rounded-md flex items-center text-sm">
-                <FaPlus className="mr-2" /> New Requirement
-              </button>
-              <button className="bg-gray-200 hover:bg-gray-300 text-gray-700 px-4 py-2 rounded-md flex items-center text-sm">
-                <FaFileImport className="mr-2" /> Import
-              </button>
               <button className="bg-gray-200 hover:bg-gray-300 text-gray-700 px-4 py-2 rounded-md flex items-center text-sm">
                 <FaFileExport className="mr-2" /> Export
               </button>
             </div>
           </div>
           
-          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-5 gap-4">
-            <div className="col-span-1 md:col-span-2">
+          <div className="grid grid-cols-1 md:grid-cols-4 gap-4">
+            <div>
               <label className="block text-sm font-medium text-gray-700 mb-1">Search</label>
               <div className="relative">
                 <input
@@ -399,34 +393,33 @@ const SystemRequirements: React.FC = () => {
               </select>
             </div>
             
-            <div>
+            <div className="flex flex-col">
               <label className="block text-sm font-medium text-gray-700 mb-1">Priority</label>
-              <select
-                className="border border-gray-300 rounded-md p-2 w-full"
-                value={priorityFilter || ''}
-                onChange={(e) => setPriorityFilter(e.target.value === '' ? null : e.target.value)}
-              >
-                <option value="">All Priorities</option>
-                {uniquePriorities.map((priority) => (
-                  <option key={priority} value={priority}>{priority}</option>
-                ))}
-              </select>
+              <div className="flex items-center h-full">
+                <select
+                  className="border border-gray-300 rounded-md p-2 w-full"
+                  value={priorityFilter || ''}
+                  onChange={(e) => setPriorityFilter(e.target.value === '' ? null : e.target.value)}
+                >
+                  <option value="">All Priorities</option>
+                  {uniquePriorities.map((priority) => (
+                    <option key={priority} value={priority}>{priority}</option>
+                  ))}
+                </select>
+                <button
+                  className="bg-gray-200 hover:bg-gray-300 text-gray-700 px-4 py-2 rounded-md flex items-center text-sm ml-2"
+                  onClick={() => {
+                    setSearchTerm('');
+                    setStatusFilter(null);
+                    setTypeFilter(null);
+                    setPriorityFilter(null);
+                    setCategoryFilter(null);
+                  }}
+                >
+                  <FaFilter className="mr-2" /> Reset Filters
+                </button>
+              </div>
             </div>
-          </div>
-          
-          <div className="flex items-end justify-end mt-4">
-            <button
-              className="bg-gray-200 hover:bg-gray-300 text-gray-700 px-4 py-2 rounded-md flex items-center text-sm"
-              onClick={() => {
-                setSearchTerm('');
-                setStatusFilter(null);
-                setTypeFilter(null);
-                setPriorityFilter(null);
-                setCategoryFilter(null);
-              }}
-            >
-              <FaFilter className="mr-2" /> Reset Filters
-            </button>
           </div>
         </div>
         
