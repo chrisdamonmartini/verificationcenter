@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { LineChart, Line, XAxis, YAxis, CartesianGrid, Tooltip, Legend, ResponsiveContainer, BarChart, Bar, ComposedChart, Rectangle } from 'recharts';
+import { LineChart, Line, XAxis, YAxis, CartesianGrid, Tooltip, Legend, ResponsiveContainer, BarChart, Bar, ComposedChart, Rectangle, PieChart, Pie, Cell } from 'recharts';
 import * as FaIcons from 'react-icons/fa';
 import { motion } from 'framer-motion';
 
@@ -38,6 +38,41 @@ interface ApprovalTimeData {
   median: number;
   best: number;
   max: number;
+}
+
+// Interface for quarter-based status data
+interface QuarterData {
+  name: string;
+  value: number;
+  color: string;
+}
+
+// Interface for Test Point Maturity data
+interface MaturityData {
+  name: string;
+  value: number;
+  color: string;
+}
+
+// Interface for Flight Test Delays data
+interface DelaysData {
+  name: string;
+  value: number;
+  color: string;
+}
+
+// Interface for Flight Test Effectiveness data
+interface EffectivenessData {
+  name: string;
+  value: number;
+  color: string;
+}
+
+// Interface for Flight Test Efficiency data
+interface EfficiencyData {
+  name: string;
+  value: number;
+  color: string;
 }
 
 export const Analysis: React.FC<AnalysisProps> = () => {
@@ -125,6 +160,53 @@ export const Analysis: React.FC<AnalysisProps> = () => {
     }
   ];
 
+  // Mock data for Test Request Status
+  const testRequestStatusData: QuarterData[] = [
+    { name: '1st Qtr', value: 45, color: '#4e79a7' },
+    { name: '2nd Qtr', value: 25, color: '#f28e2c' },
+    { name: '3rd Qtr', value: 15, color: '#bab0ac' },
+    { name: '4th Qtr', value: 15, color: '#e8c63e' },
+  ];
+
+  // Mock data for Test Plan Status
+  const testPlanStatusData: QuarterData[] = [
+    { name: '1st Qtr', value: 50, color: '#4e79a7' },
+    { name: '2nd Qtr', value: 20, color: '#f28e2c' },
+    { name: '3rd Qtr', value: 15, color: '#bab0ac' },
+    { name: '4th Qtr', value: 15, color: '#e8c63e' },
+  ];
+
+  // Mock data for Test Point Maturity
+  const testPointMaturityData: MaturityData[] = [
+    { name: 'Execution Approved', value: 8.2, color: '#4e79a7' },
+    { name: 'Released', value: 3.2, color: '#f28e2c' },
+    { name: 'Inwork', value: 1.4, color: '#bab0ac' },
+    { name: 'Planned', value: 1.2, color: '#e8c63e' },
+  ];
+
+  // Mock data for Flight Test Delays
+  const flightTestDelaysData: DelaysData[] = [
+    { name: 'Weather', value: 45, color: '#4e79a7' },
+    { name: 'Aircraft', value: 25, color: '#f28e2c' },
+    { name: 'Resources', value: 15, color: '#bab0ac' },
+    { name: 'Pilot', value: 15, color: '#e8c63e' },
+  ];
+
+  // Mock data for Flight Test Effectiveness
+  const flightTestEffectivenessData: EffectivenessData[] = [
+    { name: 'Executed OK', value: 75, color: '#4e79a7' },
+    { name: 'Behaved Ok', value: 15, color: '#f28e2c' },
+    { name: 'Data Good', value: 10, color: '#bab0ac' },
+  ];
+
+  // Mock data for Flight Test Efficiency
+  const flightTestEfficiencyData: EfficiencyData[] = [
+    { name: '0-15 min', value: 50, color: '#4e79a7' },
+    { name: '15-30', value: 25, color: '#f28e2c' },
+    { name: '30-60', value: 15, color: '#bab0ac' },
+    { name: '>60', value: 10, color: '#e8c63e' },
+  ];
+
   // Custom box plot component
   const BoxPlot = (props: any) => {
     const { x, y, width, height, payload, dataKey, fill } = props;
@@ -188,6 +270,45 @@ export const Analysis: React.FC<AnalysisProps> = () => {
       </g>
     );
   };
+
+  // Custom Pie Chart rendering component
+  const renderPieChart = (data: any[], title: string, height = 200) => (
+    <div className="bg-white rounded-lg shadow-sm p-4">
+      <h4 className="font-medium mb-2 text-center text-sm">{title}</h4>
+      <div style={{ height: `${height}px` }}>
+        <ResponsiveContainer width="100%" height="100%">
+          <PieChart>
+            <Pie
+              data={data}
+              cx="50%"
+              cy="50%"
+              innerRadius={0}
+              outerRadius={60}
+              paddingAngle={1}
+              dataKey="value"
+              label={false}
+              strokeWidth={1}
+              stroke="#ffffff"
+            >
+              {data.map((entry, index) => (
+                <Cell key={`cell-${index}`} fill={entry.color} />
+              ))}
+            </Pie>
+            <Tooltip formatter={(value) => [`${value}`, '']} />
+          </PieChart>
+        </ResponsiveContainer>
+      </div>
+      {/* Legend */}
+      <div className="flex flex-wrap justify-center text-xs mt-2">
+        {data.map((entry, index) => (
+          <div key={index} className="flex items-center mr-3 mb-1">
+            <div className="w-3 h-3 mr-1" style={{ backgroundColor: entry.color }}></div>
+            <span>{entry.name}</span>
+          </div>
+        ))}
+      </div>
+    </div>
+  );
 
   return (
     <div className="space-y-6">
@@ -257,6 +378,16 @@ export const Analysis: React.FC<AnalysisProps> = () => {
             </LineChart>
           </ResponsiveContainer>
         </div>
+      </div>
+
+      {/* Grid of Pie Charts */}
+      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+        {renderPieChart(testRequestStatusData, 'Test Request Status')}
+        {renderPieChart(testPlanStatusData, 'Test Plan Status')}
+        {renderPieChart(testPointMaturityData, 'Test Point Maturity')}
+        {renderPieChart(flightTestDelaysData, 'Flight Test Delays')}
+        {renderPieChart(flightTestEffectivenessData, 'Flight Test Effectiveness')}
+        {renderPieChart(flightTestEfficiencyData, 'Flight Test Efficiency')}
       </div>
 
       {/* Approval Times Chart */}
