@@ -118,12 +118,8 @@ const ChangeTracker: React.FC = () => {
       </ResponsiveContainer>
       
       <div className="mt-4 text-sm text-gray-600">
-        <p className="mb-2">
-          The chart shows change frequency over time. The decreasing trend after SRR indicates growing stability in the requirements.
-        </p>
         <div className="flex items-center mt-1">
           <span className="w-3 h-3 bg-yellow-100 inline-block mr-1"></span>
-          <span className="text-xs">Verification Phase shows further stabilization</span>
         </div>
       </div>
     </div>

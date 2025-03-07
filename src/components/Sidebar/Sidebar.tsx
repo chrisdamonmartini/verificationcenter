@@ -35,7 +35,7 @@ export const SidebarData = [
   {
     title: 'Verification Mgmt.',
     path: '/verification-planning',
-    icon: <ProjectOutlined />
+    icon: <FaIcons.FaClipboardCheck />
   },
   {
     title: 'Analysis',
