@@ -44,6 +44,10 @@ import { ProductProvider } from './context/ProductContext';
 import { TeamcenterProvider } from './context/TeamcenterContext';
 // Import Change Awareness components
 import ChangeAwareness from './components/ChangeAwareness/ChangeAwareness';
+import CADDesignChanges from './components/ChangeAwareness/CADDesignChanges';
+import EngineeringBOMChanges from './components/ChangeAwareness/EngineeringBOMChanges';
+import { FlightTestManagement } from './components/FlightTest/FlightTestManagement';
+import { Aircraft } from './types';
 
 // Define a type for requirements
 interface Requirement {
@@ -290,6 +294,10 @@ function App() {
       case 'test-management':
         return <UnitTests />;
         
+      // Flight Test
+      case 'flight-test':
+        return <FlightTestManagement aircraft={[]} />;
+        
       // Simulation
       case 'simulation/models':
         return <ModelsManagement />;
@@ -389,43 +397,43 @@ function App() {
   return (
     <ProductProvider>
       <TeamcenterProvider>
-        <div className="flex flex-col h-screen bg-gray-100">
-          {/* Header */}
-          <header className="bg-blue-900 text-white py-2 px-4 flex items-center">
+    <div className="flex flex-col h-screen bg-gray-100">
+      {/* Header */}
+      <header className="bg-blue-900 text-white py-2 px-4 flex items-center">
             {/* VERIFICATIONCENTER Logo */}
-            <div className="flex items-center">
-              <FaIcons.FaClipboardCheck className="text-white mr-2 text-2xl" />
-              <span className="font-bold text-lg mr-8">VERIFICATIONCENTER</span>
-            </div>
-            
-            {/* Spacer to push right-side buttons to the end */}
-            <div className="flex-grow"></div>
-            
-            <div className="flex items-center space-x-4">
-              <button className="p-2 hover:bg-blue-800 rounded-full">
-                <FaIcons.FaSearch className="text-xl" />
-              </button>
-              <button className="p-2 hover:bg-blue-800 rounded-full relative">
-                <FaIcons.FaBell className="text-xl" />
+        <div className="flex items-center">
+          <img src="/verificationcenter/logo192.png" alt="Logo" className="h-8 w-8" />
+          <span className="font-bold text-lg mr-8">Verificationcenter</span>
+        </div>
+        
+        {/* Spacer to push right-side buttons to the end */}
+        <div className="flex-grow"></div>
+        
+        <div className="flex items-center space-x-4">
+          <button className="p-2 hover:bg-blue-800 rounded-full">
+            <FaIcons.FaSearch className="text-xl" />
+          </button>
+          <button className="p-2 hover:bg-blue-800 rounded-full relative">
+            <FaIcons.FaBell className="text-xl" />
                 <span className="absolute top-0 right-0 h-4 w-4 bg-red-500 rounded-full text-xs flex items-center justify-center">3</span>
               </button>
               <button className="p-2 hover:bg-blue-800 rounded-full">
                 <FaIcons.FaUserCircle className="text-xl" />
-              </button>
-            </div>
-          </header>
+          </button>
+        </div>
+      </header>
 
-          {/* Main Content */}
+      {/* Main Content */}
           <div className="flex flex-grow overflow-hidden">
             {/* Sidebar */}
             <Sidebar currentView={activeView} onNavigate={handleNavigation} />
-            
+        
             {/* Main Content Area */}
             <main className="flex-grow p-4 overflow-auto">
-              {renderContent()}
-            </main>
-          </div>
-        </div>
+          {renderContent()}
+        </main>
+      </div>
+    </div>
       </TeamcenterProvider>
     </ProductProvider>
   );

@@ -48,6 +48,11 @@ export const SidebarData = [
     icon: <CheckCircleOutlined />
   },
   {
+    title: 'Flight Test',
+    path: '/flight-test',
+    icon: <FaIcons.FaPlane />
+  },
+  {
     title: 'Test Results',
     path: '/test-results',
     icon: <FileSearchOutlined />
