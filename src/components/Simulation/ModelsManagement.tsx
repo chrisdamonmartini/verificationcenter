@@ -1227,6 +1227,11 @@ const ModelsManagement: React.FC = () => {
     );
   };
 
+  // Add this function to navigate to Digital Thread view
+  const navigateToDigitalThread = () => {
+    window.location.href = '/simulation/digital-thread';
+  };
+
   return (
     <div className="bg-white p-6 rounded-lg shadow-lg relative">
       <div className="flex justify-between items-center mb-6">
@@ -1375,6 +1380,18 @@ const ModelsManagement: React.FC = () => {
                 title="Analysis Digital Thread"
                 isFixed={false}
               />
+            </div>
+
+            {/* In the Alpha tab content, add a button to view the Digital Thread */}
+            <div className="mb-4 flex justify-between">
+              <div className="text-xl font-semibold">Analysis Dashboard</div>
+              <button
+                className="px-4 py-2 bg-blue-600 text-white rounded-md flex items-center"
+                onClick={navigateToDigitalThread}
+              >
+                <BsIcons.BsDiagram3 className="mr-2" />
+                View Digital Thread
+              </button>
             </div>
           </div>
         )}

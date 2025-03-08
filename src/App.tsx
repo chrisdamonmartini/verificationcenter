@@ -153,7 +153,7 @@ const CoverageAnalysis = () => (
       <div className="bg-white p-6 rounded-lg shadow-lg">
     <h2 className="text-2xl font-bold mb-6">Coverage Analysis</h2>
     <p className="text-gray-600 mb-4">Analyze verification coverage and identify gaps.</p>
-    </div>
+          </div>
   );
 
 // Replace placeholder components for verification methods
@@ -176,7 +176,7 @@ const DataCollectionTab = () => <DataCollection />;
 
 // Placeholder components for test results
 const ResultsAnalysisTab = () => (
-      <div className="bg-white p-6 rounded-lg shadow-lg">
+        <div className="bg-white p-6 rounded-lg shadow-lg">
     <h2 className="text-2xl font-bold mb-6">Results Analysis</h2>
     <p className="text-gray-600 mb-4">Analyze and interpret test data to verify requirements.</p>
     </div>
@@ -186,7 +186,7 @@ const Anomalies = () => (
     <div className="bg-white p-6 rounded-lg shadow-lg">
     <h2 className="text-2xl font-bold mb-6">Anomalies</h2>
     <p className="text-gray-600 mb-4">Track and manage test anomalies and their resolution.</p>
-    </div>
+                    </div>
   );
 
 // Verification Closure tab
@@ -204,15 +204,15 @@ const VerificationClosure = () => (
   <div className="bg-white p-6 rounded-lg shadow-lg">
     <h2 className="text-2xl font-bold mb-6">Verification Closure</h2>
     <p className="text-gray-600 mb-4">Close out verification activities and document compliance.</p>
-  </div>
-);
+        </div>
+      );
 
 const ComplianceReports = () => (
   <div className="bg-white p-6 rounded-lg shadow-lg">
     <h2 className="text-2xl font-bold mb-6">Compliance Reports</h2>
     <p className="text-gray-600 mb-4">Generate and manage compliance reports.</p>
-  </div>
-);
+      </div>
+    );
 
 // Replace placeholder components for reports and analytics
 const VerificationStatus = () => <VerificationStatusComponent />;
@@ -306,6 +306,8 @@ function App() {
         return <SimulationRuns />;
       case 'simulation/results':
         return <ResultsAnalysis />;
+      case 'simulation/digital-thread':
+        return <DigitalThread />;
       case 'simulation':
         return <ModelsManagement />;
         
@@ -351,18 +353,18 @@ function App() {
       case 'risks':
       case 'trade-studies':
       case 'integration':
-        return (
-          <div className="bg-white p-6 rounded-lg shadow-lg">
+  return (
+    <div className="bg-white p-6 rounded-lg shadow-lg">
             <h2 className="text-xl font-bold">This module has been migrated</h2>
             <p className="mt-2">This functionality has been moved to the new verification management structure.</p>
-            <button 
+        <button 
               onClick={() => setActiveView('dashboard')}
               className="mt-4 bg-blue-600 text-white px-4 py-2 rounded hover:bg-blue-700"
             >
               Go to Dashboard
-            </button>
-          </div>
-        );
+        </button>
+    </div>
+  );
         
       // Settings
       case 'settings':

@@ -13,7 +13,10 @@ import {
   AuditOutlined,
   BarChartOutlined,
   SettingOutlined,
-  NodeIndexOutlined
+  NodeIndexOutlined,
+  AppstoreOutlined,
+  PlayCircleOutlined,
+  BranchesOutlined
 } from '@ant-design/icons';
 
 // Updated navigation items for Verification Management - Flattened structure
@@ -41,12 +44,29 @@ export const SidebarData = [
   {
     title: 'Analysis',
     path: '/simulation',
-    icon: <FundOutlined />
-  },
-  {
-    title: 'Digital Thread',
-    path: '/digital-thread',
-    icon: <NodeIndexOutlined />
+    icon: <FundOutlined />,
+    subitems: [
+      {
+        title: 'Models',
+        path: '/simulation/models',
+        icon: <AppstoreOutlined />
+      },
+      {
+        title: 'Simulation Runs',
+        path: '/simulation/runs',
+        icon: <PlayCircleOutlined />
+      },
+      {
+        title: 'Results',
+        path: '/simulation/results',
+        icon: <BarChartOutlined />
+      },
+      {
+        title: 'Digital Thread',
+        path: '/simulation/digital-thread',
+        icon: <BranchesOutlined />
+      }
+    ]
   },
   {
     title: 'Test Management',
