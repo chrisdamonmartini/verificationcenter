@@ -1,6 +1,10 @@
 import React, { useState, useEffect } from 'react';
+import { Tabs } from 'antd';
 import NetworkView from './NetworkView';
 import { Select, Checkbox, Button, Divider } from 'antd';
+import * as FaIcons from 'react-icons/fa';
+import * as BiIcons from 'react-icons/bi';
+import * as AiIcons from 'react-icons/ai';
 
 // Define types
 type DigitalThreadItemType = 'Scenario' | 'Requirement' | 'Function' | 'Logical' | 'CAD' | 'BOM' | 'Simulation' | 'Test' | 'Result';
@@ -180,6 +184,7 @@ const generateMockData = (): DigitalThreadItemBase[] => {
 const DigitalThread: React.FC = () => {
   const [items, setItems] = useState<DigitalThreadItemBase[]>([]);
   const [selectedItem, setSelectedItem] = useState<string | null>(null);
+  const [viewType, setViewType] = useState<string>('network');
   const [timeframeFilter, setTimeframeFilter] = useState<string>('all');
   const [typeFilters, setTypeFilters] = useState<string[]>([
     'Scenario', 'Requirement', 'Function', 'Logical', 'CAD', 'BOM', 'Simulation', 'Test', 'Result'
@@ -333,6 +338,228 @@ const DigitalThread: React.FC = () => {
     );
   };
   
+  // Render the Flow View
+  const renderFlowView = () => {
+    return (
+      <div className="p-4">
+        <div className="bg-white rounded-lg border p-8 text-center">
+          <div className="flex flex-col items-center">
+            <BiIcons.BiNetworkChart className="text-6xl text-blue-500 mb-4" />
+            <h2 className="text-2xl font-medium mb-2">Flow View</h2>
+            <p className="text-gray-600 max-w-xl">
+              This view displays elements in a horizontal flow from left to right, showing the progression
+              through the development lifecycle from scenarios to test results.
+            </p>
+            
+            <div className="mt-8 w-full">
+              <div className="flex justify-between">
+                {['Scenario', 'Requirement', 'Function', 'Logical', 'CAD', 'BOM', 'Simulation', 'Test', 'Result'].map((type, index) => (
+                  <div key={type} className="flex flex-col items-center">
+                    <div 
+                      className="w-12 h-12 rounded-full flex items-center justify-center text-white"
+                      style={{ backgroundColor: getColorForType(type as DigitalThreadItemType) }}
+                    >
+                      {type.substring(0, 1)}
+                    </div>
+                    <div className="text-xs mt-2">{type}</div>
+                    {index < 8 && (
+                      <div className="w-20 h-0.5 bg-gray-300 absolute" style={{ marginLeft: '50px' }}></div>
+                    )}
+                  </div>
+                ))}
+              </div>
+              
+              <div className="mt-16 grid grid-cols-9 gap-4">
+                {['Scenario', 'Requirement', 'Function', 'Logical', 'CAD', 'BOM', 'Simulation', 'Test', 'Result'].map((type) => (
+                  <div key={type} className="flex flex-col items-center">
+                    {items
+                      .filter(item => item.type === type)
+                      .map(item => (
+                        <div 
+                          key={item.id}
+                          className="mb-2 p-2 border rounded-lg text-xs w-full cursor-pointer hover:bg-gray-50"
+                          onClick={() => handleSelectItem(item.id)}
+                        >
+                          <div className="font-medium truncate">{item.name}</div>
+                          <div className="text-gray-500 truncate">{item.id}</div>
+                        </div>
+                      ))}
+                  </div>
+                ))}
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    );
+  };
+  
+  // Render the Timeline View
+  const renderTimelineView = () => {
+    // Sort items by lastModified date
+    const sortedItems = [...items].sort((a, b) => 
+      new Date(a.lastModified).getTime() - new Date(b.lastModified).getTime()
+    );
+    
+    return (
+      <div className="p-4">
+        <div className="bg-white rounded-lg border p-8">
+          <div className="flex items-center mb-6">
+            <AiIcons.AiOutlineClockCircle className="text-3xl text-blue-500 mr-4" />
+            <h2 className="text-2xl font-medium">Timeline View</h2>
+          </div>
+          
+          <div className="relative">
+            {/* Timeline line */}
+            <div className="absolute left-8 top-0 bottom-0 w-0.5 bg-gray-300 z-0"></div>
+            
+            {/* Timeline items */}
+            <div className="space-y-8 relative z-10">
+              {sortedItems.map((item, index) => (
+                <div key={item.id} className="flex">
+                  <div 
+                    className="w-4 h-4 rounded-full mt-1.5 ml-6 z-10"
+                    style={{ backgroundColor: getColorForType(item.type) }}
+                  ></div>
+                  <div className="ml-6">
+                    <div className="text-xs text-gray-500">{item.lastModified}</div>
+                    <div className="font-medium flex items-center">
+                      <span 
+                        className="w-2 h-2 rounded-full mr-2"
+                        style={{ backgroundColor: getColorForType(item.type) }}
+                      ></span>
+                      {item.name}
+                      <span className="ml-2 text-xs text-gray-500">{item.id}</span>
+                    </div>
+                    <div className="text-sm mt-1">{item.description.substring(0, 80)}...</div>
+                    <div className="text-xs text-gray-500 mt-1">Modified by {item.modifiedBy}</div>
+                    
+                    {item.status === 'Modified' && (
+                      <div className="mt-2 bg-yellow-50 p-2 rounded-lg border border-yellow-200">
+                        <div className="text-xs text-yellow-700 font-medium">Modified</div>
+                        <div className="text-xs text-yellow-600">
+                          Changes to this element may impact connected elements.
+                        </div>
+                      </div>
+                    )}
+                  </div>
+                </div>
+              ))}
+            </div>
+          </div>
+        </div>
+      </div>
+    );
+  };
+  
+  // Render the Network View
+  const renderNetworkView = () => {
+    return (
+      <div>
+        <div className="flex space-x-6">
+          <div className="w-1/5">
+            <div className="border rounded-lg bg-white p-4 mb-4">
+              <h3 className="font-medium mb-3">Filter by Type</h3>
+              <div className="space-y-2">
+                {['Scenario', 'Requirement', 'Function', 'Logical', 'CAD', 'BOM', 'Simulation', 'Test', 'Result'].map(type => (
+                  <div key={type} className="flex items-center">
+                    <Checkbox
+                      checked={typeFilters.includes(type)}
+                      onChange={e => {
+                        if (e.target.checked) {
+                          setTypeFilters([...typeFilters, type]);
+                        } else {
+                          setTypeFilters(typeFilters.filter(t => t !== type));
+                        }
+                      }}
+                    >
+                      <div className="flex items-center">
+                        <span 
+                          className="w-3 h-3 rounded-full mr-2"
+                          style={{ backgroundColor: getColorForType(type as DigitalThreadItemType) }}
+                        ></span>
+                        <span>{type}</span>
+                      </div>
+                    </Checkbox>
+                  </div>
+                ))}
+              </div>
+            </div>
+            
+            <div className="border rounded-lg bg-white p-4">
+              <h3 className="font-medium mb-3">Filter by Status</h3>
+              <div className="space-y-2">
+                {['Current', 'Modified', 'New', 'Deprecated'].map(status => (
+                  <div key={status} className="flex items-center">
+                    <Checkbox
+                      checked={statusFilters.includes(status)}
+                      onChange={e => {
+                        if (e.target.checked) {
+                          setStatusFilters([...statusFilters, status]);
+                        } else {
+                          setStatusFilters(statusFilters.filter(s => s !== status));
+                        }
+                      }}
+                    >
+                      <span className={getStatusBadgeStyle(status)}>{status}</span>
+                    </Checkbox>
+                  </div>
+                ))}
+              </div>
+            </div>
+          </div>
+          
+          <div className="w-4/5">
+            <NetworkView 
+              items={filteredItems}
+              selectedItem={selectedItem}
+              onSelectItem={handleSelectItem}
+              getColorForType={getColorForType}
+              getStatusBadgeStyle={getStatusBadgeStyle}
+              getItemById={getItemById}
+            />
+            
+            {renderDetailPanel()}
+          </div>
+        </div>
+      </div>
+    );
+  };
+  
+  // Tab configuration
+  const tabItems = [
+    {
+      key: 'network',
+      label: (
+        <span className="flex items-center">
+          <FaIcons.FaProjectDiagram className="mr-2" />
+          Network View
+        </span>
+      ),
+      children: renderNetworkView(),
+    },
+    {
+      key: 'flow',
+      label: (
+        <span className="flex items-center">
+          <BiIcons.BiNetworkChart className="mr-2" />
+          Flow View
+        </span>
+      ),
+      children: renderFlowView(),
+    },
+    {
+      key: 'timeline',
+      label: (
+        <span className="flex items-center">
+          <AiIcons.AiOutlineClockCircle className="mr-2" />
+          Timeline View
+        </span>
+      ),
+      children: renderTimelineView(),
+    },
+  ];
+  
   return (
     <div className="p-6">
       <div className="flex justify-between items-center mb-6">
@@ -390,72 +617,12 @@ const DigitalThread: React.FC = () => {
         </div>
       </div>
       
-      <div className="flex space-x-6">
-        <div className="w-1/5">
-          <div className="border rounded-lg bg-white p-4 mb-4">
-            <h3 className="font-medium mb-3">Filter by Type</h3>
-            <div className="space-y-2">
-              {['Scenario', 'Requirement', 'Function', 'Logical', 'CAD', 'BOM', 'Simulation', 'Test', 'Result'].map(type => (
-                <div key={type} className="flex items-center">
-                  <Checkbox
-                    checked={typeFilters.includes(type)}
-                    onChange={e => {
-                      if (e.target.checked) {
-                        setTypeFilters([...typeFilters, type]);
-                      } else {
-                        setTypeFilters(typeFilters.filter(t => t !== type));
-                      }
-                    }}
-                  >
-                    <div className="flex items-center">
-                      <span 
-                        className="w-3 h-3 rounded-full mr-2"
-                        style={{ backgroundColor: getColorForType(type as DigitalThreadItemType) }}
-                      ></span>
-                      <span>{type}</span>
-                    </div>
-                  </Checkbox>
-                </div>
-              ))}
-            </div>
-          </div>
-          
-          <div className="border rounded-lg bg-white p-4">
-            <h3 className="font-medium mb-3">Filter by Status</h3>
-            <div className="space-y-2">
-              {['Current', 'Modified', 'New', 'Deprecated'].map(status => (
-                <div key={status} className="flex items-center">
-                  <Checkbox
-                    checked={statusFilters.includes(status)}
-                    onChange={e => {
-                      if (e.target.checked) {
-                        setStatusFilters([...statusFilters, status]);
-                      } else {
-                        setStatusFilters(statusFilters.filter(s => s !== status));
-                      }
-                    }}
-                  >
-                    <span className={getStatusBadgeStyle(status)}>{status}</span>
-                  </Checkbox>
-                </div>
-              ))}
-            </div>
-          </div>
-        </div>
-        
-        <div className="w-4/5">
-          <NetworkView 
-            items={filteredItems}
-            selectedItem={selectedItem}
-            onSelectItem={handleSelectItem}
-            getColorForType={getColorForType}
-            getStatusBadgeStyle={getStatusBadgeStyle}
-            getItemById={getItemById}
-          />
-          
-          {renderDetailPanel()}
-        </div>
-      </div>
+      <Tabs 
+        activeKey={viewType}
+        onChange={setViewType}
+        items={tabItems}
+        className="digital-thread-tabs"
+      />
       
       <div className="mt-6 bg-blue-50 p-4 rounded-lg text-sm">
         <div>
