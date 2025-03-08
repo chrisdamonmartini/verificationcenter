@@ -1,4 +1,4 @@
-import React, { useState, useEffect, useRef } from 'react';
+import React, { useState, useEffect, useRef, useCallback, useMemo } from 'react';
 import * as FaIcons from 'react-icons/fa';
 import * as BsIcons from 'react-icons/bs';
 import * as AiIcons from 'react-icons/ai';
@@ -110,6 +110,26 @@ type DigitalThreadElementItem =
   | SimulationItem 
   | TestItem 
   | ResultItem;
+
+// Add these types for the network visualization
+interface NetworkNode {
+  id: string;
+  type: DigitalThreadItem['type'];
+  status: DigitalThreadItem['status'];
+  name: string;
+  x?: number;
+  y?: number;
+  vx?: number;
+  vy?: number;
+  fx?: number | null;
+  fy?: number | null;
+}
+
+interface NetworkLink {
+  source: string;
+  target: string;
+  type: string;
+}
 
 // Main component for the Digital Thread page
 const DigitalThread: React.FC = () => {
@@ -759,26 +779,230 @@ const DigitalThread: React.FC = () => {
 
   // Network View visualization
   const renderNetworkView = () => {
+    // Simple implementation using static SVG elements
+    // In the future, this could be replaced with a more interactive version using D3.js
+    
+    // Prepare data for visualization
+    const typeOrder: DigitalThreadItem['type'][] = [
+      'Scenario', 'Requirement', 'Function', 'Logical', 'CAD', 'BOM', 'Simulation', 'Test', 'Result'
+    ];
+    
+    // Group items by type 
+    const itemsByType: Record<string, DigitalThreadElementItem[]> = digitalThreadData.reduce((acc, item) => {
+      if (!acc[item.type]) acc[item.type] = [];
+      acc[item.type].push(item);
+      return acc;
+    }, {} as Record<string, DigitalThreadElementItem[]>);
+    
+    // Calculate connections between nodes for visualization
+    const connections: {from: string, to: string, fromType: string, toType: string}[] = [];
+    digitalThreadData.forEach(item => {
+      item.linkedItems.forEach(linkedId => {
+        const linkedItem = getItemById(linkedId);
+        if (linkedItem) {
+          connections.push({
+            from: item.id,
+            to: linkedId,
+            fromType: item.type,
+            toType: linkedItem.type
+          });
+        }
+      });
+    });
+    
+    // Function to handle node click
+    const handleNodeClick = (nodeId: string) => {
+      setSelectedItem(selectedItem === nodeId ? null : nodeId);
+    };
+    
     return (
       <div className="mb-8">
         <div className="flex justify-between items-center mb-4">
           <h2 className="text-lg font-semibold">Digital Thread Network View</h2>
           <div className="flex space-x-2">
             <button className="px-3 py-1 rounded-lg bg-blue-100 text-blue-800">
-              Zoom to Fit
+              <FaIcons.FaFilter className="inline mr-1" />
+              Filter Nodes
             </button>
             <button className="px-3 py-1 rounded-lg bg-gray-100 text-gray-800">
-              Reset View
+              <FaIcons.FaExpand className="inline mr-1" />
+              Expand All
             </button>
           </div>
         </div>
         
-        <div className="border rounded-lg h-[600px] bg-gray-50 p-4 flex items-center justify-center">
-          <div className="text-center">
-            <FaIcons.FaProjectDiagram className="mx-auto text-gray-400 text-5xl mb-4" />
-            <p className="text-gray-600">Interactive network graph visualization will be rendered here</p>
-            <p className="text-gray-500 text-sm mt-2">This will show nodes representing all items and edges showing their connections</p>
+        <div className="border rounded-lg p-4 bg-white">
+          {/* Network visualization - simplified version */}
+          <div className="overflow-x-auto">
+            <div className="flex flex-col space-y-6 min-w-max">
+              {/* Horizontal layout of nodes by type */}
+              <div className="flex space-x-10 px-6 py-4">
+                {typeOrder.map(type => (
+                  <div key={type} className="flex flex-col items-center">
+                    <div 
+                      className="w-24 h-24 rounded-full flex items-center justify-center text-white text-2xl"
+                      style={{ backgroundColor: getColorForType(type) }}
+                    >
+                      {getIconForType(type)}
+                    </div>
+                    <div className="mt-2 text-sm font-medium">{type}s</div>
+                    <div className="text-xs text-gray-500">({itemsByType[type]?.length || 0})</div>
+                  </div>
+                ))}
+              </div>
+              
+              {/* Connection lines between node types */}
+              <div className="relative h-20">
+                <svg width="100%" height="100%" className="absolute inset-0">
+                  {typeOrder.map((fromType, fromIndex) => {
+                    return typeOrder.map((toType, toIndex) => {
+                      // Only draw connections between adjacent types in the flow
+                      if (fromIndex + 1 === toIndex) {
+                        // Check if there are actual connections between these types
+                        const hasConnections = connections.some(
+                          conn => conn.fromType === fromType && conn.toType === toType
+                        );
+                        
+                        if (hasConnections) {
+                          // Calculate positions for the line
+                          const fromX = 70 + fromIndex * 170; // 70px initial offset + 170px per type
+                          const toX = 70 + toIndex * 170;
+                          
+                          return (
+                            <path
+                              key={`${fromType}-${toType}`}
+                              d={`M ${fromX} 10 C ${fromX + 50} 40, ${toX - 50} 40, ${toX} 10`}
+                              stroke={getColorForType(toType)}
+                              strokeWidth="2"
+                              fill="none"
+                              strokeDasharray={showChanges ? "5,5" : "none"}
+                              markerEnd="url(#arrowhead)"
+                            />
+                          );
+                        }
+                      }
+                      return null;
+                    });
+                  })}
+                  
+                  <defs>
+                    <marker
+                      id="arrowhead"
+                      viewBox="0 -5 10 10"
+                      refX="8"
+                      refY="0"
+                      markerWidth="6"
+                      markerHeight="6"
+                      orient="auto"
+                    >
+                      <path d="M0,-5L10,0L0,5" fill="#999" />
+                    </marker>
+                  </defs>
+                </svg>
+              </div>
+              
+              {/* Nodes with details */}
+              <div className="grid grid-cols-1 gap-6">
+                {typeOrder.map(type => (
+                  <div key={type} className="p-4 border-t border-b">
+                    <h3 className="font-medium mb-4" style={{ color: getColorForType(type) }}>
+                      {getIconForType(type)}
+                      <span className="ml-2">{type} Nodes</span>
+                    </h3>
+                    
+                    <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+                      {itemsByType[type]?.map(item => {
+                        const hasChanges = item.changes && item.changes.length > 0;
+                        const isSelected = selectedItem === item.id;
+                        const connectedItems = connections
+                          .filter(conn => conn.from === item.id || conn.to === item.id)
+                          .map(conn => conn.from === item.id ? conn.to : conn.from);
+                        
+                        return (
+                          <div 
+                            key={item.id}
+                            className={`
+                              p-3 border rounded-lg cursor-pointer transition-all
+                              ${isSelected ? 'ring-2 ring-blue-500 shadow-md' : ''}
+                              ${hasChanges && showChanges ? 'border-yellow-500 bg-yellow-50' : 'border-gray-200 hover:bg-gray-50'}
+                            `}
+                            onClick={() => handleNodeClick(item.id)}
+                          >
+                            <div className="flex items-center">
+                              <div 
+                                className="w-8 h-8 rounded-full flex items-center justify-center text-white mr-3"
+                                style={{ backgroundColor: getColorForType(item.type) }}
+                              >
+                                {getIconForType(item.type)}
+                              </div>
+                              
+                              <div>
+                                <h4 className="font-medium text-sm">{item.name}</h4>
+                                <div className="flex items-center">
+                                  <span className="text-xs text-gray-500 mr-2">{item.id}</span>
+                                  <span className={`px-1.5 py-0.5 text-xs rounded-full ${getStatusBadgeStyle(item.status)}`}>
+                                    {item.status}
+                                  </span>
+                                </div>
+                              </div>
+                            </div>
+                            
+                            {isSelected && (
+                              <div className="mt-3 pt-2 border-t border-gray-200">
+                                <p className="text-xs text-gray-600 mb-2">{item.description}</p>
+                                
+                                <div className="flex justify-between text-xs text-gray-500 mb-2">
+                                  <span>Version: {item.version}</span>
+                                  <span>{item.lastModified}</span>
+                                </div>
+                                
+                                {showChanges && hasChanges && (
+                                  <div className="mb-2 p-2 bg-yellow-50 rounded text-xs">
+                                    <div className="font-medium">Recent Changes:</div>
+                                    {item.changes?.map((change, idx) => (
+                                      <div key={idx} className="mt-1">
+                                        {change.description}
+                                      </div>
+                                    ))}
+                                  </div>
+                                )}
+                                
+                                <div>
+                                  <div className="text-xs font-medium">Connected to:</div>
+                                  <div className="flex flex-wrap gap-1 mt-1">
+                                    {connectedItems.map(itemId => {
+                                      const connectedItem = getItemById(itemId);
+                                      return connectedItem ? (
+                                        <span 
+                                          key={itemId}
+                                          className="px-1.5 py-0.5 rounded text-xs"
+                                          style={{ 
+                                            backgroundColor: `${getColorForType(connectedItem.type)}20`,
+                                            color: getColorForType(connectedItem.type)
+                                          }}
+                                        >
+                                          {itemId}
+                                        </span>
+                                      ) : null;
+                                    })}
+                                  </div>
+                                </div>
+                              </div>
+                            )}
+                          </div>
+                        );
+                      })}
+                    </div>
+                  </div>
+                ))}
+              </div>
+            </div>
           </div>
+        </div>
+        
+        <div className="mt-4 bg-blue-50 p-3 rounded-lg text-sm text-blue-800">
+          <FaIcons.FaInfoCircle className="inline mr-2" />
+          <span className="font-medium">Network View:</span> Click on any node to see its details and connections. Use the filter button to focus on specific parts of the digital thread.
         </div>
       </div>
     );
@@ -786,28 +1010,260 @@ const DigitalThread: React.FC = () => {
 
   // Timeline View visualization
   const renderTimelineView = () => {
+    // Sort all data by modification date for the timeline
+    const allEventsData = digitalThreadData
+      .flatMap(item => {
+        // Basic item as an event
+        const baseEvent = {
+          id: item.id,
+          type: item.type,
+          name: item.name,
+          date: item.lastModified,
+          status: item.status,
+          description: item.description,
+          user: item.modifiedBy,
+          eventType: 'Creation' as 'Creation' | 'Modification'
+        };
+
+        // Get additional change events if they exist
+        const changeEvents = (item.changes || []).map(change => ({
+          id: item.id,
+          type: item.type,
+          name: item.name,
+          date: change.date,
+          status: item.status,
+          description: change.description,
+          user: change.user,
+          eventType: 'Modification' as 'Creation' | 'Modification'
+        }));
+
+        return [baseEvent, ...changeEvents];
+      })
+      // Sort by date
+      .sort((a, b) => new Date(a.date).getTime() - new Date(b.date).getTime());
+
+    // Group events by month/year for the timeline
+    const eventsByMonth: Record<string, typeof allEventsData> = allEventsData.reduce((acc, event) => {
+      const date = new Date(event.date);
+      const monthYear = `${date.getFullYear()}-${String(date.getMonth() + 1).padStart(2, '0')}`;
+      
+      if (!acc[monthYear]) {
+        acc[monthYear] = [];
+      }
+      
+      acc[monthYear].push(event);
+      return acc;
+    }, {} as Record<string, typeof allEventsData>);
+    
+    // Get unique months and sort them
+    const months = Object.keys(eventsByMonth).sort();
+    
+    // Filter events based on selected time range
+    const getTimeRangeDate = (): Date => {
+      const now = new Date();
+      switch (timeRange) {
+        case '1W':
+          const oneWeekAgo = new Date(now);
+          oneWeekAgo.setDate(oneWeekAgo.getDate() - 7);
+          return oneWeekAgo;
+        case '1M':
+          const oneMonthAgo = new Date(now);
+          oneMonthAgo.setMonth(oneMonthAgo.getMonth() - 1);
+          return oneMonthAgo;
+        case '3M':
+          const threeMonthsAgo = new Date(now);
+          threeMonthsAgo.setMonth(threeMonthsAgo.getMonth() - 3);
+          return threeMonthsAgo;
+        case '6M':
+          const sixMonthsAgo = new Date(now);
+          sixMonthsAgo.setMonth(sixMonthsAgo.getMonth() - 6);
+          return sixMonthsAgo;
+        case '1Y':
+          const oneYearAgo = new Date(now);
+          oneYearAgo.setFullYear(oneYearAgo.getFullYear() - 1);
+          return oneYearAgo;
+        default:
+          // All time - return a very old date
+          return new Date(0);
+      }
+    };
+    
+    const timeRangeDate = getTimeRangeDate();
+    
+    // Format a date in a readable way
+    const formatDate = (dateString: string): string => {
+      const date = new Date(dateString);
+      return date.toLocaleDateString('en-US', { 
+        year: 'numeric', 
+        month: 'short', 
+        day: 'numeric',
+        hour: '2-digit',
+        minute: '2-digit'
+      });
+    };
+    
+    // Format month for display
+    const formatMonth = (monthYear: string): string => {
+      const [year, month] = monthYear.split('-');
+      const date = new Date(parseInt(year), parseInt(month) - 1, 1);
+      return date.toLocaleDateString('en-US', { year: 'numeric', month: 'long' });
+    };
+    
     return (
       <div className="mb-8">
         <div className="flex justify-between items-center mb-4">
           <h2 className="text-lg font-semibold">Digital Thread Timeline View</h2>
           <div className="flex space-x-2">
-            <button className="px-3 py-1 rounded-lg bg-green-100 text-green-800">
-              <FaIcons.FaClock className="inline mr-1" />
-              Show All Events
-            </button>
-            <button className="px-3 py-1 rounded-lg bg-gray-100 text-gray-800">
-              <FaIcons.FaFilter className="inline mr-1" />
-              Filter Events
+            <select 
+              className="border rounded-lg px-3 py-1"
+              value={timeRange}
+              onChange={(e) => setTimeRange(e.target.value as any)}
+            >
+              <option value="1W">Last Week</option>
+              <option value="1M">Last Month</option>
+              <option value="3M">Last 3 Months</option>
+              <option value="6M">Last 6 Months</option>
+              <option value="1Y">Last Year</option>
+              <option value="All">All Time</option>
+            </select>
+            <button 
+              className={`px-3 py-1 rounded-lg ${showChanges ? 'bg-yellow-100 text-yellow-800' : 'bg-gray-100 text-gray-800'}`}
+              onClick={() => setShowChanges(!showChanges)}
+            >
+              {showChanges ? <FaIcons.FaEye className="inline mr-1" /> : <FaIcons.FaEyeSlash className="inline mr-1" />}
+              {showChanges ? 'Showing Changes' : 'Show Changes'}
             </button>
           </div>
         </div>
         
-        <div className="border rounded-lg h-[600px] bg-gray-50 p-4 flex items-center justify-center">
-          <div className="text-center">
-            <FaIcons.FaHistory className="mx-auto text-gray-400 text-5xl mb-4" />
-            <p className="text-gray-600">Interactive timeline visualization will be rendered here</p>
-            <p className="text-gray-500 text-sm mt-2">This will show the evolution of the digital thread over time</p>
+        <div className="border rounded-lg bg-white p-4">
+          <div className="mb-4 bg-blue-50 p-3 rounded-lg">
+            <div className="flex items-start">
+              <FaIcons.FaInfoCircle className="text-blue-500 mt-1 mr-3" />
+              <div>
+                <h3 className="font-medium text-blue-800">About The Timeline View</h3>
+                <p className="text-sm text-blue-700">
+                  This timeline shows how the digital thread has evolved over time. Each entry represents a creation or modification
+                  event in the thread. Use the filters above to focus on specific time periods or types of changes.
+                </p>
+              </div>
+            </div>
           </div>
+          
+          <div className="overflow-x-auto">
+            {/* Timeline visualization */}
+            <div className="min-w-max">
+              {/* Vertical timeline with horizontal sections */}
+              <div className="relative border-l-2 border-gray-300 ml-8 pl-8">
+                {/* Event months */}
+                {months.filter(month => {
+                  // Filter months based on timeRange
+                  const [year, monthNum] = month.split('-');
+                  const monthDate = new Date(parseInt(year), parseInt(monthNum) - 1, 1);
+                  return monthDate >= timeRangeDate;
+                }).map(month => (
+                  <div key={month} className="mb-6">
+                    <div className="absolute -left-2.5 mt-6">
+                      <div className="w-5 h-5 rounded-full bg-blue-500"></div>
+                    </div>
+                    
+                    <div className="mb-2">
+                      <h3 className="text-lg font-medium text-gray-900">{formatMonth(month)}</h3>
+                      <p className="text-sm text-gray-500">
+                        {eventsByMonth[month].length} event{eventsByMonth[month].length !== 1 ? 's' : ''}
+                      </p>
+                    </div>
+                    
+                    <div className="space-y-3">
+                      {eventsByMonth[month].map((event, idx) => {
+                        // Skip showing non-changes if showChanges is false
+                        if (!showChanges && event.eventType === 'Modification') {
+                          return null;
+                        }
+                        
+                        return (
+                          <div 
+                            key={`${event.id}-${idx}`} 
+                            className={`
+                              p-3 border rounded-lg 
+                              ${event.eventType === 'Modification' ? 'border-yellow-300 bg-yellow-50' : 'border-gray-200'}
+                            `}
+                          >
+                            <div className="flex justify-between items-start">
+                              <div className="flex items-center">
+                                <div 
+                                  className="w-8 h-8 rounded-full flex items-center justify-center text-white mr-3"
+                                  style={{ backgroundColor: getColorForType(event.type) }}
+                                >
+                                  {getIconForType(event.type)}
+                                </div>
+                                
+                                <div>
+                                  <h4 className="font-medium">{event.name}</h4>
+                                  <p className="text-sm text-gray-600">{event.id}</p>
+                                </div>
+                              </div>
+                              
+                              <div className="text-right">
+                                <p className="text-xs text-gray-500">{formatDate(event.date)}</p>
+                                <p className="text-xs text-gray-500">by {event.user}</p>
+                              </div>
+                            </div>
+                            
+                            <div className="mt-2 flex justify-between items-center">
+                              <div>
+                                <span className={`inline-block px-2 py-0.5 text-xs rounded-full ${getStatusBadgeStyle(event.status)}`}>
+                                  {event.status}
+                                </span>
+                                <span className="ml-2 inline-block px-2 py-0.5 text-xs rounded-full bg-gray-100 text-gray-800">
+                                  {event.eventType}
+                                </span>
+                              </div>
+                              
+                              <button 
+                                className="text-blue-600 hover:text-blue-800 text-sm"
+                                onClick={() => setSelectedItem(event.id)}
+                              >
+                                View Details
+                              </button>
+                            </div>
+                            
+                            <div className="mt-2 text-sm text-gray-600">
+                              {event.description}
+                            </div>
+                          </div>
+                        );
+                      })}
+                    </div>
+                  </div>
+                ))}
+                
+                {/* When no events match the filter */}
+                {months.filter(month => {
+                  const [year, monthNum] = month.split('-');
+                  const monthDate = new Date(parseInt(year), parseInt(monthNum) - 1, 1);
+                  return monthDate >= timeRangeDate;
+                }).length === 0 && (
+                  <div className="py-8 text-center">
+                    <FaIcons.FaCalendarDay className="mx-auto text-gray-400 text-5xl mb-4" />
+                    <p className="text-gray-600">No events found in the selected time range</p>
+                    <button 
+                      className="mt-2 px-3 py-1 bg-blue-100 text-blue-800 rounded-lg text-sm"
+                      onClick={() => setTimeRange('All')}
+                    >
+                      Show All Time
+                    </button>
+                  </div>
+                )}
+              </div>
+            </div>
+          </div>
+        </div>
+        
+        <div className="mt-4 bg-blue-50 p-3 rounded-lg text-sm text-blue-800">
+          <FaIcons.FaInfoCircle className="inline mr-2" />
+          <span className="font-medium">Timeline View:</span> This visualization shows how the digital thread has evolved over time.
+          Use the time range selector to focus on specific periods and toggle the change visibility to see modification details.
         </div>
       </div>
     );
