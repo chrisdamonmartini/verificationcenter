@@ -48,7 +48,7 @@ import CADDesignChanges from './components/ChangeAwareness/CADDesignChanges';
 import EngineeringBOMChanges from './components/ChangeAwareness/EngineeringBOMChanges';
 import { FlightTestManagement } from './components/FlightTest/FlightTestManagement';
 import { Aircraft } from './types';
-import SimpleDigitalThread from './components/DigitalThread/SimpleDigitalThread';
+import DigitalThread from './components/DigitalThread/DigitalThread';
 
 // Define a type for requirements
 interface Requirement {
@@ -224,7 +224,7 @@ const CostAnalysis = () => <CostAnalysisComponent />;
 const SchedulePerformance = () => <SchedulePerformanceComponent />;
 
 // Digital Thread (with three tabs)
-const DigitalThreadComponent = () => <SimpleDigitalThread />;
+const DigitalThreadComponent = () => <DigitalThread />;
 
 // Main App function
 function App() {
