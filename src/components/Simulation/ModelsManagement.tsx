@@ -1229,7 +1229,7 @@ const ModelsManagement: React.FC = () => {
 
   // Add this function to navigate to Digital Thread view
   const navigateToDigitalThread = () => {
-    window.location.href = '/simulation/digital-thread';
+    window.location.href = '/digital-thread';
   };
 
   return (

@@ -44,29 +44,12 @@ export const SidebarData = [
   {
     title: 'Analysis',
     path: '/simulation',
-    icon: <FundOutlined />,
-    subitems: [
-      {
-        title: 'Models',
-        path: '/simulation/models',
-        icon: <AppstoreOutlined />
-      },
-      {
-        title: 'Simulation Runs',
-        path: '/simulation/runs',
-        icon: <PlayCircleOutlined />
-      },
-      {
-        title: 'Results',
-        path: '/simulation/results',
-        icon: <BarChartOutlined />
-      },
-      {
-        title: 'Digital Thread',
-        path: '/simulation/digital-thread',
-        icon: <BranchesOutlined />
-      }
-    ]
+    icon: <FundOutlined />
+  },
+  {
+    title: 'Digital Thread',
+    path: '/digital-thread',
+    icon: <NodeIndexOutlined />
   },
   {
     title: 'Test Management',

@@ -223,6 +223,9 @@ const CostAnalysis = () => <CostAnalysisComponent />;
 
 const SchedulePerformance = () => <SchedulePerformanceComponent />;
 
+// Digital Thread (with three tabs)
+const DigitalThreadComponent = () => <SimpleDigitalThread />;
+
 // Main App function
 function App() {
   const [activeView, setActiveView] = useState<string>('dashboard');
@@ -299,17 +302,19 @@ function App() {
       case 'flight-test':
         return <FlightTestManagement aircraft={[]} />;
         
-      // Simulation
+      // Simulation/Analysis routes
       case 'simulation/models':
         return <ModelsManagement />;
       case 'simulation/runs':
         return <SimulationRuns />;
       case 'simulation/results':
         return <ResultsAnalysis />;
-      case 'simulation/digital-thread':
-        return <SimpleDigitalThread />;
       case 'simulation':
         return <ModelsManagement />;
+      
+      // Digital Thread route - should show the component with three tabs
+      case 'digital-thread':
+        return <DigitalThreadComponent />;
         
       // Test Results
       case 'test-results/data':
@@ -381,10 +386,6 @@ function App() {
       case 'change-awareness/cad':
       case 'change-awareness/bom':
         return <ChangeAwareness />;
-        
-      // Digital Thread
-      case 'digital-thread':
-        return <SimpleDigitalThread />;
         
       default:
         return (
