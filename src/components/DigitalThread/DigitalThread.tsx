@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { Tabs } from 'antd';
-import NetworkView from './NetworkView';
+import SimpleNetworkView from './SimpleNetworkView';
 import { Select, Checkbox, Button, Divider } from 'antd';
 import * as FaIcons from 'react-icons/fa';
 import * as BiIcons from 'react-icons/bi';
@@ -510,7 +510,7 @@ const DigitalThread: React.FC = () => {
           </div>
           
           <div className="w-4/5">
-            <NetworkView 
+            <SimpleNetworkView 
               items={filteredItems}
               selectedItem={selectedItem}
               onSelectItem={handleSelectItem}
