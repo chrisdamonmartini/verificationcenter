@@ -101,15 +101,24 @@ interface HPCJob {
   id: string;
   name: string;
   user: string;
+  submittedBy?: string; // Added for compatibility
   status: 'Running' | 'Queued' | 'Completed' | 'Failed' | 'Canceled';
   priority: 'Low' | 'Normal' | 'High' | 'Critical';
   startTime: string;
+  submissionTime?: string; // Added for compatibility
   endTime?: string;
+  completionTime?: string; // Added for compatibility
+  executionTime?: string; // Added for duration display
   estimatedCompletion?: string;
   progress: number;
   nodesAllocated: number;
   cpuCores: number;
   memoryAllocated: string;
+  resourceAllocation?: { // Added for compatibility with rendering
+    cpuCores: number;
+    memoryGB: number;
+    gpuCores: number;
+  };
   cluster: string;
   analysisId?: string;
 }
@@ -1232,6 +1241,236 @@ const ModelsManagement: React.FC = () => {
     window.location.href = '/digital-thread';
   };
 
+  // HPC Status tab content
+  const renderHPCStatus = () => {
+    return (
+      <div>
+        <div className="flex justify-between items-center mb-6">
+          <h2 className="text-xl font-semibold">HPC Cluster Status</h2>
+          <div className="flex space-x-2">
+            <select 
+              className="border border-gray-300 rounded-lg px-3 py-1 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500"
+              defaultValue="all"
+            >
+              <option value="all">All Clusters</option>
+              {hpcClusters.map(cluster => (
+                <option key={cluster.id} value={cluster.id}>{cluster.name}</option>
+              ))}
+            </select>
+            <button className="bg-blue-500 hover:bg-blue-600 text-white rounded-lg px-3 py-1 text-sm">
+              <FaIcons.FaSync className="inline mr-1" /> Refresh
+            </button>
+          </div>
+        </div>
+
+        {/* HPC Clusters */}
+        <div className="mb-8">
+          <h3 className="text-lg font-medium mb-4">Compute Clusters</h3>
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+            {hpcClusters.map(cluster => (
+              <div key={cluster.id} className="border rounded-lg p-4 shadow-sm">
+                <div className="flex justify-between items-start">
+                  <div>
+                    <h4 className="font-semibold text-lg">{cluster.name}</h4>
+                    <p className="text-sm text-gray-500 mb-1">{cluster.id}</p>
+                  </div>
+                  <div>
+                    <span className={`inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium ${
+                      cluster.status === 'Online' 
+                        ? 'bg-green-100 text-green-800' 
+                        : cluster.status === 'Degraded'
+                          ? 'bg-yellow-100 text-yellow-800'
+                          : 'bg-red-100 text-red-800'
+                    }`}>
+                      {cluster.status}
+                    </span>
+                  </div>
+                </div>
+                
+                <div className="grid grid-cols-2 gap-4 mt-4">
+                  <div>
+                    <p className="text-sm text-gray-500 mb-1">CPU Usage</p>
+                    <div className="w-full bg-gray-200 rounded-full h-2.5">
+                      <div 
+                        className={`h-2.5 rounded-full ${
+                          cluster.cpuUsage > 90 ? 'bg-red-500' : cluster.cpuUsage > 70 ? 'bg-yellow-500' : 'bg-green-500'
+                        }`} 
+                        style={{ width: `${cluster.cpuUsage}%` }}
+                      ></div>
+                    </div>
+                    <p className="text-xs text-right mt-1">{cluster.cpuUsage}%</p>
+                  </div>
+                  
+                  <div>
+                    <p className="text-sm text-gray-500 mb-1">Memory Usage</p>
+                    <div className="w-full bg-gray-200 rounded-full h-2.5">
+                      <div 
+                        className={`h-2.5 rounded-full ${
+                          cluster.memoryUsage > 90 ? 'bg-red-500' : cluster.memoryUsage > 70 ? 'bg-yellow-500' : 'bg-green-500'
+                        }`} 
+                        style={{ width: `${cluster.memoryUsage}%` }}
+                      ></div>
+                    </div>
+                    <p className="text-xs text-right mt-1">{cluster.memoryUsage}%</p>
+                  </div>
+                </div>
+                
+                <div className="mt-4 grid grid-cols-2 gap-4">
+                  <div>
+                    <span className="text-sm text-gray-500">Nodes:</span>
+                    <span className="ml-1">{cluster.activeNodes}/{cluster.totalNodes}</span>
+                  </div>
+                  <div>
+                    <span className="text-sm text-gray-500">Jobs:</span>
+                    <span className="ml-1">{cluster.jobsRunning} running, {cluster.jobsQueued} queued</span>
+                  </div>
+                  <div>
+                    <span className="text-sm text-gray-500">Uptime:</span>
+                    <span className="ml-1">{cluster.uptime}</span>
+                  </div>
+                  <div>
+                    <span className="text-sm text-gray-500">Next Maintenance:</span>
+                    <span className="ml-1">{cluster.nextMaintenance}</span>
+                  </div>
+                </div>
+              </div>
+            ))}
+          </div>
+        </div>
+
+        {/* HPC Jobs */}
+        <div>
+          <div className="flex justify-between items-center mb-4">
+            <h3 className="text-lg font-medium">Running & Queued Jobs</h3>
+            <div className="text-sm text-gray-500">
+              {hpcJobs.filter(job => job.status === 'Running' || job.status === 'Queued').length} jobs
+            </div>
+          </div>
+          
+          <div className="overflow-x-auto">
+            <table className="min-w-full divide-y divide-gray-200">
+              <thead className="bg-gray-50">
+                <tr>
+                  <th scope="col" className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">ID / Name</th>
+                  <th scope="col" className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Status</th>
+                  <th scope="col" className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Progress</th>
+                  <th scope="col" className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Resources</th>
+                  <th scope="col" className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">User</th>
+                  <th scope="col" className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Start Time</th>
+                </tr>
+              </thead>
+              <tbody className="bg-white divide-y divide-gray-200">
+                {hpcJobs
+                  .filter(job => job.status === 'Running' || job.status === 'Queued')
+                  .map(job => (
+                  <tr key={job.id}>
+                    <td className="px-6 py-4 whitespace-nowrap">
+                      <div className="text-sm font-medium text-gray-900">{job.id}</div>
+                      <div className="text-sm text-gray-500">{job.name}</div>
+                    </td>
+                    <td className="px-6 py-4 whitespace-nowrap">
+                      <span className={`inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium ${
+                        job.status === 'Running' 
+                          ? 'bg-green-100 text-green-800' 
+                          : job.status === 'Queued'
+                            ? 'bg-yellow-100 text-yellow-800'
+                            : job.status === 'Failed'
+                              ? 'bg-red-100 text-red-800'
+                              : 'bg-blue-100 text-blue-800'
+                      }`}>
+                        {job.status}
+                      </span>
+                    </td>
+                    <td className="px-6 py-4 whitespace-nowrap">
+                      {job.status === 'Running' ? (
+                        <div>
+                          <div className="w-full bg-gray-200 rounded-full h-2.5">
+                            <div 
+                              className="h-2.5 rounded-full bg-blue-500" 
+                              style={{ width: `${job.progress}%` }}
+                            ></div>
+                          </div>
+                          <p className="text-xs text-right mt-1">{job.progress}%</p>
+                        </div>
+                      ) : (
+                        <span className="text-sm text-gray-500">-</span>
+                      )}
+                    </td>
+                    <td className="px-6 py-4 whitespace-nowrap">
+                      <div className="text-sm text-gray-900">{job.cpuCores} CPUs, {job.memoryAllocated}</div>
+                      <div className="text-xs text-gray-500">On {job.nodesAllocated} node(s)</div>
+                    </td>
+                    <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
+                      {job.user}
+                    </td>
+                    <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
+                      {job.startTime}
+                    </td>
+                  </tr>
+                ))}
+              </tbody>
+            </table>
+          </div>
+          
+          <div className="mt-6">
+            <h3 className="text-lg font-medium mb-4">Completed Jobs (Last 7 Days)</h3>
+            <div className="overflow-x-auto">
+              <table className="min-w-full divide-y divide-gray-200">
+                <thead className="bg-gray-50">
+                  <tr>
+                    <th scope="col" className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">ID / Name</th>
+                    <th scope="col" className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Status</th>
+                    <th scope="col" className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Duration</th>
+                    <th scope="col" className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Resources</th>
+                    <th scope="col" className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">User</th>
+                    <th scope="col" className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">End Time</th>
+                  </tr>
+                </thead>
+                <tbody className="bg-white divide-y divide-gray-200">
+                  {hpcJobs
+                    .filter(job => job.status === 'Completed' || job.status === 'Failed')
+                    .slice(0, 5)
+                    .map(job => (
+                    <tr key={job.id}>
+                      <td className="px-6 py-4 whitespace-nowrap">
+                        <div className="text-sm font-medium text-gray-900">{job.id}</div>
+                        <div className="text-sm text-gray-500">{job.name}</div>
+                      </td>
+                      <td className="px-6 py-4 whitespace-nowrap">
+                        <span className={`inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium ${
+                          job.status === 'Completed' 
+                            ? 'bg-green-100 text-green-800' 
+                            : 'bg-red-100 text-red-800'
+                        }`}>
+                          {job.status}
+                        </span>
+                      </td>
+                      <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
+                        {job.startTime && job.endTime ? 
+                          new Date(new Date(job.endTime).getTime() - new Date(job.startTime).getTime()).toISOString().substr(11, 8) 
+                          : '-'}
+                      </td>
+                      <td className="px-6 py-4 whitespace-nowrap">
+                        <div className="text-sm text-gray-900">{job.cpuCores} CPUs, {job.memoryAllocated}</div>
+                        <div className="text-xs text-gray-500">On {job.nodesAllocated} node(s)</div>
+                      </td>
+                      <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
+                        {job.user}
+                      </td>
+                      <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
+                        {job.endTime || '-'}
+                      </td>
+                    </tr>
+                  ))}
+                </tbody>
+              </table>
+            </div>
+          </div>
+        </div>
+      </div>
+    );
+  };
+
   return (
     <div className="bg-white p-6 rounded-lg shadow-lg relative">
       <div className="flex justify-between items-center mb-6">
@@ -1633,7 +1872,7 @@ const ModelsManagement: React.FC = () => {
 
         {activeTab === 'HPCStatus' && (
           <div>
-            {/* Existing HPCStatus tab content */}
+            {renderHPCStatus()}
           </div>
         )}
       </div>
