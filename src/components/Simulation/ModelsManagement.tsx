@@ -1,9 +1,35 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect, useRef } from 'react';
 import * as FaIcons from 'react-icons/fa';
 import * as BsIcons from 'react-icons/bs';
 import * as AiIcons from 'react-icons/ai';
 import * as MdIcons from 'react-icons/md';
 import * as BiIcons from 'react-icons/bi';
+
+// Digital Thread interfaces
+interface DigitalThreadItem {
+  id: string;
+  name: string;
+  type: 'Requirement' | 'Function' | 'CAD' | 'Simulation' | 'BOM' | 'Test' | 'Analysis';
+  status: 'Current' | 'Modified' | 'New' | 'Deprecated';
+  lastModified: string;
+  modifiedBy: string;
+  linkedItems: string[];
+  dueDate?: string;
+  description?: string;
+}
+
+// Enhanced Analysis Item interface
+interface EnhancedAnalysisItem extends AnalysisItem {
+  scenarios: string[];
+  functions: string[];
+  cad: string[];
+  bom: string[];
+  simulationModels: string[];
+  automations: string[];
+  dueDate: string;
+  description: string;
+  linkedThreadItems: DigitalThreadItem[];
+}
 
 // Types for simulation models
 interface SimulationModel {
@@ -87,28 +113,15 @@ interface HPCJob {
   analysisId?: string;
 }
 
-// Digital Thread interfaces
-interface DigitalThreadNode {
-  id: string;
-  name: string;
-  type: 'Requirement' | 'Function' | 'Component' | 'Simulation' | 'Test' | 'CAD' | 'BOM';
-  status: 'Current' | 'Modified' | 'New' | 'Deprecated';
-  lastModified: string;
-  modifiedBy: string;
-  links: string[]; // IDs of connected nodes
-}
-
-interface RelatedItem {
-  id: string;
-  name: string;
-  type: string;
-  status: string;
-  link: string;
-}
-
 const ModelsManagement: React.FC = () => {
-  // Active tab state
-  const [activeTab, setActiveTab] = useState<'Analyses' | 'Models' | 'Automation' | 'HPCStatus'>('Analyses');
+  // Active tab state - update to include Alpha, Beta, Charlie
+  const [activeTab, setActiveTab] = useState<'Alpha' | 'Beta' | 'Charlie' | 'Models' | 'Automation' | 'HPCStatus'>('Alpha');
+  
+  // Digital Thread panel state
+  const [showDigitalThread, setShowDigitalThread] = useState<boolean>(false);
+  const [selectedThreadItem, setSelectedThreadItem] = useState<DigitalThreadItem | null>(null);
+  const [selectedAnalysis, setSelectedAnalysis] = useState<EnhancedAnalysisItem | null>(null);
+  const [recentChanges, setRecentChanges] = useState<{[id: string]: boolean}>({});
   
   // Filter states
   const [searchQuery, setSearchQuery] = useState('');
@@ -119,13 +132,15 @@ const ModelsManagement: React.FC = () => {
   const [clusterFilter, setClusterFilter] = useState('All Clusters');
   const [jobStatusFilter, setJobStatusFilter] = useState('All Statuses');
 
-  // New state for Digital Thread
-  const [showDigitalThread, setShowDigitalThread] = useState<boolean>(false);
-  const [selectedNode, setSelectedNode] = useState<DigitalThreadNode | null>(null);
-  const [timeframeFilter, setTimeframeFilter] = useState<string>('all');
-  
-  // Sample analysis data
-  const analysisItems: AnalysisItem[] = [
+  // Beta tab specific state
+  const [betaSelectedAnalysis, setBetaSelectedAnalysis] = useState<EnhancedAnalysisItem | null>(null);
+
+  // Charlie tab specific state
+  const [charlieExpandedAnalysis, setCharlieExpandedAnalysis] = useState<string | null>(null);
+  const [charlieActiveMetric, setCharlieActiveMetric] = useState<'status' | 'requirements' | 'models' | 'changes'>('status');
+
+  // Sample enhanced analysis data
+  const enhancedAnalysisItems: EnhancedAnalysisItem[] = [
     {
       id: 'AN-001',
       name: 'Structural Analysis - Wing Components',
@@ -133,7 +148,16 @@ const ModelsManagement: React.FC = () => {
       completionPercentage: 100,
       requirements: ['SR-001', 'SR-004', 'SR-009'],
       lastRun: '2023-05-10',
-      assignedTo: 'John Smith'
+      assignedTo: 'John Smith',
+      scenarios: ['Flight Scenario 1', 'Extreme Weather Conditions'],
+      functions: ['Lift Generation', 'Load Distribution'],
+      cad: ['Wing Assembly v2.4', 'Winglet Design v1.1'],
+      bom: ['Wing Components BOM v3.0'],
+      simulationModels: ['SM-001', 'SM-003'],
+      automations: ['AUTO-002'],
+      dueDate: '2023-04-30',
+      description: 'Structural analysis of main wing components under various load conditions',
+      linkedThreadItems: []
     },
     {
       id: 'AN-002',
@@ -142,36 +166,150 @@ const ModelsManagement: React.FC = () => {
       completionPercentage: 65,
       requirements: ['SR-012', 'SR-015'],
       lastRun: '2023-05-08',
-      assignedTo: 'Sarah Johnson'
+      assignedTo: 'Emily Johnson',
+      scenarios: ['Max Thrust Conditions', 'Extended Idle'],
+      functions: ['Heat Dissipation', 'Thermal Insulation'],
+      cad: ['Engine Bay v3.1', 'Heat Shield v2.0'],
+      bom: ['Engine Components BOM v2.1'],
+      simulationModels: ['SM-002', 'SM-007'],
+      automations: ['AUTO-001'],
+      dueDate: '2023-05-20',
+      description: 'Analysis of thermal behavior in the engine bay during various operational scenarios',
+      linkedThreadItems: []
     },
     {
       id: 'AN-003',
-      name: 'Aerodynamic Performance Analysis',
+      name: 'Aerodynamic Analysis - Full Aircraft',
       status: 'Pending',
       completionPercentage: 0,
-      requirements: ['SR-003', 'SR-007', 'SR-018'],
-      lastRun: 'Not Started',
-      assignedTo: 'Michael Chen'
+      requirements: ['SR-003', 'SR-007', 'SR-016'],
+      lastRun: '',
+      assignedTo: 'Michael Chen',
+      scenarios: ['Cruise Conditions', 'Maximum Speed', 'Take-off & Landing'],
+      functions: ['Drag Reduction', 'Lift Optimization'],
+      cad: ['Full Aircraft v4.2'],
+      bom: ['Aerodynamic Surfaces BOM v1.5'],
+      simulationModels: ['SM-004', 'SM-008'],
+      automations: ['AUTO-003'],
+      dueDate: '2023-06-15',
+      description: 'Comprehensive aerodynamic analysis of the full aircraft configuration',
+      linkedThreadItems: []
     },
     {
       id: 'AN-004',
-      name: 'Control System Stability Analysis',
+      name: 'Control Systems Analysis',
       status: 'In Progress',
-      completionPercentage: 42,
-      requirements: ['SR-022', 'SR-025'],
-      lastRun: '2023-05-09',
-      assignedTo: 'Lisa Garcia'
+      completionPercentage: 35,
+      requirements: ['SR-022', 'SR-023', 'SR-025'],
+      lastRun: '2023-05-05',
+      assignedTo: 'Sarah Wilson',
+      scenarios: ['Normal Operation', 'Emergency Procedures'],
+      functions: ['Control Surface Response', 'System Latency'],
+      cad: ['Control Systems v2.8', 'Actuators v1.7'],
+      bom: ['Control Systems BOM v2.3'],
+      simulationModels: ['SM-005', 'SM-010'],
+      automations: ['AUTO-004'],
+      dueDate: '2023-05-30',
+      description: 'Analysis of control systems response and performance under different flight conditions',
+      linkedThreadItems: []
     },
     {
       id: 'AN-005',
       name: 'Environmental Impact Analysis',
       status: 'Failed',
-      completionPercentage: 80,
-      requirements: ['SR-030', 'SR-032', 'SR-035'],
-      lastRun: '2023-05-07',
-      assignedTo: 'Robert Wilson'
+      completionPercentage: 75,
+      requirements: ['SR-030', 'SR-032'],
+      lastRun: '2023-05-03',
+      assignedTo: 'David Wilson',
+      scenarios: ['Standard Flight Profile', 'Extended Range Mission'],
+      functions: ['Emissions Calculation', 'Fuel Efficiency'],
+      cad: ['Engine Assembly v3.5', 'Fuel System v2.2'],
+      bom: ['Engine BOM v3.6', 'Fuel System BOM v2.0'],
+      simulationModels: ['SM-006', 'SM-009'],
+      automations: ['AUTO-005'],
+      dueDate: '2023-05-10',
+      description: 'Analysis of emissions and environmental impact across multiple flight profiles',
+      linkedThreadItems: []
     }
   ];
+
+  // Sample Digital Thread Data
+  const digitalThreadItems: DigitalThreadItem[] = [
+    {
+      id: 'REQ-001',
+      name: 'Wing Loading Requirements',
+      type: 'Requirement',
+      status: 'Current',
+      lastModified: '2023-03-15',
+      modifiedBy: 'John Smith',
+      linkedItems: ['FUNC-001', 'CAD-001', 'AN-001']
+    },
+    {
+      id: 'FUNC-001',
+      name: 'Wing Load Distribution',
+      type: 'Function',
+      status: 'Modified',
+      lastModified: '2023-04-02',
+      modifiedBy: 'Emily Johnson',
+      linkedItems: ['REQ-001', 'CAD-001', 'SIM-001']
+    },
+    {
+      id: 'CAD-001',
+      name: 'Wing Assembly Design',
+      type: 'CAD',
+      status: 'Modified',
+      lastModified: '2023-04-10',
+      modifiedBy: 'Michael Chen',
+      linkedItems: ['FUNC-001', 'BOM-001', 'AN-001']
+    },
+    {
+      id: 'BOM-001',
+      name: 'Wing Components',
+      type: 'BOM',
+      status: 'New',
+      lastModified: '2023-04-15',
+      modifiedBy: 'Sarah Wilson',
+      linkedItems: ['CAD-001', 'AN-001']
+    },
+    {
+      id: 'SIM-001',
+      name: 'Wing Structural Model',
+      type: 'Simulation',
+      status: 'Current',
+      lastModified: '2023-03-20',
+      modifiedBy: 'David Wilson',
+      linkedItems: ['FUNC-001', 'AN-001']
+    }
+  ];
+
+  // Link thread items to analyses
+  useEffect(() => {
+    // Populate the linkedThreadItems for each analysis item
+    const updatedAnalysisItems = enhancedAnalysisItems.map(analysis => {
+      // Find all thread items that link to this analysis
+      const linkedItems = digitalThreadItems.filter(item => 
+        item.linkedItems.includes(analysis.id)
+      );
+      return {
+        ...analysis,
+        linkedThreadItems: linkedItems
+      };
+    });
+
+    // Identify recent changes (items modified in the last 2 weeks)
+    const twoWeeksAgo = new Date();
+    twoWeeksAgo.setDate(twoWeeksAgo.getDate() - 14);
+    
+    const changes: {[id: string]: boolean} = {};
+    digitalThreadItems.forEach(item => {
+      const modifiedDate = new Date(item.lastModified);
+      if (modifiedDate > twoWeeksAgo && item.status !== 'Current') {
+        changes[item.id] = true;
+      }
+    });
+    
+    setRecentChanges(changes);
+  }, []);
 
   // Sample simulation models data
   const simulationModels: SimulationModel[] = [
@@ -558,243 +696,6 @@ const ModelsManagement: React.FC = () => {
     }
   ];
 
-  // Mock digital thread data
-  const digitalThreadNodes: DigitalThreadNode[] = [
-    {
-      id: 'REQ-001',
-      name: 'Aerodynamic Performance',
-      type: 'Requirement',
-      status: 'Current',
-      lastModified: '2024-03-15',
-      modifiedBy: 'J. Smith',
-      links: ['FUNC-001', 'SIM-001']
-    },
-    {
-      id: 'FUNC-001',
-      name: 'Wing Lift Calculation',
-      type: 'Function',
-      status: 'Modified',
-      lastModified: '2024-04-02',
-      modifiedBy: 'A. Johnson',
-      links: ['REQ-001', 'CAD-001', 'SIM-001']
-    },
-    {
-      id: 'CAD-001',
-      name: 'Wing Assembly',
-      type: 'CAD',
-      status: 'Modified',
-      lastModified: '2024-03-28',
-      modifiedBy: 'R. Chen',
-      links: ['FUNC-001', 'BOM-001']
-    },
-    {
-      id: 'BOM-001',
-      name: 'Wing Components',
-      type: 'BOM',
-      status: 'Current',
-      lastModified: '2024-03-30',
-      modifiedBy: 'S. Davis',
-      links: ['CAD-001']
-    },
-    {
-      id: 'SIM-001',
-      name: 'Wing Aerodynamics Simulation',
-      type: 'Simulation',
-      status: 'Current',
-      lastModified: '2024-04-05',
-      modifiedBy: 'J. Wilson',
-      links: ['REQ-001', 'FUNC-001', 'TEST-001']
-    },
-    {
-      id: 'TEST-001',
-      name: 'Wind Tunnel Test',
-      type: 'Test',
-      status: 'New',
-      lastModified: '2024-04-10',
-      modifiedBy: 'K. Lee',
-      links: ['SIM-001']
-    }
-  ];
-  
-  // Filter digital thread nodes by timeframe
-  const getFilteredNodes = () => {
-    if (timeframeFilter === 'all') return digitalThreadNodes;
-    
-    const now = new Date();
-    const cutoffDate = new Date();
-    
-    switch (timeframeFilter) {
-      case '1week':
-        cutoffDate.setDate(now.getDate() - 7);
-        break;
-      case '2weeks':
-        cutoffDate.setDate(now.getDate() - 14);
-        break;
-      case '1month':
-        cutoffDate.setMonth(now.getMonth() - 1);
-        break;
-      case '3months':
-        cutoffDate.setMonth(now.getMonth() - 3);
-        break;
-      default:
-        return digitalThreadNodes;
-    }
-    
-    return digitalThreadNodes.filter(node => {
-      const modifiedDate = new Date(node.lastModified);
-      return modifiedDate >= cutoffDate;
-    });
-  };
-  
-  // Get color for node status
-  const getNodeStatusColor = (status: string) => {
-    switch (status) {
-      case 'Current': return 'bg-green-100 text-green-800';
-      case 'Modified': return 'bg-yellow-100 text-yellow-800';
-      case 'New': return 'bg-blue-100 text-blue-800';
-      case 'Deprecated': return 'bg-red-100 text-red-800';
-      default: return 'bg-gray-100 text-gray-800';
-    }
-  };
-  
-  // Get icon for node type
-  const getNodeTypeIcon = (type: string) => {
-    switch (type) {
-      case 'Requirement': return <FaIcons.FaFileAlt />;
-      case 'Function': return <FaIcons.FaProjectDiagram />;
-      case 'Component': return <FaIcons.FaCubes />;
-      case 'Simulation': return <FaIcons.FaChartLine />;
-      case 'Test': return <FaIcons.FaVial />;
-      case 'CAD': return <FaIcons.FaDrawPolygon />;
-      case 'BOM': return <FaIcons.FaListAlt />;
-      default: return <FaIcons.FaFile />;
-    }
-  };
-  
-  // Get related items for a node
-  const getRelatedItems = (nodeId: string): RelatedItem[] => {
-    const node = digitalThreadNodes.find(n => n.id === nodeId);
-    if (!node) return [];
-    
-    return node.links.map(linkId => {
-      const linkedNode = digitalThreadNodes.find(n => n.id === linkId);
-      if (!linkedNode) return null;
-      
-      return {
-        id: linkedNode.id,
-        name: linkedNode.name,
-        type: linkedNode.type,
-        status: linkedNode.status,
-        link: `#${linkedNode.id}`
-      };
-    }).filter(item => item !== null) as RelatedItem[];
-  };
-  
-  // Digital Thread panel component
-  const DigitalThreadPanel = () => {
-    return (
-      <div className={`fixed bottom-0 left-0 right-0 bg-white shadow-lg transition-transform transform ${showDigitalThread ? 'translate-y-0' : 'translate-y-full'} z-50`} style={{ height: '60vh' }}>
-        <div className="flex justify-between items-center p-4 border-b">
-          <h2 className="text-lg font-semibold">Digital Thread Visualization</h2>
-          <div className="flex items-center space-x-4">
-            <select
-              className="border rounded-md p-1"
-              value={timeframeFilter}
-              onChange={(e) => setTimeframeFilter(e.target.value)}
-            >
-              <option value="all">All Time</option>
-              <option value="1week">Last Week</option>
-              <option value="2weeks">Last 2 Weeks</option>
-              <option value="1month">Last Month</option>
-              <option value="3months">Last 3 Months</option>
-            </select>
-            <button 
-              className="text-gray-500 hover:text-gray-700"
-              onClick={() => setShowDigitalThread(false)}
-            >
-              <FaIcons.FaTimes />
-            </button>
-          </div>
-        </div>
-        
-        <div className="flex h-full">
-          {/* Thread visualization */}
-          <div className="flex-1 overflow-auto p-4 border-r">
-            <div className="flex flex-wrap gap-4">
-              {getFilteredNodes().map(node => (
-                <div 
-                  key={node.id}
-                  className={`p-4 border rounded-lg cursor-pointer hover:bg-gray-50 ${selectedNode?.id === node.id ? 'border-blue-500 ring-2 ring-blue-200' : 'border-gray-200'}`}
-                  onClick={() => setSelectedNode(node)}
-                >
-                  <div className="flex items-center mb-2">
-                    <span className="mr-2 text-blue-600">
-                      {getNodeTypeIcon(node.type)}
-                    </span>
-                    <span className="font-medium">{node.id}: {node.name}</span>
-                  </div>
-                  <div className="flex justify-between items-center">
-                    <span className={`px-2 py-1 text-xs rounded-full ${getNodeStatusColor(node.status)}`}>
-                      {node.status}
-                    </span>
-                    <span className="text-xs text-gray-500">
-                      {node.lastModified}
-                    </span>
-                  </div>
-                </div>
-              ))}
-            </div>
-          </div>
-          
-          {/* Selected node details */}
-          {selectedNode && (
-            <div className="w-96 overflow-auto p-4 bg-gray-50">
-              <div className="mb-4">
-                <h3 className="text-lg font-semibold">{selectedNode.name}</h3>
-                <div className="flex items-center text-sm text-gray-500">
-                  <span className="mr-2">{selectedNode.id}</span>
-                  <span className={`px-2 py-1 text-xs rounded-full ${getNodeStatusColor(selectedNode.status)}`}>
-                    {selectedNode.status}
-                  </span>
-                </div>
-              </div>
-              
-              <div className="mb-4">
-                <div className="text-sm text-gray-600 mb-1">Last Modified</div>
-                <div className="flex items-center">
-                  <FaIcons.FaCalendarAlt className="mr-2 text-gray-500" />
-                  <span>{selectedNode.lastModified}</span>
-                  <span className="mx-2">by</span>
-                  <span>{selectedNode.modifiedBy}</span>
-                </div>
-              </div>
-              
-              {/* Related items */}
-              <div>
-                <div className="text-sm font-medium mb-2">Related Items</div>
-                <div className="space-y-2">
-                  {getRelatedItems(selectedNode.id).map(item => (
-                    <div key={item.id} className="flex items-center justify-between p-2 border rounded hover:bg-white">
-                      <div className="flex items-center">
-                        <span className="mr-2 text-blue-600">
-                          {getNodeTypeIcon(item.type)}
-                        </span>
-                        <span>{item.id}</span>
-                      </div>
-                      <span className={`px-2 py-1 text-xs rounded-full ${getNodeStatusColor(item.status)}`}>
-                        {item.status}
-                      </span>
-                    </div>
-                  ))}
-                </div>
-              </div>
-            </div>
-          )}
-        </div>
-      </div>
-    );
-  };
-
   // Filter the models based on search and filters
   const filteredModels = simulationModels.filter(model => {
     const matchesSearch = 
@@ -949,77 +850,1431 @@ const ModelsManagement: React.FC = () => {
     }
   };
 
-  return (
-    <div className="bg-gray-50 p-6 min-h-screen relative">
-      {/* Digital Thread toggle button */}
-      <button
-        className="fixed bottom-6 right-6 z-50 bg-blue-600 hover:bg-blue-700 text-white rounded-full p-4 shadow-lg"
-        onClick={() => setShowDigitalThread(!showDigitalThread)}
-        title="Toggle Digital Thread View"
+  // Function to get the correct icon for each thread item type
+  const getThreadItemIcon = (type: string) => {
+    switch (type) {
+      case 'Requirement':
+        return <FaIcons.FaFileAlt className="text-blue-600" />;
+      case 'Function':
+        return <FaIcons.FaProjectDiagram className="text-green-600" />;
+      case 'CAD':
+        return <FaIcons.FaDrawPolygon className="text-purple-600" />;
+      case 'Simulation':
+        return <FaIcons.FaChartLine className="text-orange-600" />;
+      case 'BOM':
+        return <FaIcons.FaListAlt className="text-indigo-600" />;
+      case 'Test':
+        return <FaIcons.FaVial className="text-red-600" />;
+      case 'Analysis':
+        return <FaIcons.FaChartBar className="text-yellow-600" />;
+      default:
+        return <FaIcons.FaFile className="text-gray-600" />;
+    }
+  };
+
+  // Get badge color for thread item status
+  const getThreadStatusColor = (status: string) => {
+    switch (status) {
+      case 'Current':
+        return 'bg-green-100 text-green-800';
+      case 'Modified':
+        return 'bg-yellow-100 text-yellow-800';
+      case 'New':
+        return 'bg-blue-100 text-blue-800';
+      case 'Deprecated':
+        return 'bg-red-100 text-red-800';
+      default:
+        return 'bg-gray-100 text-gray-800';
+    }
+  };
+
+  // Digital Thread Panel Component
+  const DigitalThreadPanel = () => {
+    return (
+      <div 
+        className={`fixed bottom-0 left-0 right-0 bg-white shadow-lg border-t border-gray-300 transition-all duration-300 ease-in-out ${
+          showDigitalThread ? 'h-96' : 'h-10'
+        } z-40`}
       >
-        <FaIcons.FaProjectDiagram />
-      </button>
-      
-      {/* Digital Thread Panel */}
-      <DigitalThreadPanel />
-      
-      <div className="max-w-7xl mx-auto">
-        <div className="mb-6">
-          <h1 className="text-2xl font-bold text-gray-900">Analysis Dashboard</h1>
-          <p className="text-gray-600">Manage simulation models, analyses, and digital thread visualization</p>
-        </div>
-        
-        {/* Program Selection */}
-        <div className="bg-white p-6 rounded-lg shadow-md mb-6">
-          <h2 className="text-lg font-semibold mb-4">Program Selection</h2>
-          <div className="flex space-x-4">
-            <div className="flex items-center">
-              <input
-                type="checkbox"
-                id="missileProgram"
-                className="h-4 w-4 text-blue-600 focus:ring-blue-500 border-gray-300 rounded"
-                checked={true}
-              />
-              <label htmlFor="missileProgram" className="ml-2 text-gray-700">
-                Missile Program
-              </label>
-            </div>
-            <div className="flex items-center">
-              <input
-                type="checkbox"
-                id="fighterProgram"
-                className="h-4 w-4 text-blue-600 focus:ring-blue-500 border-gray-300 rounded"
-                checked={true}
-              />
-              <label htmlFor="fighterProgram" className="ml-2 text-gray-700">
-                Fighter Program
-              </label>
-            </div>
+        <div 
+          className="flex items-center justify-between px-4 py-2 bg-gray-100 cursor-pointer border-b"
+          onClick={() => setShowDigitalThread(!showDigitalThread)}
+        >
+          <div className="flex items-center">
+            <FaIcons.FaProjectDiagram className="mr-2 text-blue-600" />
+            <h3 className="font-medium">Digital Thread Visualization</h3>
+            {Object.keys(recentChanges).length > 0 && (
+              <span className="ml-2 px-2 py-1 bg-yellow-100 text-yellow-800 text-xs rounded-full">
+                {Object.keys(recentChanges).length} Recent Changes
+              </span>
+            )}
           </div>
-        </div>
-        
-        {/* Analysis Overview */}
-        <div className="grid grid-cols-1 md:grid-cols-3 gap-6 mb-6">
-          <div className="bg-white p-6 rounded-lg shadow-md">
-            <h2 className="text-lg font-semibold mb-4">Total Analyses</h2>
-            <div className="text-4xl font-bold text-blue-600">24</div>
-            <div className="mt-2 text-sm text-gray-600">5 completed, 12 in progress, 7 planned</div>
-          </div>
-          
-          <div className="bg-white p-6 rounded-lg shadow-md">
-            <h2 className="text-lg font-semibold mb-4">Models Utilized</h2>
-            <div className="text-4xl font-bold text-green-600">18</div>
-            <div className="mt-2 text-sm text-gray-600">12 fully validated, 6 partially validated</div>
-          </div>
-          
-          <div className="bg-white p-6 rounded-lg shadow-md">
-            <h2 className="text-lg font-semibold mb-4">Automation Workflows</h2>
-            <div className="text-4xl font-bold text-purple-600">7</div>
-            <div className="mt-2 text-sm text-gray-600">3 running, 2 scheduled, 2 completed</div>
+          <div>
+            {showDigitalThread ? <FaIcons.FaChevronDown /> : <FaIcons.FaChevronUp />}
           </div>
         </div>
 
-        {/* Rest of the component... */}
+        {showDigitalThread && (
+          <div className="p-4 h-full overflow-auto">
+            <div className="flex flex-col h-full">
+              {selectedAnalysis ? (
+                <div className="flex flex-col h-full">
+                  <div className="flex justify-between mb-4">
+                    <h3 className="text-lg font-semibold">{selectedAnalysis.name} - Digital Thread</h3>
+                    <button
+                      className="text-blue-600 hover:text-blue-800"
+                      onClick={() => setSelectedAnalysis(null)}
+                    >
+                      <FaIcons.FaTimes />
+                    </button>
+                  </div>
+
+                  <div className="flex-1 overflow-x-auto">
+                    <div className="flex space-x-4 pb-4 min-w-max">
+                      {/* Requirements Column */}
+                      <div className="min-w-64 flex-shrink-0">
+                        <div className="mb-2 font-medium text-center p-2 bg-blue-100 rounded-t-lg">Requirements</div>
+                        <div className="space-y-2">
+                          {selectedAnalysis.requirements.map(reqId => {
+                            const item = digitalThreadItems.find(item => item.id === reqId) || {
+                              id: reqId,
+                              name: `Requirement ${reqId}`,
+                              type: 'Requirement' as const,
+                              status: 'Current' as const,
+                              lastModified: '2023-04-01',
+                              modifiedBy: 'System',
+                              linkedItems: [selectedAnalysis.id]
+                            };
+                            
+                            const isRecentlyChanged = recentChanges[item.id];
+                            
+                            return (
+                              <div 
+                                key={reqId}
+                                className={`p-3 border rounded-lg ${isRecentlyChanged ? 'border-yellow-500 bg-yellow-50' : 'border-gray-200'}`}
+                              >
+                                <div className="flex items-center mb-1">
+                                  {getThreadItemIcon('Requirement')}
+                                  <span className="ml-2 font-medium">{item.id}</span>
+                                </div>
+                                <p className="text-sm text-gray-700">{item.name}</p>
+                                <div className="flex justify-between mt-1">
+                                  <span className={`px-2 py-1 text-xs rounded-full ${getThreadStatusColor(item.status)}`}>
+                                    {item.status}
+                                  </span>
+                                  <span className="text-xs text-gray-500">{item.lastModified}</span>
+                                </div>
+                              </div>
+                            );
+                          })}
+                        </div>
+                      </div>
+
+                      {/* Functions Column */}
+                      <div className="min-w-64 flex-shrink-0">
+                        <div className="mb-2 font-medium text-center p-2 bg-green-100 rounded-t-lg">Functions</div>
+                        <div className="space-y-2">
+                          {selectedAnalysis.functions.map((funcName, index) => {
+                            const funcId = `FUNC-${index + 1}`;
+                            const isRecentlyChanged = recentChanges[funcId];
+                            
+                            return (
+                              <div 
+                                key={funcId}
+                                className={`p-3 border rounded-lg ${isRecentlyChanged ? 'border-yellow-500 bg-yellow-50' : 'border-gray-200'}`}
+                              >
+                                <div className="flex items-center mb-1">
+                                  {getThreadItemIcon('Function')}
+                                  <span className="ml-2 font-medium">{funcId}</span>
+                                </div>
+                                <p className="text-sm text-gray-700">{funcName}</p>
+                                <div className="flex justify-between mt-1">
+                                  <span className={`px-2 py-1 text-xs rounded-full ${getThreadStatusColor('Current')}`}>
+                                    Current
+                                  </span>
+                                </div>
+                              </div>
+                            );
+                          })}
+                        </div>
+                      </div>
+
+                      {/* CAD Column */}
+                      <div className="min-w-64 flex-shrink-0">
+                        <div className="mb-2 font-medium text-center p-2 bg-purple-100 rounded-t-lg">CAD Data</div>
+                        <div className="space-y-2">
+                          {selectedAnalysis.cad.map((cadName, index) => {
+                            const cadId = `CAD-${index + 1}`;
+                            const isRecentlyChanged = recentChanges[cadId];
+                            
+                            return (
+                              <div 
+                                key={cadId}
+                                className={`p-3 border rounded-lg ${isRecentlyChanged ? 'border-yellow-500 bg-yellow-50' : 'border-gray-200'}`}
+                              >
+                                <div className="flex items-center mb-1">
+                                  {getThreadItemIcon('CAD')}
+                                  <span className="ml-2 font-medium">{cadId}</span>
+                                </div>
+                                <p className="text-sm text-gray-700">{cadName}</p>
+                                <div className="flex justify-between mt-1">
+                                  <span className={`px-2 py-1 text-xs rounded-full ${getThreadStatusColor('Current')}`}>
+                                    Current
+                                  </span>
+                                </div>
+                              </div>
+                            );
+                          })}
+                        </div>
+                      </div>
+
+                      {/* BOM Column */}
+                      <div className="min-w-64 flex-shrink-0">
+                        <div className="mb-2 font-medium text-center p-2 bg-indigo-100 rounded-t-lg">Engineering BOM</div>
+                        <div className="space-y-2">
+                          {selectedAnalysis.bom.map((bomName, index) => {
+                            const bomId = `BOM-${index + 1}`;
+                            const isRecentlyChanged = recentChanges[bomId];
+                            
+                            return (
+                              <div 
+                                key={bomId}
+                                className={`p-3 border rounded-lg ${isRecentlyChanged ? 'border-yellow-500 bg-yellow-50' : 'border-gray-200'}`}
+                              >
+                                <div className="flex items-center mb-1">
+                                  {getThreadItemIcon('BOM')}
+                                  <span className="ml-2 font-medium">{bomId}</span>
+                                </div>
+                                <p className="text-sm text-gray-700">{bomName}</p>
+                                <div className="flex justify-between mt-1">
+                                  <span className={`px-2 py-1 text-xs rounded-full ${getThreadStatusColor('Current')}`}>
+                                    Current
+                                  </span>
+                                </div>
+                              </div>
+                            );
+                          })}
+                        </div>
+                      </div>
+                      
+                      {/* Simulation Models Column */}
+                      <div className="min-w-64 flex-shrink-0">
+                        <div className="mb-2 font-medium text-center p-2 bg-orange-100 rounded-t-lg">Simulation Models</div>
+                        <div className="space-y-2">
+                          {selectedAnalysis.simulationModels.map(simId => {
+                            const isRecentlyChanged = recentChanges[simId];
+                            
+                            return (
+                              <div 
+                                key={simId}
+                                className={`p-3 border rounded-lg ${isRecentlyChanged ? 'border-yellow-500 bg-yellow-50' : 'border-gray-200'}`}
+                              >
+                                <div className="flex items-center mb-1">
+                                  {getThreadItemIcon('Simulation')}
+                                  <span className="ml-2 font-medium">{simId}</span>
+                                </div>
+                                <p className="text-sm text-gray-700">Simulation Model</p>
+                                <div className="flex justify-between mt-1">
+                                  <span className={`px-2 py-1 text-xs rounded-full ${getThreadStatusColor('Current')}`}>
+                                    Current
+                                  </span>
+                                </div>
+                              </div>
+                            );
+                          })}
+                        </div>
+                      </div>
+                      
+                      {/* Automations Column */}
+                      <div className="min-w-64 flex-shrink-0">
+                        <div className="mb-2 font-medium text-center p-2 bg-red-100 rounded-t-lg">Automations</div>
+                        <div className="space-y-2">
+                          {selectedAnalysis.automations.map(autoId => {
+                            const isRecentlyChanged = recentChanges[autoId];
+                            
+                            return (
+                              <div 
+                                key={autoId}
+                                className={`p-3 border rounded-lg ${isRecentlyChanged ? 'border-yellow-500 bg-yellow-50' : 'border-gray-200'}`}
+                              >
+                                <div className="flex items-center mb-1">
+                                  {getThreadItemIcon('Test')}
+                                  <span className="ml-2 font-medium">{autoId}</span>
+                                </div>
+                                <p className="text-sm text-gray-700">Automation Workflow</p>
+                                <div className="flex justify-between mt-1">
+                                  <span className={`px-2 py-1 text-xs rounded-full ${getThreadStatusColor('Current')}`}>
+                                    Current
+                                  </span>
+                                </div>
+                              </div>
+                            );
+                          })}
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+              ) : (
+                <div className="text-center py-8">
+                  <FaIcons.FaProjectDiagram className="mx-auto text-gray-400 text-5xl mb-4" />
+                  <p className="text-gray-600">Select an Analysis to view its Digital Thread</p>
+                </div>
+              )}
+            </div>
+          </div>
+        )}
+      </div>
+    );
+  };
+
+  // Enhanced Analysis Card Component
+  const AnalysisCard = ({ analysis }: { analysis: EnhancedAnalysisItem }) => {
+    // Check if any thread items are recently changed
+    const hasRecentChanges = analysis.linkedThreadItems.some(item => recentChanges[item.id]);
+    
+    return (
+      <div className={`border rounded-lg shadow-sm overflow-hidden ${hasRecentChanges ? 'border-yellow-500' : 'border-gray-200'}`}>
+        <div className="p-4 bg-gray-50 flex justify-between items-start border-b">
+          <div>
+            <div className="flex items-center">
+              <h3 className="font-medium">{analysis.name}</h3>
+              {hasRecentChanges && (
+                <span className="ml-2 px-2 py-1 bg-yellow-100 text-yellow-800 text-xs rounded-full">
+                  Recent Changes
+                </span>
+              )}
+            </div>
+            <p className="text-sm text-gray-600">{analysis.description}</p>
+          </div>
+          <div>
+            <span className={`px-2 py-1 rounded-full text-xs font-medium ${getAnalysisStatusBadgeColor(analysis.status)}`}>
+              {analysis.status}
+            </span>
+          </div>
+        </div>
+        
+        <div className="p-4">
+          <div className="mb-3">
+            <div className="flex justify-between text-sm mb-1">
+              <span>Progress</span>
+              <span>{analysis.completionPercentage}%</span>
+            </div>
+            <div className="w-full bg-gray-200 rounded-full h-2">
+              <div 
+                className={`h-2 rounded-full ${
+                  analysis.status === 'Completed' ? 'bg-green-500' :
+                  analysis.status === 'Failed' ? 'bg-red-500' : 'bg-blue-500'
+                }`} 
+                style={{ width: `${analysis.completionPercentage}%` }}
+              ></div>
+            </div>
+          </div>
+          
+          <div className="grid grid-cols-2 gap-4 mb-3 text-sm">
+            <div>
+              <p className="font-medium text-gray-700">Assigned To</p>
+              <p>{analysis.assignedTo}</p>
+            </div>
+            <div>
+              <p className="font-medium text-gray-700">Due Date</p>
+              <p>{analysis.dueDate}</p>
+            </div>
+          </div>
+          
+          <div className="mb-3">
+            <p className="font-medium text-gray-700 text-sm mb-1">Requirements</p>
+            <div className="flex flex-wrap gap-1">
+              {analysis.requirements.map(req => (
+                <span key={req} className="px-2 py-1 bg-blue-100 text-blue-800 text-xs rounded">
+                  {req}
+                </span>
+              ))}
+            </div>
+          </div>
+
+          <div className="mb-3">
+            <p className="font-medium text-gray-700 text-sm mb-1">Simulation Models</p>
+            <div className="flex flex-wrap gap-1">
+              {analysis.simulationModels.map(model => (
+                <span key={model} className="px-2 py-1 bg-orange-100 text-orange-800 text-xs rounded">
+                  {model}
+                </span>
+              ))}
+            </div>
+          </div>
+
+          <div className="mb-3">
+            <p className="font-medium text-gray-700 text-sm mb-1">Scenarios</p>
+            <div className="flex flex-wrap gap-1">
+              {analysis.scenarios.map((scenario, index) => (
+                <span key={index} className="px-2 py-1 bg-green-100 text-green-800 text-xs rounded">
+                  {scenario}
+                </span>
+              ))}
+            </div>
+          </div>
+        </div>
+        
+        <div className="border-t p-3 bg-gray-50 flex justify-between">
+          <button 
+            className="text-blue-600 flex items-center text-sm"
+            onClick={() => {
+              setSelectedAnalysis(analysis);
+              setShowDigitalThread(true);
+            }}
+          >
+            <FaIcons.FaProjectDiagram className="mr-1" />
+            View Digital Thread
+          </button>
+          <button className="text-blue-600 flex items-center text-sm">
+            <FaIcons.FaEdit className="mr-1" />
+            View Details
+          </button>
+        </div>
+      </div>
+    );
+  };
+
+  // Beta tab analysis card component
+  const BetaAnalysisCard = ({ analysis }: { analysis: EnhancedAnalysisItem }) => {
+    const hasRecentChanges = analysis.linkedThreadItems.some(item => recentChanges[item.id]);
+    
+    return (
+      <div 
+        className={`border rounded-lg shadow-sm overflow-hidden cursor-pointer transition-all hover:shadow-md ${
+          betaSelectedAnalysis?.id === analysis.id ? 'ring-2 ring-blue-500' : ''
+        } ${hasRecentChanges ? 'border-yellow-500' : 'border-gray-200'}`}
+        onClick={() => setBetaSelectedAnalysis(analysis)}
+      >
+        <div className="p-4 bg-gray-50 flex justify-between items-start border-b">
+          <div>
+            <div className="flex items-center">
+              <h3 className="font-medium">{analysis.name}</h3>
+              {hasRecentChanges && (
+                <span className="ml-2 px-2 py-1 bg-yellow-100 text-yellow-800 text-xs rounded-full">
+                  Recent Changes
+                </span>
+              )}
+            </div>
+            <p className="text-sm text-gray-600 line-clamp-1">{analysis.description}</p>
+          </div>
+          <div>
+            <span className={`px-2 py-1 rounded-full text-xs font-medium ${getAnalysisStatusBadgeColor(analysis.status)}`}>
+              {analysis.status}
+            </span>
+          </div>
+        </div>
+        
+        <div className="p-4">
+          <div className="mb-3">
+            <div className="flex justify-between text-sm mb-1">
+              <span>Progress</span>
+              <span>{analysis.completionPercentage}%</span>
+            </div>
+            <div className="w-full bg-gray-200 rounded-full h-2">
+              <div 
+                className={`h-2 rounded-full ${
+                  analysis.status === 'Completed' ? 'bg-green-500' :
+                  analysis.status === 'Failed' ? 'bg-red-500' : 'bg-blue-500'
+                }`} 
+                style={{ width: `${analysis.completionPercentage}%` }}
+              ></div>
+            </div>
+          </div>
+          
+          <div className="grid grid-cols-2 gap-2 mb-3 text-xs">
+            <div>
+              <p className="font-medium text-gray-700">Assigned To</p>
+              <p>{analysis.assignedTo}</p>
+            </div>
+            <div>
+              <p className="font-medium text-gray-700">Due Date</p>
+              <p>{analysis.dueDate}</p>
+            </div>
+            <div>
+              <p className="font-medium text-gray-700">Last Run</p>
+              <p>{analysis.lastRun || 'Not run yet'}</p>
+            </div>
+            <div>
+              <p className="font-medium text-gray-700">Req. Count</p>
+              <p>{analysis.requirements.length}</p>
+            </div>
+          </div>
+        </div>
+      </div>
+    );
+  };
+  
+  // Beta tab digital thread visualization
+  const BetaDigitalThreadView = () => {
+    if (!betaSelectedAnalysis) {
+      return (
+        <div className="h-full flex flex-col justify-center items-center bg-gray-50 rounded-lg border border-dashed border-gray-300 p-6">
+          <FaIcons.FaProjectDiagram className="text-gray-400 text-5xl mb-4" />
+          <p className="text-gray-600 text-center">Select an analysis on the left to view its digital thread</p>
+        </div>
+      );
+    }
+    
+    return (
+      <div className="h-full flex flex-col overflow-hidden">
+        <div className="flex items-center justify-between p-4 bg-gray-50 border-b">
+          <div className="flex items-center">
+            <FaIcons.FaProjectDiagram className="text-blue-600 mr-2" />
+            <h3 className="font-medium">{betaSelectedAnalysis.name} - Digital Thread</h3>
+            {betaSelectedAnalysis.linkedThreadItems.some(item => recentChanges[item.id]) && (
+              <span className="ml-2 px-2 py-1 bg-yellow-100 text-yellow-800 text-xs rounded-full">
+                Recent Changes
+              </span>
+            )}
+          </div>
+        </div>
+        
+        <div className="flex-1 overflow-auto p-4">
+          <div className="grid grid-cols-2 gap-4 mb-6">
+            <div>
+              <h4 className="text-sm font-medium mb-2 text-gray-700">Description</h4>
+              <p className="text-sm bg-white p-3 rounded-lg border border-gray-200">
+                {betaSelectedAnalysis.description}
+              </p>
+            </div>
+            <div>
+              <h4 className="text-sm font-medium mb-2 text-gray-700">Scenarios</h4>
+              <div className="flex flex-wrap gap-1">
+                {betaSelectedAnalysis.scenarios.map((scenario, index) => (
+                  <span key={index} className="px-2 py-1 bg-green-100 text-green-800 text-xs rounded">
+                    {scenario}
+                  </span>
+                ))}
+              </div>
+            </div>
+          </div>
+          
+          {/* Thread visualization containers */}
+          <div className="mb-4">
+            <h4 className="text-sm font-semibold mb-3 flex items-center">
+              <span className="flex items-center mr-2">
+                <FaIcons.FaFileAlt className="text-blue-600 mr-1" />
+                Requirements
+              </span>
+              <span className="text-xs text-gray-500">({betaSelectedAnalysis.requirements.length})</span>
+            </h4>
+            <div className="flex flex-wrap gap-3">
+              {betaSelectedAnalysis.requirements.map(reqId => {
+                const item = digitalThreadItems.find(item => item.id === reqId) || {
+                  id: reqId,
+                  name: `Requirement ${reqId}`,
+                  type: 'Requirement' as const,
+                  status: 'Current' as const,
+                  lastModified: '2023-04-01',
+                  modifiedBy: 'System',
+                  linkedItems: [betaSelectedAnalysis.id]
+                };
+                
+                const isRecentlyChanged = recentChanges[item.id];
+                
+                return (
+                  <div 
+                    key={reqId}
+                    className={`p-3 border rounded-lg ${isRecentlyChanged ? 'border-yellow-500 bg-yellow-50' : 'border-gray-200'} w-64`}
+                  >
+                    <div className="flex items-center mb-1">
+                      {getThreadItemIcon('Requirement')}
+                      <span className="ml-2 font-medium">{item.id}</span>
+                    </div>
+                    <p className="text-sm text-gray-700">{item.name}</p>
+                    <div className="flex justify-between mt-1">
+                      <span className={`px-2 py-1 text-xs rounded-full ${getThreadStatusColor(item.status)}`}>
+                        {item.status}
+                      </span>
+                      <span className="text-xs text-gray-500">{item.lastModified}</span>
+                    </div>
+                  </div>
+                );
+              })}
+            </div>
+          </div>
+          
+          <div className="flex flex-wrap gap-8">
+            <div className="mb-4 flex-1">
+              <h4 className="text-sm font-semibold mb-3 flex items-center">
+                <span className="flex items-center mr-2">
+                  <FaIcons.FaProjectDiagram className="text-green-600 mr-1" />
+                  Functions
+                </span>
+                <span className="text-xs text-gray-500">({betaSelectedAnalysis.functions.length})</span>
+              </h4>
+              <div className="space-y-2">
+                {betaSelectedAnalysis.functions.map((funcName, index) => {
+                  const funcId = `FUNC-${index + 1}`;
+                  const isRecentlyChanged = recentChanges[funcId];
+                  return (
+                    <div 
+                      key={funcId}
+                      className={`p-3 border rounded-lg ${isRecentlyChanged ? 'border-yellow-500 bg-yellow-50' : 'border-gray-200'}`}
+                    >
+                      <div className="flex items-center mb-1">
+                        {getThreadItemIcon('Function')}
+                        <span className="ml-2 font-medium">{funcId}</span>
+                      </div>
+                      <p className="text-sm text-gray-700">{funcName}</p>
+                    </div>
+                  );
+                })}
+              </div>
+            </div>
+            
+            <div className="mb-4 flex-1">
+              <h4 className="text-sm font-semibold mb-3 flex items-center">
+                <span className="flex items-center mr-2">
+                  <FaIcons.FaDrawPolygon className="text-purple-600 mr-1" />
+                  CAD Data
+                </span>
+                <span className="text-xs text-gray-500">({betaSelectedAnalysis.cad.length})</span>
+              </h4>
+              <div className="space-y-2">
+                {betaSelectedAnalysis.cad.map((cadName, index) => {
+                  const cadId = `CAD-${index + 1}`;
+                  const isRecentlyChanged = recentChanges[cadId];
+                  return (
+                    <div 
+                      key={cadId}
+                      className={`p-3 border rounded-lg ${isRecentlyChanged ? 'border-yellow-500 bg-yellow-50' : 'border-gray-200'}`}
+                    >
+                      <div className="flex items-center mb-1">
+                        {getThreadItemIcon('CAD')}
+                        <span className="ml-2 font-medium">{cadId}</span>
+                      </div>
+                      <p className="text-sm text-gray-700">{cadName}</p>
+                    </div>
+                  );
+                })}
+              </div>
+            </div>
+          </div>
+          
+          <div className="flex flex-wrap gap-8">
+            <div className="mb-4 flex-1">
+              <h4 className="text-sm font-semibold mb-3 flex items-center">
+                <span className="flex items-center mr-2">
+                  <FaIcons.FaListAlt className="text-indigo-600 mr-1" />
+                  BOM Items
+                </span>
+                <span className="text-xs text-gray-500">({betaSelectedAnalysis.bom.length})</span>
+              </h4>
+              <div className="space-y-2">
+                {betaSelectedAnalysis.bom.map((bomName, index) => {
+                  const bomId = `BOM-${index + 1}`;
+                  const isRecentlyChanged = recentChanges[bomId];
+                  return (
+                    <div 
+                      key={bomId}
+                      className={`p-3 border rounded-lg ${isRecentlyChanged ? 'border-yellow-500 bg-yellow-50' : 'border-gray-200'}`}
+                    >
+                      <div className="flex items-center mb-1">
+                        {getThreadItemIcon('BOM')}
+                        <span className="ml-2 font-medium">{bomId}</span>
+                      </div>
+                      <p className="text-sm text-gray-700">{bomName}</p>
+                    </div>
+                  );
+                })}
+              </div>
+            </div>
+            
+            <div className="mb-4 flex-1">
+              <h4 className="text-sm font-semibold mb-3 flex items-center">
+                <span className="flex items-center mr-2">
+                  <FaIcons.FaChartLine className="text-orange-600 mr-1" />
+                  Simulation Models
+                </span>
+                <span className="text-xs text-gray-500">({betaSelectedAnalysis.simulationModels.length})</span>
+              </h4>
+              <div className="space-y-2">
+                {betaSelectedAnalysis.simulationModels.map(simId => {
+                  const isRecentlyChanged = recentChanges[simId];
+                  return (
+                    <div 
+                      key={simId}
+                      className={`p-3 border rounded-lg ${isRecentlyChanged ? 'border-yellow-500 bg-yellow-50' : 'border-gray-200'}`}
+                    >
+                      <div className="flex items-center mb-1">
+                        {getThreadItemIcon('Simulation')}
+                        <span className="ml-2 font-medium">{simId}</span>
+                      </div>
+                      <p className="text-sm text-gray-700">Simulation Model</p>
+                    </div>
+                  );
+                })}
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    );
+  };
+
+  // Charlie tab metric donut chart component
+  const CharlieMetricDonut = ({ 
+    title, 
+    data, 
+    colors,
+    isActive,
+    onClick
+  }: { 
+    title: string;
+    data: { label: string; value: number; color: string }[];
+    colors: string[];
+    isActive: boolean;
+    onClick: () => void;
+  }) => {
+    const total = data.reduce((sum, item) => sum + item.value, 0);
+    
+    return (
+      <div 
+        className={`border rounded-lg p-4 cursor-pointer transition-all ${isActive ? 'ring-2 ring-blue-500 shadow-md' : 'hover:shadow-sm'}`}
+        onClick={onClick}
+      >
+        <h3 className="font-medium text-center mb-2">{title}</h3>
+        
+        <div className="flex justify-center mb-3">
+          <div className="w-24 h-24 relative">
+            <svg viewBox="0 0 36 36" className="w-full h-full">
+              <circle cx="18" cy="18" r="15.91549430918954" fill="transparent" stroke="#e9ecef" strokeWidth="2"></circle>
+              
+              {data.map((item, index) => {
+                const prevOffsetPercent = data
+                  .slice(0, index)
+                  .reduce((sum, d) => sum + (d.value / total) * 100, 0);
+                  
+                const strokeDasharray = `${(item.value / total) * 100} ${100 - (item.value / total) * 100}`;
+                const strokeDashoffset = 100 - prevOffsetPercent;
+                
+                return (
+                  <circle 
+                    key={index}
+                    cx="18" 
+                    cy="18" 
+                    r="15.91549430918954" 
+                    fill="transparent"
+                    stroke={item.color}
+                    strokeWidth="3"
+                    strokeDasharray={strokeDasharray}
+                    strokeDashoffset={String(strokeDashoffset)}
+                    strokeLinecap="round"
+                    style={{ transformOrigin: '50% 50%', transform: 'rotate(-90deg)' }}
+                  ></circle>
+                );
+              })}
+              
+              <text x="18" y="18" textAnchor="middle" dominantBaseline="middle" className="text-xl font-bold" fill="#495057">
+                {total}
+              </text>
+            </svg>
+          </div>
+        </div>
+        
+        <div className="space-y-1">
+          {data.map((item, index) => (
+            <div key={index} className="flex justify-between items-center text-sm">
+              <div className="flex items-center">
+                <div className="w-3 h-3 rounded-full mr-2" style={{ backgroundColor: item.color }}></div>
+                <span>{item.label}</span>
+              </div>
+              <span className="font-medium">{item.value}</span>
+            </div>
+          ))}
+        </div>
+      </div>
+    );
+  };
+  
+  // Charlie tab relationship metrics component
+  const CharlieRelationshipMetrics = () => {
+    const requirementCounts = enhancedAnalysisItems.reduce((acc, item) => {
+      item.requirements.forEach(req => {
+        if (!acc[req]) acc[req] = 0;
+        acc[req]++;
+      });
+      return acc;
+    }, {} as Record<string, number>);
+    
+    const modelCounts = enhancedAnalysisItems.reduce((acc, item) => {
+      item.simulationModels.forEach(model => {
+        if (!acc[model]) acc[model] = 0;
+        acc[model]++;
+      });
+      return acc;
+    }, {} as Record<string, number>);
+    
+    // Sort requirements by usage count (descending)
+    const sortedRequirements = Object.entries(requirementCounts)
+      .sort(([, a], [, b]) => b - a)
+      .slice(0, 5);
+    
+    // Sort models by usage count (descending)
+    const sortedModels = Object.entries(modelCounts)
+      .sort(([, a], [, b]) => b - a)
+      .slice(0, 5);
+    
+    return (
+      <div className="grid grid-cols-1 lg:grid-cols-2 gap-6 mt-6">
+        <div className="border rounded-lg p-4">
+          <h3 className="font-medium mb-3">Top Requirements</h3>
+          <div className="space-y-3">
+            {sortedRequirements.map(([req, count]) => (
+              <div key={req} className="flex items-center">
+                <div className="mr-2 text-blue-500">
+                  <FaIcons.FaFileAlt />
+                </div>
+                <div className="flex-grow">
+                  <div className="flex justify-between mb-1">
+                    <span className="font-medium text-sm">{req}</span>
+                    <span className="text-sm text-gray-600">{count} analyses</span>
+                  </div>
+                  <div className="w-full bg-gray-200 rounded-full h-1.5">
+                    <div 
+                      className="bg-blue-500 h-1.5 rounded-full" 
+                      style={{ width: `${(count / Math.max(...Object.values(requirementCounts))) * 100}%` }}
+                    ></div>
+                  </div>
+                </div>
+              </div>
+            ))}
+          </div>
+        </div>
+        
+        <div className="border rounded-lg p-4">
+          <h3 className="font-medium mb-3">Top Simulation Models</h3>
+          <div className="space-y-3">
+            {sortedModels.map(([model, count]) => (
+              <div key={model} className="flex items-center">
+                <div className="mr-2 text-orange-500">
+                  <FaIcons.FaChartLine />
+                </div>
+                <div className="flex-grow">
+                  <div className="flex justify-between mb-1">
+                    <span className="font-medium text-sm">{model}</span>
+                    <span className="text-sm text-gray-600">{count} analyses</span>
+                  </div>
+                  <div className="w-full bg-gray-200 rounded-full h-1.5">
+                    <div 
+                      className="bg-orange-500 h-1.5 rounded-full" 
+                      style={{ width: `${(count / Math.max(...Object.values(modelCounts))) * 100}%` }}
+                    ></div>
+                  </div>
+                </div>
+              </div>
+            ))}
+          </div>
+        </div>
+      </div>
+    );
+  };
+  
+  // Charlie tab analysis row component
+  const CharlieAnalysisRow = ({ analysis }: { analysis: EnhancedAnalysisItem }) => {
+    const isExpanded = charlieExpandedAnalysis === analysis.id;
+    const hasRecentChanges = analysis.linkedThreadItems.some(item => recentChanges[item.id]);
+    
+    return (
+      <div className="mb-2">
+        {/* Main row */}
+        <div 
+          className={`flex items-center border rounded-lg p-3 cursor-pointer transition-all ${
+            isExpanded ? 'bg-blue-50 border-blue-300' : hasRecentChanges ? 'bg-yellow-50 border-yellow-300' : 'bg-white border-gray-200 hover:bg-gray-50'
+          }`}
+          onClick={() => setCharlieExpandedAnalysis(isExpanded ? null : analysis.id)}
+        >
+          <div className="mr-3">
+            <button className="text-blue-600 focus:outline-none">
+              {isExpanded ? <FaIcons.FaChevronDown /> : <FaIcons.FaChevronRight />}
+            </button>
+          </div>
+          
+          <div className="w-10 mr-3">
+            <span className={`px-2 py-1 rounded-full text-xs font-medium ${getAnalysisStatusBadgeColor(analysis.status)}`}>
+              {analysis.status === 'Completed' ? <FaIcons.FaCheckCircle /> : 
+               analysis.status === 'In Progress' ? <FaIcons.FaSpinner className="animate-spin" /> :
+               analysis.status === 'Failed' ? <FaIcons.FaTimesCircle /> : <FaIcons.FaClock />}
+            </span>
+          </div>
+          
+          <div className="flex-grow">
+            <div className="flex items-center">
+              <h3 className="font-medium">{analysis.name}</h3>
+              {hasRecentChanges && (
+                <span className="ml-2 px-2 py-0.5 bg-yellow-100 text-yellow-800 text-xs rounded-full">
+                  Recent Changes
+                </span>
+              )}
+            </div>
+          </div>
+          
+          <div className="w-32 text-right text-sm text-gray-500">
+            Due: {analysis.dueDate}
+          </div>
+          
+          <div className="w-24 flex justify-end">
+            <div className="w-16 flex items-center">
+              <div className="w-full bg-gray-200 rounded-full h-1.5 mr-2">
+                <div 
+                  className={`h-1.5 rounded-full ${
+                    analysis.status === 'Completed' ? 'bg-green-500' :
+                    analysis.status === 'Failed' ? 'bg-red-500' : 'bg-blue-500'
+                  }`} 
+                  style={{ width: `${analysis.completionPercentage}%` }}
+                ></div>
+              </div>
+              <span className="text-xs">{analysis.completionPercentage}%</span>
+            </div>
+          </div>
+        </div>
+        
+        {/* Expanded content */}
+        {isExpanded && (
+          <div className="border border-t-0 border-gray-200 rounded-b-lg p-4 bg-white">
+            <div className="grid grid-cols-1 lg:grid-cols-3 gap-6 mb-4">
+              <div>
+                <h4 className="text-sm font-medium mb-2 text-gray-700">Description</h4>
+                <p className="text-sm bg-gray-50 p-3 rounded-lg border border-gray-200">
+                  {analysis.description}
+                </p>
+                
+                <h4 className="text-sm font-medium mt-4 mb-2 text-gray-700">Scenarios</h4>
+                <div className="flex flex-wrap gap-1">
+                  {analysis.scenarios.map((scenario, index) => (
+                    <span key={index} className="px-2 py-1 bg-green-100 text-green-800 text-xs rounded">
+                      {scenario}
+                    </span>
+                  ))}
+                </div>
+                
+                <div className="grid grid-cols-2 gap-3 mt-4">
+                  <div>
+                    <h4 className="text-sm font-medium mb-1 text-gray-700">Assigned To</h4>
+                    <p className="text-sm">{analysis.assignedTo}</p>
+                  </div>
+                  <div>
+                    <h4 className="text-sm font-medium mb-1 text-gray-700">Last Run</h4>
+                    <p className="text-sm">{analysis.lastRun || 'Not run yet'}</p>
+                  </div>
+                </div>
+              </div>
+              
+              <div className="lg:col-span-2">
+                <h4 className="text-sm font-medium mb-2 text-gray-700">Digital Thread</h4>
+                
+                <div className="border border-gray-200 rounded-lg overflow-hidden">
+                  <div className="bg-gray-50 p-3 border-b border-gray-200">
+                    <ul className="flex space-x-3 text-sm">
+                      <li>
+                        <button className="px-2 py-1 rounded font-medium bg-blue-100 text-blue-800">Overview</button>
+                      </li>
+                      <li>
+                        <button className="px-2 py-1 text-gray-600 hover:bg-gray-100 rounded">Changes</button>
+                      </li>
+                      <li>
+                        <button className="px-2 py-1 text-gray-600 hover:bg-gray-100 rounded">Timeline</button>
+                      </li>
+                    </ul>
+                  </div>
+                  
+                  <div className="p-3">
+                    <div className="grid grid-cols-2 gap-3 mb-3">
+                      <div>
+                        <h5 className="text-xs font-medium mb-2 text-gray-500 flex items-center">
+                          <FaIcons.FaFileAlt className="text-blue-600 mr-1" />
+                          Requirements
+                        </h5>
+                        <div className="space-y-1">
+                          {analysis.requirements.map(req => {
+                            const isChanged = recentChanges[req];
+                            return (
+                              <div 
+                                key={req} 
+                                className={`text-xs px-2 py-1 rounded ${isChanged ? 'bg-yellow-100 text-yellow-800' : 'bg-gray-100 text-gray-800'}`}
+                              >
+                                {req} {isChanged && <FaIcons.FaExclamationCircle className="inline ml-1" />}
+                              </div>
+                            );
+                          })}
+                        </div>
+                      </div>
+                      
+                      <div>
+                        <h5 className="text-xs font-medium mb-2 text-gray-500 flex items-center">
+                          <FaIcons.FaProjectDiagram className="text-green-600 mr-1" />
+                          Functions
+                        </h5>
+                        <div className="space-y-1">
+                          {analysis.functions.map((func, index) => {
+                            const funcId = `FUNC-${index + 1}`;
+                            const isChanged = recentChanges[funcId];
+                            return (
+                              <div 
+                                key={index} 
+                                className={`text-xs px-2 py-1 rounded ${isChanged ? 'bg-yellow-100 text-yellow-800' : 'bg-gray-100 text-gray-800'}`}
+                              >
+                                {func} {isChanged && <FaIcons.FaExclamationCircle className="inline ml-1" />}
+                              </div>
+                            );
+                          })}
+                        </div>
+                      </div>
+                    </div>
+                    
+                    <div className="grid grid-cols-2 gap-3">
+                      <div>
+                        <h5 className="text-xs font-medium mb-2 text-gray-500 flex items-center">
+                          <FaIcons.FaDrawPolygon className="text-purple-600 mr-1" />
+                          CAD & BOM
+                        </h5>
+                        <div className="space-y-1">
+                          {[...analysis.cad, ...analysis.bom].map((item, index) => {
+                            const isChanged = index < analysis.cad.length 
+                              ? recentChanges[`CAD-${index + 1}`] 
+                              : recentChanges[`BOM-${index - analysis.cad.length + 1}`];
+                            return (
+                              <div 
+                                key={index} 
+                                className={`text-xs px-2 py-1 rounded ${isChanged ? 'bg-yellow-100 text-yellow-800' : 'bg-gray-100 text-gray-800'}`}
+                              >
+                                {item} {isChanged && <FaIcons.FaExclamationCircle className="inline ml-1" />}
+                              </div>
+                            );
+                          })}
+                        </div>
+                      </div>
+                      
+                      <div>
+                        <h5 className="text-xs font-medium mb-2 text-gray-500 flex items-center">
+                          <FaIcons.FaChartLine className="text-orange-600 mr-1" />
+                          Models & Automations
+                        </h5>
+                        <div className="space-y-1">
+                          {[...analysis.simulationModels, ...analysis.automations].map((item, index) => {
+                            const isChanged = recentChanges[item];
+                            return (
+                              <div 
+                                key={index} 
+                                className={`text-xs px-2 py-1 rounded ${isChanged ? 'bg-yellow-100 text-yellow-800' : 'bg-gray-100 text-gray-800'}`}
+                              >
+                                {item} {isChanged && <FaIcons.FaExclamationCircle className="inline ml-1" />}
+                              </div>
+                            );
+                          })}
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </div>
+            
+            <div className="flex justify-end space-x-2 mt-2">
+              <button className="flex items-center px-3 py-1 bg-gray-100 text-gray-800 rounded hover:bg-gray-200 text-sm">
+                <FaIcons.FaHistory className="mr-1" />
+                History
+              </button>
+              <button className="flex items-center px-3 py-1 bg-blue-100 text-blue-800 rounded hover:bg-blue-200 text-sm">
+                <FaIcons.FaProjectDiagram className="mr-1" />
+                Full Thread
+              </button>
+              <button className="flex items-center px-3 py-1 bg-green-100 text-green-800 rounded hover:bg-green-200 text-sm">
+                <FaIcons.FaEdit className="mr-1" />
+                Edit
+              </button>
+            </div>
+          </div>
+        )}
+      </div>
+    );
+  };
+
+  return (
+    <div className="bg-white p-6 rounded-lg shadow-lg relative">
+      <div className="flex justify-between items-center mb-6">
+        <h1 className="text-2xl font-bold">Analysis</h1>
+      </div>
+
+      {/* Tab Navigation - updated to include Alpha, Beta, Charlie */}
+      <div className="border-b border-gray-200 mb-6">
+        <nav className="-mb-px flex space-x-8">
+          <button
+            onClick={() => setActiveTab('Alpha')}
+            className={`py-4 px-1 border-b-2 font-medium text-sm ${
+              activeTab === 'Alpha'
+                ? 'border-blue-500 text-blue-600'
+                : 'border-transparent text-gray-500 hover:text-gray-700 hover:border-gray-300'
+            }`}
+          >
+            Alpha
+          </button>
+          <button
+            onClick={() => setActiveTab('Beta')}
+            className={`py-4 px-1 border-b-2 font-medium text-sm ${
+              activeTab === 'Beta'
+                ? 'border-blue-500 text-blue-600'
+                : 'border-transparent text-gray-500 hover:text-gray-700 hover:border-gray-300'
+            }`}
+          >
+            Beta
+          </button>
+          <button
+            onClick={() => setActiveTab('Charlie')}
+            className={`py-4 px-1 border-b-2 font-medium text-sm ${
+              activeTab === 'Charlie'
+                ? 'border-blue-500 text-blue-600'
+                : 'border-transparent text-gray-500 hover:text-gray-700 hover:border-gray-300'
+            }`}
+          >
+            Charlie
+          </button>
+          <button
+            onClick={() => setActiveTab('Models')}
+            className={`py-4 px-1 border-b-2 font-medium text-sm ${
+              activeTab === 'Models'
+                ? 'border-blue-500 text-blue-600'
+                : 'border-transparent text-gray-500 hover:text-gray-700 hover:border-gray-300'
+            }`}
+          >
+            Models
+          </button>
+          <button
+            onClick={() => setActiveTab('Automation')}
+            className={`py-4 px-1 border-b-2 font-medium text-sm ${
+              activeTab === 'Automation'
+                ? 'border-blue-500 text-blue-600'
+                : 'border-transparent text-gray-500 hover:text-gray-700 hover:border-gray-300'
+            }`}
+          >
+            Automation
+          </button>
+          <button
+            onClick={() => setActiveTab('HPCStatus')}
+            className={`py-4 px-1 border-b-2 font-medium text-sm ${
+              activeTab === 'HPCStatus'
+                ? 'border-blue-500 text-blue-600'
+                : 'border-transparent text-gray-500 hover:text-gray-700 hover:border-gray-300'
+            }`}
+          >
+            HPC Status
+          </button>
+        </nav>
+      </div>
+
+      {/* Tab Content */}
+      <div>
+        {activeTab === 'Alpha' && (
+          <div>
+            {/* Analysis Dashboard */}
+            <div className="grid grid-cols-1 md:grid-cols-3 gap-4 mb-6">
+              <div className="bg-blue-50 p-4 rounded-lg shadow-sm">
+                <div className="flex items-center justify-between mb-2">
+                  <h3 className="font-medium">Total Analyses</h3>
+                  <FaIcons.FaChartBar className="text-blue-500" />
+                </div>
+                <p className="text-3xl font-bold">{enhancedAnalysisItems.length}</p>
+              </div>
+              <div className="bg-green-50 p-4 rounded-lg shadow-sm">
+                <div className="flex items-center justify-between mb-2">
+                  <h3 className="font-medium">Completed</h3>
+                  <FaIcons.FaCheckCircle className="text-green-500" />
+                </div>
+                <p className="text-3xl font-bold">{enhancedAnalysisItems.filter(item => item.status === 'Completed').length}</p>
+              </div>
+              <div className="bg-yellow-50 p-4 rounded-lg shadow-sm">
+                <div className="flex items-center justify-between mb-2">
+                  <h3 className="font-medium">In Progress</h3>
+                  <FaIcons.FaSpinner className="text-yellow-500" />
+                </div>
+                <p className="text-3xl font-bold">{enhancedAnalysisItems.filter(item => item.status === 'In Progress').length}</p>
+              </div>
+            </div>
+
+            {/* Analysis Filters */}
+            <div className="mb-6">
+              <div className="flex flex-wrap gap-4 items-center">
+                <div className="flex-grow">
+                  <input
+                    type="text"
+                    placeholder="Search analyses..."
+                    className="w-full border border-gray-300 rounded-lg px-4 py-2 focus:outline-none focus:ring-2 focus:ring-blue-500"
+                    value={searchQuery}
+                    onChange={(e) => setSearchQuery(e.target.value)}
+                  />
+                </div>
+                
+                <div>
+                  <select
+                    className="border border-gray-300 rounded-lg px-4 py-2"
+                    value={statusFilter}
+                    onChange={(e) => setStatusFilter(e.target.value)}
+                  >
+                    <option value="All Statuses">All Statuses</option>
+                    <option value="Pending">Pending</option>
+                    <option value="In Progress">In Progress</option>
+                    <option value="Completed">Completed</option>
+                    <option value="Failed">Failed</option>
+                  </select>
+                </div>
+              </div>
+            </div>
+
+            {/* Analysis Cards Grid */}
+            <div className="grid grid-cols-1 lg:grid-cols-2 gap-6 mb-8">
+              {enhancedAnalysisItems.map(analysis => (
+                <AnalysisCard key={analysis.id} analysis={analysis} />
+              ))}
+            </div>
+            
+            {/* Alpha tab includes the digital thread visualization panel */}
+            <DigitalThreadPanel />
+          </div>
+        )}
+
+        {activeTab === 'Beta' && (
+          <div>
+            {/* Beta tab dashboard */}
+            <div className="grid grid-cols-1 md:grid-cols-3 gap-4 mb-6">
+              <div className="bg-blue-50 p-4 rounded-lg shadow-sm">
+                <div className="flex items-center justify-between mb-2">
+                  <h3 className="font-medium">Total Analyses</h3>
+                  <FaIcons.FaChartBar className="text-blue-500" />
+                </div>
+                <p className="text-3xl font-bold">{enhancedAnalysisItems.length}</p>
+              </div>
+              <div className="bg-green-50 p-4 rounded-lg shadow-sm">
+                <div className="flex items-center justify-between mb-2">
+                  <h3 className="font-medium">Completed</h3>
+                  <FaIcons.FaCheckCircle className="text-green-500" />
+                </div>
+                <p className="text-3xl font-bold">{enhancedAnalysisItems.filter(item => item.status === 'Completed').length}</p>
+              </div>
+              <div className="bg-yellow-50 p-4 rounded-lg shadow-sm">
+                <div className="flex items-center justify-between mb-2">
+                  <h3 className="font-medium">In Progress</h3>
+                  <FaIcons.FaSpinner className="text-yellow-500" />
+                </div>
+                <p className="text-3xl font-bold">{enhancedAnalysisItems.filter(item => item.status === 'In Progress').length}</p>
+              </div>
+            </div>
+
+            {/* Beta tab filters */}
+            <div className="mb-6">
+              <div className="flex flex-wrap gap-4 items-center">
+                <div className="flex-grow">
+                  <input
+                    type="text"
+                    placeholder="Search analyses..."
+                    className="w-full border border-gray-300 rounded-lg px-4 py-2 focus:outline-none focus:ring-2 focus:ring-blue-500"
+                    value={searchQuery}
+                    onChange={(e) => setSearchQuery(e.target.value)}
+                  />
+                </div>
+                
+                <div>
+                  <select
+                    className="border border-gray-300 rounded-lg px-4 py-2"
+                    value={statusFilter}
+                    onChange={(e) => setStatusFilter(e.target.value)}
+                  >
+                    <option value="All Statuses">All Statuses</option>
+                    <option value="Pending">Pending</option>
+                    <option value="In Progress">In Progress</option>
+                    <option value="Completed">Completed</option>
+                    <option value="Failed">Failed</option>
+                  </select>
+                </div>
+              </div>
+            </div>
+
+            {/* Beta tab side-by-side layout */}
+            <div className="flex gap-6 mb-8">
+              {/* Left column - Analysis list */}
+              <div className="w-1/3">
+                <h2 className="text-lg font-medium mb-4">Analysis List</h2>
+                <div className="space-y-4">
+                  {enhancedAnalysisItems.map(analysis => (
+                    <BetaAnalysisCard key={analysis.id} analysis={analysis} />
+                  ))}
+                </div>
+              </div>
+              
+              {/* Right column - Digital thread visualization */}
+              <div className="w-2/3 border rounded-lg overflow-hidden shadow-sm">
+                <BetaDigitalThreadView />
+              </div>
+            </div>
+          </div>
+        )}
+
+        {activeTab === 'Charlie' && (
+          <div>
+            {/* Charlie tab - Top metrics cards */}
+            <div className="grid grid-cols-1 md:grid-cols-4 gap-4 mb-6">
+              <CharlieMetricDonut
+                title="Analysis Status"
+                data={[
+                  { label: 'Completed', value: enhancedAnalysisItems.filter(item => item.status === 'Completed').length, color: '#10b981' },
+                  { label: 'In Progress', value: enhancedAnalysisItems.filter(item => item.status === 'In Progress').length, color: '#3b82f6' },
+                  { label: 'Pending', value: enhancedAnalysisItems.filter(item => item.status === 'Pending').length, color: '#f59e0b' },
+                  { label: 'Failed', value: enhancedAnalysisItems.filter(item => item.status === 'Failed').length, color: '#ef4444' }
+                ]}
+                colors={['#10b981', '#3b82f6', '#f59e0b', '#ef4444']}
+                isActive={charlieActiveMetric === 'status'}
+                onClick={() => setCharlieActiveMetric('status')}
+              />
+              
+              <CharlieMetricDonut
+                title="Requirements Coverage"
+                data={[
+                  { label: 'Covered', value: 18, color: '#10b981' },
+                  { label: 'Partial', value: 7, color: '#f59e0b' },
+                  { label: 'Missing', value: 3, color: '#ef4444' }
+                ]}
+                colors={['#10b981', '#f59e0b', '#ef4444']}
+                isActive={charlieActiveMetric === 'requirements'}
+                onClick={() => setCharlieActiveMetric('requirements')}
+              />
+              
+              <CharlieMetricDonut
+                title="Simulation Models"
+                data={[
+                  { label: 'Validated', value: 5, color: '#10b981' },
+                  { label: 'In Dev', value: 3, color: '#3b82f6' },
+                  { label: 'Legacy', value: 2, color: '#f59e0b' }
+                ]}
+                colors={['#10b981', '#3b82f6', '#f59e0b']}
+                isActive={charlieActiveMetric === 'models'}
+                onClick={() => setCharlieActiveMetric('models')}
+              />
+              
+              <CharlieMetricDonut
+                title="Recent Changes"
+                data={[
+                  { label: 'Requirements', value: Object.keys(recentChanges).filter(id => id.startsWith('REQ')).length, color: '#3b82f6' },
+                  { label: 'CAD/BOM', value: Object.keys(recentChanges).filter(id => id.startsWith('CAD') || id.startsWith('BOM')).length, color: '#8b5cf6' },
+                  { label: 'Functions', value: Object.keys(recentChanges).filter(id => id.startsWith('FUNC')).length, color: '#10b981' },
+                  { label: 'Models', value: Object.keys(recentChanges).filter(id => id.startsWith('SIM')).length, color: '#f59e0b' }
+                ]}
+                colors={['#3b82f6', '#8b5cf6', '#10b981', '#f59e0b']}
+                isActive={charlieActiveMetric === 'changes'}
+                onClick={() => setCharlieActiveMetric('changes')}
+              />
+            </div>
+            
+            {/* Conditional metric details based on active metric */}
+            {charlieActiveMetric === 'status' && (
+              <div className="mb-6">
+                <h2 className="text-lg font-medium mb-2">Analysis Status Overview</h2>
+                <div className="bg-blue-50 border border-blue-200 rounded-lg p-4">
+                  <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                    <div>
+                      <h3 className="text-sm font-medium mb-2 text-gray-700">Status Timeline</h3>
+                      <div className="flex items-center space-x-1">
+                        <div className="h-8 bg-gray-200 rounded flex-grow flex items-center justify-center text-xs font-medium text-gray-600">
+                          Planning
+                        </div>
+                        <FaIcons.FaChevronRight className="text-gray-400" />
+                        <div className="h-8 bg-blue-200 rounded flex-grow flex items-center justify-center text-xs font-medium text-blue-800">
+                          In Progress
+                        </div>
+                        <FaIcons.FaChevronRight className="text-gray-400" />
+                        <div className="h-8 bg-gray-200 rounded flex-grow flex items-center justify-center text-xs font-medium text-gray-600">
+                          Review
+                        </div>
+                        <FaIcons.FaChevronRight className="text-gray-400" />
+                        <div className="h-8 bg-gray-200 rounded flex-grow flex items-center justify-center text-xs font-medium text-gray-600">
+                          Complete
+                        </div>
+                      </div>
+                    </div>
+                    <div>
+                      <h3 className="text-sm font-medium mb-2 text-gray-700">Current Status</h3>
+                      <p className="text-sm text-gray-600 mb-2">Program is currently in active analysis phase with 3 analyses in progress.</p>
+                      <div className="flex space-x-2">
+                        <span className="px-2 py-1 bg-yellow-100 text-yellow-800 text-xs rounded-full">
+                          2 analyses due this week
+                        </span>
+                        <span className="px-2 py-1 bg-green-100 text-green-800 text-xs rounded-full">
+                          1 analysis completed today
+                        </span>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            )}
+            
+            {charlieActiveMetric === 'changes' && <CharlieRelationshipMetrics />}
+            
+            {/* Analysis filters */}
+            <div className="mb-6">
+              <div className="flex flex-wrap gap-4 items-center">
+                <div className="flex-grow">
+                  <input
+                    type="text"
+                    placeholder="Search analyses..."
+                    className="w-full border border-gray-300 rounded-lg px-4 py-2 focus:outline-none focus:ring-2 focus:ring-blue-500"
+                    value={searchQuery}
+                    onChange={(e) => setSearchQuery(e.target.value)}
+                  />
+                </div>
+                
+                <div>
+                  <select
+                    className="border border-gray-300 rounded-lg px-4 py-2"
+                    value={statusFilter}
+                    onChange={(e) => setStatusFilter(e.target.value)}
+                  >
+                    <option value="All Statuses">All Statuses</option>
+                    <option value="Pending">Pending</option>
+                    <option value="In Progress">In Progress</option>
+                    <option value="Completed">Completed</option>
+                    <option value="Failed">Failed</option>
+                  </select>
+                </div>
+              </div>
+            </div>
+            
+            {/* Analyses section with expandable rows */}
+            <div className="mb-8">
+              <div className="flex justify-between items-center mb-4">
+                <h2 className="text-lg font-medium">Analyses & Digital Thread</h2>
+                <div className="text-sm text-gray-500">
+                  Showing {enhancedAnalysisItems.length} analyses
+                </div>
+              </div>
+              
+              <div className="space-y-2">
+                {enhancedAnalysisItems.map(analysis => (
+                  <CharlieAnalysisRow key={analysis.id} analysis={analysis} />
+                ))}
+              </div>
+            </div>
+          </div>
+        )}
+
+        {activeTab === 'Models' && (
+          <>
+            {/* Existing Models tab content */}
+          </>
+        )}
+
+        {activeTab === 'Automation' && (
+          <div>
+            {/* Existing Automation tab content */}
+          </div>
+        )}
+
+        {activeTab === 'HPCStatus' && (
+          <div>
+            {/* Existing HPCStatus tab content */}
+          </div>
+        )}
       </div>
     </div>
   );
