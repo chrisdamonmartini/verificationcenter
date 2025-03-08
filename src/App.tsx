@@ -48,6 +48,7 @@ import CADDesignChanges from './components/ChangeAwareness/CADDesignChanges';
 import EngineeringBOMChanges from './components/ChangeAwareness/EngineeringBOMChanges';
 import { FlightTestManagement } from './components/FlightTest/FlightTestManagement';
 import { Aircraft } from './types';
+import DigitalThread from './components/DigitalThread/DigitalThread';
 
 // Define a type for requirements
 interface Requirement {
@@ -378,6 +379,10 @@ function App() {
       case 'change-awareness/cad':
       case 'change-awareness/bom':
         return <ChangeAwareness />;
+        
+      // Digital Thread
+      case 'digital-thread':
+        return <DigitalThread />;
         
       default:
         return (

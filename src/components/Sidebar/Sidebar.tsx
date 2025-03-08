@@ -12,7 +12,8 @@ import {
   DatabaseOutlined,
   AuditOutlined,
   BarChartOutlined,
-  SettingOutlined
+  SettingOutlined,
+  NodeIndexOutlined
 } from '@ant-design/icons';
 
 // Updated navigation items for Verification Management - Flattened structure
@@ -41,6 +42,11 @@ export const SidebarData = [
     title: 'Analysis',
     path: '/simulation',
     icon: <FundOutlined />
+  },
+  {
+    title: 'Digital Thread',
+    path: '/digital-thread',
+    icon: <NodeIndexOutlined />
   },
   {
     title: 'Test Management',
