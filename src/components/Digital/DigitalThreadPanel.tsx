@@ -25,6 +25,7 @@ export interface DigitalThreadPanelProps {
   width?: string;
   title?: string;
   renderThreadContent: () => React.ReactNode;
+  isFixed?: boolean; // New prop to control fixed vs relative positioning
 }
 
 // Reusable Digital Thread Panel Component
@@ -37,20 +38,27 @@ const DigitalThreadPanel: React.FC<DigitalThreadPanelProps> = ({
   height = 'h-96',
   width = 'w-full',
   title = 'Digital Thread Visualization',
-  renderThreadContent
+  renderThreadContent,
+  isFixed = false // Default to relative positioning
 }) => {
-  // Determine styles based on position
-  const containerStyles = position === 'bottom'
-    ? `fixed bottom-0 left-0 right-0 bg-white shadow-lg border-t border-gray-300 transition-all duration-300 ease-in-out ${
-        showDigitalThread ? height : 'h-10'
-      } z-40`
-    : `fixed top-0 bottom-0 right-0 bg-white shadow-lg border-l border-gray-300 transition-all duration-300 ease-in-out ${
-        showDigitalThread ? width : 'w-10'
-      } z-40`;
+  // Determine styles based on position and positioning type
+  const containerStyles = isFixed 
+    ? (position === 'bottom'
+        ? `fixed bottom-0 left-0 right-0 bg-white shadow-lg border-t border-gray-300 transition-all duration-300 ease-in-out ${
+            showDigitalThread ? height : 'h-10'
+          } z-40`
+        : `fixed top-0 bottom-0 right-0 bg-white shadow-lg border-l border-gray-300 transition-all duration-300 ease-in-out ${
+            showDigitalThread ? width : 'w-10'
+          } z-40`)
+    : (position === 'bottom'
+        ? `relative bg-white shadow-lg border border-gray-300 mt-4 transition-all duration-300 ease-in-out ${
+            showDigitalThread ? height : 'h-10'
+          }`
+        : `relative bg-white shadow-lg border border-gray-300 transition-all duration-300 ease-in-out ${
+            showDigitalThread ? width : 'w-10'
+          }`);
   
-  const headerStyles = position === 'bottom'
-    ? 'flex items-center justify-between px-4 py-2 bg-gray-100 cursor-pointer border-b'
-    : 'flex items-center justify-between px-4 py-2 bg-gray-100 cursor-pointer border-b h-10';
+  const headerStyles = 'flex items-center justify-between px-4 py-2 bg-gray-100 cursor-pointer border-b';
   
   return (
     <div className={containerStyles}>
@@ -76,7 +84,7 @@ const DigitalThreadPanel: React.FC<DigitalThreadPanelProps> = ({
       </div>
       
       {showDigitalThread && (
-        <div className="p-4 h-full overflow-auto">
+        <div className="p-4 overflow-auto" style={{ height: showDigitalThread ? 'calc(100% - 38px)' : '0' }}>
           <div className="flex flex-col h-full">
             {selectedItem ? (
               renderThreadContent()

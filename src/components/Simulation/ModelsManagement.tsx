@@ -1956,7 +1956,7 @@ const ModelsManagement: React.FC = () => {
               ))}
             </div>
             
-            {/* Alpha tab includes the digital thread visualization panel */}
+            {/* Alpha tab includes the digital thread visualization panel with relative positioning */}
             <DigitalThreadPanel
               showDigitalThread={alphaShowDigitalThread}
               setShowDigitalThread={setAlphaShowDigitalThread}
@@ -1966,6 +1966,7 @@ const ModelsManagement: React.FC = () => {
               position="bottom"
               height="h-96"
               title="Analysis Digital Thread"
+              isFixed={false}
             />
           </div>
         )}
