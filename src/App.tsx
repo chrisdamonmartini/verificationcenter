@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import './App.css';
 import * as FaIcons from 'react-icons/fa';
 import * as BiIcons from 'react-icons/bi';
@@ -48,7 +48,7 @@ import CADDesignChanges from './components/ChangeAwareness/CADDesignChanges';
 import EngineeringBOMChanges from './components/ChangeAwareness/EngineeringBOMChanges';
 import { FlightTestManagement } from './components/FlightTest/FlightTestManagement';
 import { Aircraft } from './types';
-import DigitalThread from './components/DigitalThread/DigitalThread';
+import SimpleDigitalThread from './components/DigitalThread/SimpleDigitalThread';
 
 // Define a type for requirements
 interface Requirement {
@@ -307,7 +307,7 @@ function App() {
       case 'simulation/results':
         return <ResultsAnalysis />;
       case 'simulation/digital-thread':
-        return <DigitalThread />;
+        return <SimpleDigitalThread />;
       case 'simulation':
         return <ModelsManagement />;
         
@@ -384,7 +384,7 @@ function App() {
         
       // Digital Thread
       case 'digital-thread':
-        return <DigitalThread />;
+        return <SimpleDigitalThread />;
         
       default:
         return (
