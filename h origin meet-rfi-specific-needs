@@ -1,0 +1,1 @@
+[33m0eefc5d[m[33m ([m[1;36mHEAD[m[33m -> [m[1;32mmeet-rfi-specific-needs[m[33m)[m Implement Verification Matrix enhancements: 1) Remove line showing requirements count, 2) Make columns sortable and filterable, 3) Reorder verification methods (Analysis, Unit Test, Demo, Flight Test), 4) Remove X marks for non-applicable methods, 5) Add pagination with 50 items per page

@@ -131,15 +131,13 @@ const EngineeringBOMChanges: React.FC = () => {
       title: 'ID',
       dataIndex: 'id',
       key: 'id',
-      width: 100,
-      align: 'left'
+      width: 120
     },
     {
       title: 'BOM',
       dataIndex: 'bomId',
       key: 'bomId',
-      width: 100,
-      align: 'left'
+      width: 120
     },
     {
       title: 'Category',
@@ -161,8 +159,7 @@ const EngineeringBOMChanges: React.FC = () => {
           </Tag>
         );
       },
-      width: 160,
-      align: 'left',
+      width: 150,
       filters: [
         { text: 'Hardware', value: 'hardware' },
         { text: 'Electronics', value: 'electronics' },
@@ -184,8 +181,7 @@ const EngineeringBOMChanges: React.FC = () => {
           </Tooltip>
         </div>
       ),
-      width: 300,
-      align: 'left'
+      width: 300
     },
     {
       title: 'Type',
@@ -194,19 +190,18 @@ const EngineeringBOMChanges: React.FC = () => {
       render: (type) => {
         const typeConfig: Record<string, { color: string, text: string, prefix: string }> = {
           added: { color: '#52c41a', text: 'ADDED', prefix: '+ ' },
-          modified: { color: '#faad14', text: 'MODIFIED', prefix: '↻ ' },
+          modified: { color: '#faad14', text: 'MODIFIED', prefix: '⟳ ' },
           removed: { color: '#f5222d', text: 'REMOVED', prefix: '- ' }
         };
 
         const config = typeConfig[type];
         return (
-          <Tag color={config.color} style={{ borderRadius: '12px', fontWeight: 'normal' }}>
+          <Tag color={config.color}>
             {config.prefix}{config.text}
           </Tag>
         );
       },
-      width: 120,
-      align: 'center',
+      width: 130,
       filters: [
         { text: 'Added', value: 'added' },
         { text: 'Modified', value: 'modified' },
@@ -227,16 +222,15 @@ const EngineeringBOMChanges: React.FC = () => {
 
         const config = severityConfig[severity];
         return (
-          <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
+          <div style={{ display: 'flex', alignItems: 'center' }}>
             {config.icon}
-            <span style={{ marginLeft: 8, color: config.color, fontWeight: 'normal' }}>
+            <span style={{ marginLeft: 8, color: config.color }}>
               {config.text}
             </span>
           </div>
         );
       },
       width: 120,
-      align: 'center',
       filters: [
         { text: 'Critical', value: 'critical' },
         { text: 'Major', value: 'major' },
@@ -248,15 +242,9 @@ const EngineeringBOMChanges: React.FC = () => {
       title: 'Date',
       dataIndex: 'date',
       key: 'date',
-      render: (date) => (
-        <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
-          <span>{date}</span>
-        </div>
-      ),
       sorter: (a, b) => new Date(a.date).getTime() - new Date(b.date).getTime(),
       sortDirections: ['descend', 'ascend'],
-      width: 120,
-      align: 'center'
+      width: 120
     },
     {
       title: 'Status',
@@ -271,14 +259,13 @@ const EngineeringBOMChanges: React.FC = () => {
 
         const config = statusConfig[status];
         return (
-          <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
+          <div>
             {config.dot}
             <span style={{ textTransform: 'capitalize' }}>{status}</span>
           </div>
         );
       },
       width: 120,
-      align: 'center',
       filters: [
         { text: 'Approved', value: 'approved' },
         { text: 'Pending', value: 'pending' },
@@ -290,14 +277,11 @@ const EngineeringBOMChanges: React.FC = () => {
       title: 'Impact',
       key: 'impact',
       render: (_, record) => (
-        <div style={{ display: 'flex', justifyContent: 'center' }}>
-          <Tag color="volcano" style={{ borderRadius: '12px' }}>
-            {record.impactCount} affected items
-          </Tag>
-        </div>
+        <Tag color="volcano">
+          {record.impactCount} affected items
+        </Tag>
       ),
-      width: 150,
-      align: 'center'
+      width: 150
     }
   ];
 
@@ -326,12 +310,8 @@ const EngineeringBOMChanges: React.FC = () => {
           <ToolOutlined style={{ marginRight: 8 }} /> Engineering BOM Changes
         </Title>
         <Space>
-          <Button icon={<SearchOutlined />} style={{ display: 'flex', alignItems: 'center' }}>
-            <span style={{ marginLeft: 4 }}>Advanced Search</span>
-          </Button>
-          <Button type="primary" icon={<ThunderboltOutlined />} style={{ display: 'flex', alignItems: 'center' }}>
-            <span style={{ marginLeft: 4 }}>Impact Report</span>
-          </Button>
+          <Button icon={<SearchOutlined />}>Advanced Search</Button>
+          <Button type="primary" icon={<ThunderboltOutlined />}>Impact Report</Button>
         </Space>
       </div>
 
@@ -341,7 +321,6 @@ const EngineeringBOMChanges: React.FC = () => {
           <RangePicker 
             style={{ width: '100%', marginTop: 8 }} 
             onChange={handleDateRangeChange}
-            placeholder={['Start date', 'End date']}
           />
         </div>
         <div style={{ flex: 1 }}>
@@ -374,9 +353,8 @@ const EngineeringBOMChanges: React.FC = () => {
         pagination={{
           current: currentPage,
           onChange: setCurrentPage,
-          total: bomChanges.length,
-          pageSize: 5,
-          showSizeChanger: false
+          showSizeChanger: false,
+          simple: true
         }}
       />
     </div>

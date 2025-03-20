@@ -332,7 +332,7 @@ const VerificationStrategy: React.FC = () => {
             <div className="mb-8">
               <h2 className="text-xl font-semibold mb-4">Verification Phases</h2>
               <div className="flex flex-nowrap overflow-x-auto pb-4">
-                <div className="flex-none mr-4 w-58 bg-white p-4 rounded-lg shadow-md">
+                <div className="flex-none mr-4 w-62 bg-white p-4 rounded-lg shadow-md">
                   <h3 className="font-semibold text-gray-900">System Requirements Review</h3>
                   <p className="text-sm text-gray-500 mb-2">2022-12-01 to 2023-01-15</p>
                   <div className="flex items-center justify-between mb-2">
@@ -345,7 +345,7 @@ const VerificationStrategy: React.FC = () => {
                   <p className="text-xs text-gray-600">2 activities</p>
                 </div>
                 
-                <div className="flex-none mr-4 w-58 bg-white p-4 rounded-lg shadow-md">
+                <div className="flex-none mr-4 w-62 bg-white p-4 rounded-lg shadow-md">
                   <h3 className="font-semibold text-gray-900">Systems Design Review</h3>
                   <p className="text-sm text-gray-500 mb-2">2023-01-15 to 2023-02-20</p>
                   <div className="flex items-center justify-between mb-2">
@@ -362,7 +362,7 @@ const VerificationStrategy: React.FC = () => {
                   <div
                     key={phase.id}
                     onClick={() => handleSelectPhase(phase.id)}
-                    className={`flex-none mr-4 w-58 bg-white p-4 rounded-lg shadow-md cursor-pointer transition-all ${
+                    className={`flex-none mr-4 w-62 bg-white p-4 rounded-lg shadow-md cursor-pointer transition-all ${
                       selectedPhase === phase.id ? 'ring-2 ring-blue-500 transform scale-[1.02]' : 'hover:shadow-lg'
                     }`}
                   >
@@ -449,19 +449,21 @@ const VerificationStrategy: React.FC = () => {
                     </select>
                   </div>
                 </div>
-                <div className="relative">
-                  <input
-                    type="text"
-                    placeholder="Search activities, requirements..."
-                    className="pl-10 pr-24 py-2 border border-gray-300 rounded-lg focus:ring-blue-500 focus:border-blue-500"
-                    value={searchTerm}
-                    onChange={(e) => setSearchTerm(e.target.value)}
-                  />
-                  <span className="absolute left-3 top-2.5 text-gray-400">
-                    <FaSearchPlus />
-                  </span>
+                <div className="flex items-center space-x-2">
+                  <div className="relative">
+                    <input
+                      type="text"
+                      placeholder="Search activities, requirements..."
+                      className="pl-10 pr-4 py-2 border border-gray-300 rounded-lg focus:ring-blue-500 focus:border-blue-500"
+                      value={searchTerm}
+                      onChange={(e) => setSearchTerm(e.target.value)}
+                    />
+                    <span className="absolute left-3 top-2.5 text-gray-400">
+                      <FaSearchPlus />
+                    </span>
+                  </div>
                   <button
-                    className="absolute right-2 top-1 bg-gray-200 hover:bg-gray-300 text-gray-700 py-1 px-2 rounded-md flex items-center text-xs transition-colors"
+                    className="bg-gray-200 hover:bg-gray-300 text-gray-700 py-2 px-4 rounded-md flex items-center text-sm transition-colors"
                     onClick={() => {
                       setSearchTerm('');
                       setTypeFilter(null);
@@ -470,7 +472,7 @@ const VerificationStrategy: React.FC = () => {
                       setPhaseFilter(null);
                     }}
                   >
-                    <FaFilter className="mr-1" /> Reset
+                    <FaFilter className="mr-2" /> Reset Filters
                   </button>
                 </div>
               </div>

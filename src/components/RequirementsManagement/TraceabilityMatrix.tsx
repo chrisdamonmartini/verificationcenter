@@ -519,7 +519,7 @@ const TraceabilityMatrix: React.FC = () => {
   };
 
   return (
-    <div className="bg-white p-6 rounded-lg shadow-md" style={{ maxWidth: 'calc(100vw - 250px)' }}>
+    <div className="bg-white p-6 rounded-lg shadow-md" style={{ maxWidth: 'calc(100vw - 245px)' }}>
       <div className="flex justify-between items-center mb-6">
         <h2 className="text-xl font-semibold">Traceability Matrix</h2>
         <div className="flex space-x-2">
