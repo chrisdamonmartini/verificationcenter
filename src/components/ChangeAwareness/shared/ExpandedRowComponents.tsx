@@ -13,10 +13,10 @@ export interface StandardExpandedChange extends Omit<BaseChange, 'description'> 
   id: string;
   title: string;
   description?: string;
-  changeType: "added" | "modified" | "removed";
-  severity: "critical" | "major" | "minor";
+  changeType: "New" | "Modified" | "Deprecated" | "Removed";
+  severity: "Critical" | "High" | "Medium" | "Low";
   date: string;
-  status: "reviewed" | "pending" | "approved" | "rejected";
+  status: "Draft" | "In Review" | "Approved" | "Rejected" | "Implemented";
   author: string;
   changeId?: string;
   technicalDetails?: Record<string, any>;

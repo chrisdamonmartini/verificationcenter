@@ -21,7 +21,7 @@ export const useChangesData = <T extends BaseChange>(
       const allChanges = getFilteredChanges(productType as 'missile' | 'fighter', weeks);
       
       // Map domain to the appropriate key in the changes object
-      const domainMap: Record<string, keyof typeof allChanges> = {
+      const domainMap: Record<string, string> = {
         'mission': 'missionChanges',
         'operationalScenario': 'operationalScenariosChanges',
         'requirement': 'requirementsChanges',
@@ -33,9 +33,9 @@ export const useChangesData = <T extends BaseChange>(
       };
       
       const key = domainMap[domain];
-      if (key && allChanges[key]) {
+      if (key && allChanges[key as keyof typeof allChanges]) {
         // Set the data with the appropriate domain changes
-        setData(allChanges[key] as unknown as T[]);
+        setData(allChanges[key as keyof typeof allChanges] as unknown as T[]);
       } else {
         console.error(`Invalid domain: ${domain}`);
         setData([]);

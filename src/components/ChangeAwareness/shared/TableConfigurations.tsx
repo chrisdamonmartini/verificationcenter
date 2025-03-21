@@ -54,10 +54,10 @@ const { Text } = Typography;
 interface StandardBaseChange extends BaseChange {
   id: string;
   category: string;
-  changeType: "added" | "modified" | "removed";
-  severity: "critical" | "major" | "minor";
+  changeType: "New" | "Modified" | "Deprecated" | "Removed";
+  severity: "Critical" | "High" | "Medium" | "Low";
   date: string;
-  status: "reviewed" | "pending" | "approved" | "rejected";
+  status: "Draft" | "In Review" | "Approved" | "Rejected" | "Implemented";
   author: string;
   title: string;
   impactedItems: Record<string, number>;
