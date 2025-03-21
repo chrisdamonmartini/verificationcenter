@@ -1,7 +1,7 @@
 import React from 'react';
-import { Typography, Row, Col, Space, Descriptions, Table, Card, Tabs, Tag, Divider, Input } from 'antd';
+import { Typography, Row, Col, Space, Descriptions, Table, Card, Tabs, Tag, Divider, Input, Button, Timeline, List } from 'antd';
 import type { TableProps } from 'antd';
-import { NodeIndexOutlined, CloseCircleOutlined, UpOutlined, DownOutlined } from '@ant-design/icons';
+import { NodeIndexOutlined, CloseCircleOutlined, UpOutlined, DownOutlined, ClockCircleOutlined } from '@ant-design/icons';
 import { BaseChange } from '../../../types/changeAwareness';
 import { Code, SeverityTag, ChangeTypeTag } from './UtilityComponents';
 
@@ -122,6 +122,8 @@ function ImpactAnalysisSection<T extends StandardExpandedChange>({ record }: Imp
   const [visibleDomains, setVisibleDomains] = React.useState<Record<string, boolean>>(initialVisibility);
   const [searchQuery, setSearchQuery] = React.useState<string>('');
   const [expandedItems, setExpandedItems] = React.useState<Record<string, boolean>>({});
+  const [showRelationships, setShowRelationships] = React.useState<boolean>(false);
+  const [viewMode, setViewMode] = React.useState<'cards' | 'timeline'>('cards');
 
   // Toggle domain visibility
   const toggleDomain = (domain: string) => {
@@ -144,6 +146,16 @@ function ImpactAnalysisSection<T extends StandardExpandedChange>({ record }: Imp
     setSearchQuery('');
   };
 
+  // Toggle relationship lines visibility
+  const toggleRelationships = () => {
+    setShowRelationships(prev => !prev);
+  };
+
+  // Toggle between card and timeline view
+  const toggleViewMode = () => {
+    setViewMode(prev => prev === 'cards' ? 'timeline' : 'cards');
+  };
+
   // Calculate total impact from the record data
   const totalImpact = Object.values(record.impactedItems || {}).reduce(
     (sum: number, val) => sum + (val || 0), 0
@@ -155,6 +167,7 @@ function ImpactAnalysisSection<T extends StandardExpandedChange>({ record }: Imp
     title: string;
     lastModified?: string;
     modifiedBy?: string;
+    relatedTo?: Array<string>; // IDs of related items
   }> => {
     // For simplicity, create placeholder items with domain-specific IDs
     // In a real implementation, you would fetch the actual impacted items
@@ -184,11 +197,29 @@ function ImpactAnalysisSection<T extends StandardExpandedChange>({ record }: Imp
         itemId = `${domain.toUpperCase()}-${1000 + i}`;
       }
       
+      // Create mock relationships (for demonstration purposes)
+      const relatedTo: Array<string> = [];
+      
+      // For this example, we'll create relationships between adjacent domains
+      // Mission items relate to Requirements, Requirements to Functions, etc.
+      if (domain === 'mission' && i < count - 1) {
+        relatedTo.push(`REQUIREMENTS-${1000 + Math.floor(Math.random() * count)}`);
+      } else if (domain === 'requirements') {
+        relatedTo.push(`FUNCTIONS-${1000 + Math.floor(Math.random() * count)}`);
+      } else if (domain === 'functions') {
+        relatedTo.push(`LOGICAL-${1000 + Math.floor(Math.random() * count)}`);
+      } else if (domain === 'logical') {
+        relatedTo.push(`CAD-${1000 + Math.floor(Math.random() * count)}`);
+      } else if (domain === 'cad') {
+        relatedTo.push(`EBOM-${1000 + Math.floor(Math.random() * count)}`);
+      }
+      
       items.push({
         id: itemId,
         title: `${domain.charAt(0).toUpperCase() + domain.slice(1)} Item ${i + 1}`,
         lastModified: randomDate,
-        modifiedBy: randomAuthor
+        modifiedBy: randomAuthor,
+        relatedTo
       });
     }
     
@@ -294,28 +325,181 @@ function ImpactAnalysisSection<T extends StandardExpandedChange>({ record }: Imp
     );
   }, [filteredImpactData]);
 
+  // Timeline view implementation
+  const renderTimelineView = () => {
+    // Group all items by date and sort chronologically
+    const itemsByDate: Record<string, Array<any>> = Object.values(filteredImpactData)
+      .flat()
+      .filter(item => item.lastModified && 
+        (visibleDomains[item.id.split('-')[0].toLowerCase()] || false))
+      .reduce((acc: Record<string, Array<any>>, item: any) => {
+        if (!acc[item.lastModified]) {
+          acc[item.lastModified] = [];
+        }
+        acc[item.lastModified].push(item);
+        return acc;
+      }, {});
+
+    // Sort dates chronologically
+    const sortedEntries = Object.entries(itemsByDate)
+      .sort(([dateA], [dateB]) => {
+        return new Date(dateA).getTime() - new Date(dateB).getTime();
+      });
+
+    return (
+      <div style={{ overflowX: 'auto' }}>
+        <Timeline mode="alternate" style={{ marginTop: 20, marginBottom: 20 }}>
+          {sortedEntries.map(([date, items]) => (
+            <Timeline.Item 
+              key={date} 
+              color="blue"
+              label={date}
+            >
+              <Card size="small" title={`Changes on ${date}`} style={{ width: 300 }}>
+                <List
+                  size="small"
+                  dataSource={items}
+                  renderItem={(item: any) => {
+                    // Find domain for this item
+                    const domainKey = item.id.split('-')[0].toLowerCase();
+                    const domain = domains.find(d => d.key === domainKey);
+                    
+                    return (
+                      <List.Item>
+                        <List.Item.Meta
+                          title={
+                            <Space>
+                              <Tag color={getDomainColor(domainKey)}>{domain?.label || domainKey}</Tag>
+                              <Text strong>{item.id}</Text>
+                            </Space>
+                          }
+                          description={
+                            <>
+                              <div>{item.title}</div>
+                              <div>
+                                <Text type="secondary" style={{ fontSize: '12px' }}>
+                                  by {item.modifiedBy}
+                                </Text>
+                              </div>
+                            </>
+                          }
+                        />
+                      </List.Item>
+                    );
+                  }}
+                />
+              </Card>
+            </Timeline.Item>
+          ))}
+        </Timeline>
+      </div>
+    );
+  };
+
+  // CSS styles for relationship lines
+  const relationshipStyles = `
+    .relationship-container {
+      position: relative;
+    }
+    
+    .impact-item {
+      z-index: 1;
+    }
+    
+    .relationship-line {
+      position: absolute;
+      background-color: #1890ff;
+      opacity: 0.4;
+      z-index: 0;
+      pointer-events: none;
+      height: 2px;
+      transform-origin: 0 0;
+    }
+  `;
+
+  // Effect to draw relationship lines
+  React.useEffect(() => {
+    if (!showRelationships || viewMode !== 'cards') return;
+    
+    // Clear existing lines
+    const container = document.querySelector('.relationship-container');
+    const linesContainer = document.querySelector('.relationship-lines');
+    if (!container || !linesContainer) return;
+    
+    linesContainer.innerHTML = '';
+    
+    // Find all items with relationships
+    const items = document.querySelectorAll('.impact-item');
+    items.forEach(item => {
+      const relations = item.getAttribute('data-relations');
+      if (!relations) return;
+      
+      const relatedIds = relations.split(',');
+      relatedIds.forEach(relatedId => {
+        const relatedItem = document.getElementById(`item-${relatedId}`);
+        if (!relatedItem) return;
+        
+        // Get positions
+        const rect1 = item.getBoundingClientRect();
+        const rect2 = relatedItem.getBoundingClientRect();
+        const containerRect = container.getBoundingClientRect();
+        
+        // Calculate positions relative to container
+        const x1 = rect1.right - containerRect.left;
+        const y1 = rect1.top + rect1.height / 2 - containerRect.top;
+        const x2 = rect2.left - containerRect.left;
+        const y2 = rect2.top + rect2.height / 2 - containerRect.top;
+        
+        // Calculate line length and angle
+        const length = Math.sqrt(Math.pow(x2 - x1, 2) + Math.pow(y2 - y1, 2));
+        const angle = Math.atan2(y2 - y1, x2 - x1) * 180 / Math.PI;
+        
+        // Create line element
+        const line = document.createElement('div');
+        line.className = 'relationship-line';
+        line.style.width = `${length}px`;
+        line.style.left = `${x1}px`;
+        line.style.top = `${y1}px`;
+        line.style.transform = `rotate(${angle}deg)`;
+        
+        linesContainer.appendChild(line);
+      });
+    });
+  }, [showRelationships, filteredImpactData, visibleDomains, viewMode]);
+
   return (
     <div>
       <Space direction="vertical" size="middle" style={{ width: '100%' }}>
-        {/* Header row with Total Impact and Toggle Visibility */}
-        <Row align="middle" justify="space-between">
-          <Col xs={24} md={8}>
-            <Space align="center">
-              <Tag color="red">{totalImpact} affected items</Tag>
-              {searchQuery && (
-                <Tag color="blue">
-                  {totalFilteredItems} filtered items
-                  <CloseCircleOutlined 
-                    onClick={clearSearch} 
-                    style={{ marginLeft: 8, cursor: 'pointer' }} 
-                  />
-                </Tag>
-              )}
-            </Space>
+        {/* Header row with Search, Total Impact, and Toggle Visibility */}
+        <Row align="middle" justify="space-between" gutter={[16, 16]}>
+          <Col xs={24} md={16}>
+            <Row gutter={16} align="middle">
+              <Col xs={12} sm={8} md={6} lg={5} xl={4}>
+                <Input.Search
+                  placeholder="Search items..."
+                  onChange={(e) => setSearchQuery(e.target.value)}
+                  value={searchQuery}
+                  allowClear
+                  style={{ width: '100%' }}
+                />
+              </Col>
+              <Col>
+                <Tag color="red">{totalImpact} affected items</Tag>
+                {searchQuery && (
+                  <Tag color="blue">
+                    {totalFilteredItems} filtered items
+                    <CloseCircleOutlined 
+                      onClick={clearSearch} 
+                      style={{ marginLeft: 8, cursor: 'pointer' }} 
+                    />
+                  </Tag>
+                )}
+              </Col>
+            </Row>
           </Col>
-          <Col xs={24} md={16} style={{ textAlign: 'right' }}>
-            <Text style={{ marginRight: 8 }}>Toggle Visibility:</Text>
+          <Col xs={24} md={8} style={{ textAlign: 'right' }}>
             <Space wrap>
+              <Text style={{ marginRight: 8 }}>Toggle Visibility:</Text>
               {activeDomains.map(domain => {
                 const itemCount = filteredImpactData[domain.key]?.length || 0;
                 
@@ -336,110 +520,144 @@ function ImpactAnalysisSection<T extends StandardExpandedChange>({ record }: Imp
             </Space>
           </Col>
         </Row>
-
-        {/* Search bar */}
-        <Input.Search
-          placeholder="Search by ID, title, date, or author..."
-          onChange={(e) => setSearchQuery(e.target.value)}
-          value={searchQuery}
-          allowClear
-          style={{ marginBottom: 16 }}
-        />
         
+        {/* View options */}
+        <Row justify="end" align="middle">
+          <Space>
+            <Button 
+              type={showRelationships ? "primary" : "default"} 
+              icon={<NodeIndexOutlined />}
+              onClick={toggleRelationships}
+              size="small"
+            >
+              {showRelationships ? "Hide Relationships" : "Show Relationships"}
+            </Button>
+            <Button 
+              type={viewMode === 'timeline' ? "primary" : "default"}
+              icon={<ClockCircleOutlined />}
+              onClick={toggleViewMode}
+              size="small"
+            >
+              {viewMode === 'timeline' ? "Card View" : "Timeline View"}
+            </Button>
+          </Space>
+        </Row>
+
         {hasData ? (
           <>
-            {/* Domain columns with items - using xs spans to fit more on screen */}
-            <Row gutter={[24, 24]}>
-              {activeDomains.map(domain => {
-                // Skip if domain is not visible
-                if (!visibleDomains[domain.key]) {
-                  return null;
-                }
-                
-                const domainItems = filteredImpactData[domain.key] || [];
-                if (domainItems.length === 0) {
-                  return null; // Skip empty domains after filtering
-                }
-                
-                const domainColor = getDomainColor(domain.key);
-                
-                return (
-                  <Col key={domain.key} xs={24} sm={12} md={8} lg={6} xl={4}>
-                    <Card 
-                      title={domain.label}
-                      size="small"
-                      headStyle={{ 
-                        backgroundColor: domainColor, 
-                        padding: '8px 12px',
-                        fontSize: '14px',
-                        fontWeight: 'bold'
-                      }}
-                      bodyStyle={{ 
-                        padding: 0, 
-                        maxHeight: '400px', 
-                        overflowY: 'auto'
-                      }}
-                    >
-                      {domainItems.map((item, index) => {
-                        const isExpanded = expandedItems[item.id] || false;
-                        
-                        return (
-                          <div
-                            key={`${item.id}-${index}`}
-                            style={{
-                              padding: '8px 12px',
-                              borderBottom: index < domainItems.length - 1 ? '1px solid #f0f0f0' : 'none',
-                              cursor: 'pointer'
-                            }}
-                            onClick={() => toggleItemExpansion(item.id)}
-                          >
-                            <Row align="middle" justify="space-between">
-                              <Col>
-                                <Text strong style={{ fontSize: '13px' }}>{item.id}</Text>
-                              </Col>
-                              <Col>
-                                {isExpanded ? 
-                                  <UpOutlined style={{ fontSize: '12px' }} /> : 
-                                  <DownOutlined style={{ fontSize: '12px' }} />
-                                }
-                              </Col>
-                            </Row>
-                            
-                            {/* Always show title */}
-                            <div style={{ marginBottom: isExpanded ? '8px' : '0' }}>
-                              <Text style={{ fontSize: '13px' }}>{item.title}</Text>
+            {viewMode === 'cards' ? (
+              // Card View
+              <Row gutter={[24, 24]} className={showRelationships ? "relationship-container" : ""}>
+                {activeDomains.map(domain => {
+                  // Skip if domain is not visible
+                  if (!visibleDomains[domain.key]) {
+                    return null;
+                  }
+                  
+                  const domainItems = filteredImpactData[domain.key] || [];
+                  if (domainItems.length === 0) {
+                    return null; // Skip empty domains after filtering
+                  }
+                  
+                  const domainColor = getDomainColor(domain.key);
+                  
+                  return (
+                    <Col key={domain.key} xs={24} sm={12} md={8} lg={6} xl={4}>
+                      <Card 
+                        title={domain.label}
+                        size="small"
+                        headStyle={{ 
+                          backgroundColor: domainColor, 
+                          padding: '8px 12px',
+                          fontSize: '14px',
+                          fontWeight: 'bold'
+                        }}
+                        bodyStyle={{ 
+                          padding: 0, 
+                          maxHeight: '400px', 
+                          overflowY: 'auto'
+                        }}
+                      >
+                        {domainItems.map((item, index) => {
+                          const isExpanded = expandedItems[item.id] || false;
+                          
+                          return (
+                            <div
+                              key={`${item.id}-${index}`}
+                              style={{
+                                padding: '8px 12px',
+                                borderBottom: index < domainItems.length - 1 ? '1px solid #f0f0f0' : 'none',
+                                cursor: 'pointer',
+                                position: 'relative'
+                              }}
+                              onClick={() => toggleItemExpansion(item.id)}
+                              id={`item-${item.id}`}
+                              className="impact-item"
+                              data-relations={item.relatedTo?.join(',')}
+                            >
+                              <Row align="middle" justify="space-between">
+                                <Col>
+                                  <Text strong style={{ fontSize: '13px' }}>{item.id}</Text>
+                                </Col>
+                                <Col>
+                                  {isExpanded ? 
+                                    <UpOutlined style={{ fontSize: '12px' }} /> : 
+                                    <DownOutlined style={{ fontSize: '12px' }} />
+                                  }
+                                </Col>
+                              </Row>
+                              
+                              {/* Always show title */}
+                              <div style={{ marginBottom: isExpanded ? '8px' : '0' }}>
+                                <Text style={{ fontSize: '13px' }}>{item.title}</Text>
+                              </div>
+                              
+                              {/* Expanded details */}
+                              {isExpanded && item.lastModified && (
+                                <>
+                                  <Divider style={{ margin: '8px 0' }} />
+                                  <div>
+                                    <Text type="secondary" style={{ fontSize: '12px' }}>
+                                      Last modified: {item.lastModified}
+                                    </Text>
+                                  </div>
+                                  <div>
+                                    <Text type="secondary" style={{ fontSize: '12px' }}>
+                                      {item.modifiedBy && `by ${item.modifiedBy}`}
+                                    </Text>
+                                  </div>
+                                </>
+                              )}
                             </div>
-                            
-                            {/* Expanded details */}
-                            {isExpanded && item.lastModified && (
-                              <>
-                                <Divider style={{ margin: '8px 0' }} />
-                                <div>
-                                  <Text type="secondary" style={{ fontSize: '12px' }}>
-                                    Last modified: {item.lastModified}
-                                  </Text>
-                                </div>
-                                <div>
-                                  <Text type="secondary" style={{ fontSize: '12px' }}>
-                                    {item.modifiedBy && `by ${item.modifiedBy}`}
-                                  </Text>
-                                </div>
-                              </>
-                            )}
-                          </div>
-                        );
-                      })}
-                    </Card>
-                  </Col>
-                );
-              })}
-            </Row>
+                          );
+                        })}
+                      </Card>
+                    </Col>
+                  );
+                })}
+                
+                {/* Render relationship lines if enabled */}
+                {showRelationships && (
+                  <div className="relationship-lines">
+                    {/* This will be populated by useEffect after render */}
+                  </div>
+                )}
+              </Row>
+            ) : (
+              // Timeline View
+              renderTimelineView()
+            )}
           </>
         ) : (
           // No impact data available
           <Text>No impact information available</Text>
         )}
       </Space>
+
+      {/* Add CSS for relationship lines */}
+      {showRelationships && (
+        <style dangerouslySetInnerHTML={{ __html: relationshipStyles }} />
+      )}
     </div>
   );
 }
