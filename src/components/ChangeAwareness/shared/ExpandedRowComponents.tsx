@@ -1,7 +1,7 @@
 import React from 'react';
-import { Typography, Row, Col, Space, Descriptions, Table, Card, Tabs, Tag, Divider, Input, Button, Timeline, List } from 'antd';
+import { Typography, Row, Col, Space, Descriptions, Table, Card, Tabs, Tag, Divider, Input, Button, Timeline, List, Tooltip, Modal, Form, Popover, Select } from 'antd';
 import type { TableProps } from 'antd';
-import { NodeIndexOutlined, CloseCircleOutlined, UpOutlined, DownOutlined, ClockCircleOutlined } from '@ant-design/icons';
+import { NodeIndexOutlined, CloseCircleOutlined, UpOutlined, DownOutlined, ClockCircleOutlined, BarChartOutlined, ExpandOutlined, ShrinkOutlined, SaveOutlined, SettingOutlined } from '@ant-design/icons';
 import { BaseChange } from '../../../types/changeAwareness';
 import { Code, SeverityTag, ChangeTypeTag } from './UtilityComponents';
 
@@ -124,6 +124,21 @@ function ImpactAnalysisSection<T extends StandardExpandedChange>({ record }: Imp
   const [expandedItems, setExpandedItems] = React.useState<Record<string, boolean>>({});
   const [showRelationships, setShowRelationships] = React.useState<boolean>(false);
   const [viewMode, setViewMode] = React.useState<'cards' | 'timeline'>('cards');
+  const [focusedDomain, setFocusedDomain] = React.useState<string | null>(null);
+  const [showStatistics, setShowStatistics] = React.useState<boolean>(false);
+  const [savedPresets, setSavedPresets] = React.useState<Array<{
+    name: string;
+    visibility: Record<string, boolean>;
+  }>>(() => {
+    // Load saved presets from localStorage if available
+    const storedPresets = localStorage.getItem('impactAnalysisPresets');
+    return storedPresets ? JSON.parse(storedPresets) : [];
+  });
+  const [savePresetModalVisible, setSavePresetModalVisible] = React.useState<boolean>(false);
+  const [presetName, setPresetName] = React.useState<string>('');
+
+  // Form for saving presets
+  const [form] = Form.useForm();
 
   // Toggle domain visibility
   const toggleDomain = (domain: string) => {
@@ -154,6 +169,57 @@ function ImpactAnalysisSection<T extends StandardExpandedChange>({ record }: Imp
   // Toggle between card and timeline view
   const toggleViewMode = () => {
     setViewMode(prev => prev === 'cards' ? 'timeline' : 'cards');
+    // Exit focus mode when switching to timeline view
+    if (viewMode === 'cards') {
+      setFocusedDomain(null);
+    }
+  };
+
+  // Toggle statistics chart
+  const toggleStatistics = () => {
+    setShowStatistics(prev => !prev);
+  };
+
+  // Focus on a specific domain
+  const focusDomain = (domain: string) => {
+    setFocusedDomain(domain);
+  };
+
+  // Exit focus mode
+  const exitFocusMode = () => {
+    setFocusedDomain(null);
+  };
+
+  // Save current visibility state as a preset
+  const savePreset = (values: { name: string }) => {
+    const newPreset = {
+      name: values.name,
+      visibility: { ...visibleDomains }
+    };
+    
+    const updatedPresets = [...savedPresets, newPreset];
+    setSavedPresets(updatedPresets);
+    
+    // Save to localStorage
+    localStorage.setItem('impactAnalysisPresets', JSON.stringify(updatedPresets));
+    
+    // Close modal and reset form
+    setSavePresetModalVisible(false);
+    form.resetFields();
+  };
+
+  // Load a saved preset
+  const loadPreset = (preset: { name: string; visibility: Record<string, boolean> }) => {
+    setVisibleDomains(preset.visibility);
+  };
+
+  // Delete a saved preset
+  const deletePreset = (presetName: string) => {
+    const updatedPresets = savedPresets.filter(preset => preset.name !== presetName);
+    setSavedPresets(updatedPresets);
+    
+    // Update localStorage
+    localStorage.setItem('impactAnalysisPresets', JSON.stringify(updatedPresets));
   };
 
   // Calculate total impact from the record data
@@ -467,37 +533,194 @@ function ImpactAnalysisSection<T extends StandardExpandedChange>({ record }: Imp
     });
   }, [showRelationships, filteredImpactData, visibleDomains, viewMode]);
 
+  // Calculate statistics for domains
+  const domainStatistics = React.useMemo(() => {
+    return Object.entries(impactData).map(([key, items]) => {
+      const domain = domains.find(d => d.key === key) || { key, label: key };
+      return {
+        domain: domain.label,
+        count: items.length,
+        color: getDomainColor(key)
+      };
+    }).sort((a, b) => b.count - a.count); // Sort by count descending
+  }, [impactData]);
+
+  // Render statistics chart
+  const renderStatisticsChart = () => {
+    const maxCount = Math.max(...domainStatistics.map(d => d.count));
+    
+    return (
+      <Card 
+        title="Impact Distribution" 
+        size="small" 
+        style={{ marginBottom: 16 }}
+        extra={<Button size="small" icon={<CloseCircleOutlined />} onClick={toggleStatistics} />}
+      >
+        <div style={{ padding: '8px 0' }}>
+          {domainStatistics.map(stat => (
+            <Tooltip key={stat.domain} title={`${stat.domain}: ${stat.count} items`}>
+              <div style={{ marginBottom: 8 }}>
+                <div style={{ display: 'flex', alignItems: 'center' }}>
+                  <div style={{ width: 100, textOverflow: 'ellipsis', overflow: 'hidden', whiteSpace: 'nowrap' }}>
+                    {stat.domain}
+                  </div>
+                  <div 
+                    style={{ 
+                      height: 16, 
+                      background: stat.color, 
+                      width: `${(stat.count / maxCount) * 200}px`,
+                      marginRight: 8,
+                      display: 'flex',
+                      alignItems: 'center',
+                      justifyContent: 'flex-end',
+                      paddingRight: 4,
+                      minWidth: 30
+                    }}
+                  >
+                    <Text style={{ fontSize: '12px' }}>{stat.count}</Text>
+                  </div>
+                </div>
+              </div>
+            </Tooltip>
+          ))}
+        </div>
+      </Card>
+    );
+  };
+
+  // Render saved presets popover content
+  const renderPresetsContent = () => {
+    return (
+      <div style={{ width: 250 }}>
+        <div style={{ marginBottom: 8 }}>
+          <Button 
+            type="primary" 
+            size="small" 
+            icon={<SaveOutlined />} 
+            onClick={() => setSavePresetModalVisible(true)}
+            style={{ width: '100%' }}
+          >
+            Save Current View
+          </Button>
+        </div>
+        
+        {savedPresets.length > 0 ? (
+          <List
+            size="small"
+            bordered
+            dataSource={savedPresets}
+            renderItem={preset => (
+              <List.Item
+                actions={[
+                  <Button 
+                    type="text" 
+                    size="small" 
+                    danger 
+                    onClick={() => deletePreset(preset.name)}
+                    icon={<CloseCircleOutlined />} 
+                  />
+                ]}
+              >
+                <div
+                  style={{ cursor: 'pointer' }}
+                  onClick={() => loadPreset(preset)}
+                >
+                  {preset.name}
+                </div>
+              </List.Item>
+            )}
+          />
+        ) : (
+          <Text type="secondary">No saved views</Text>
+        )}
+      </div>
+    );
+  };
+
   return (
     <div>
       <Space direction="vertical" size="middle" style={{ width: '100%' }}>
-        {/* Header row with Search, Total Impact, and Toggle Visibility */}
-        <Row align="middle" justify="space-between" gutter={[16, 16]}>
-          <Col xs={24} md={16}>
-            <Row gutter={16} align="middle">
-              <Col xs={12} sm={8} md={6} lg={5} xl={4}>
-                <Input.Search
-                  placeholder="Search items..."
-                  onChange={(e) => setSearchQuery(e.target.value)}
-                  value={searchQuery}
-                  allowClear
-                  style={{ width: '100%' }}
-                />
-              </Col>
-              <Col>
-                <Tag color="red">{totalImpact} affected items</Tag>
-                {searchQuery && (
-                  <Tag color="blue">
-                    {totalFilteredItems} filtered items
-                    <CloseCircleOutlined 
-                      onClick={clearSearch} 
-                      style={{ marginLeft: 8, cursor: 'pointer' }} 
-                    />
-                  </Tag>
-                )}
-              </Col>
-            </Row>
+        {/* Header row with Search, Total Impact, Buttons, and Toggle Visibility */}
+        <Row align="middle" gutter={[16, 16]}>
+          <Col xs={6} sm={4} md={3} lg={3} xl={2}>
+            <Input.Search
+              placeholder="Search..."
+              onChange={(e) => setSearchQuery(e.target.value)}
+              value={searchQuery}
+              allowClear
+              style={{ width: '100%' }}
+            />
           </Col>
-          <Col xs={24} md={8} style={{ textAlign: 'right' }}>
+          <Col>
+            <Tag color="red">{totalImpact} affected items</Tag>
+            {searchQuery && (
+              <Tag color="blue">
+                {totalFilteredItems} filtered items
+                <CloseCircleOutlined 
+                  onClick={clearSearch} 
+                  style={{ marginLeft: 8, cursor: 'pointer' }} 
+                />
+              </Tag>
+            )}
+          </Col>
+          <Col>
+            <Button 
+              type={showRelationships ? "primary" : "default"} 
+              icon={<NodeIndexOutlined />}
+              onClick={toggleRelationships}
+              size="small"
+            >
+              {showRelationships ? "Hide Relationships" : "Show Relationships"}
+            </Button>
+          </Col>
+          <Col>
+            <Button 
+              type={viewMode === 'timeline' ? "primary" : "default"}
+              icon={<ClockCircleOutlined />}
+              onClick={toggleViewMode}
+              size="small"
+            >
+              {viewMode === 'timeline' ? "Card View" : "Timeline View"}
+            </Button>
+          </Col>
+          <Col>
+            <Button
+              type={showStatistics ? "primary" : "default"}
+              icon={<BarChartOutlined />}
+              onClick={toggleStatistics}
+              size="small"
+            >
+              {showStatistics ? "Hide Statistics" : "Show Statistics"}
+            </Button>
+          </Col>
+          <Col>
+            <Popover
+              content={renderPresetsContent()}
+              title="Saved Views"
+              trigger="click"
+              placement="bottom"
+            >
+              <Button
+                icon={<SettingOutlined />}
+                size="small"
+              >
+                Saved Views
+              </Button>
+            </Popover>
+          </Col>
+          {focusedDomain && (
+            <Col>
+              <Button
+                type="primary"
+                icon={<ShrinkOutlined />}
+                onClick={exitFocusMode}
+                size="small"
+              >
+                Exit Focus Mode
+              </Button>
+            </Col>
+          )}
+          <Col flex="auto" style={{ textAlign: 'right' }}>
             <Space wrap>
               <Text style={{ marginRight: 8 }}>Toggle Visibility:</Text>
               {activeDomains.map(domain => {
@@ -520,37 +743,18 @@ function ImpactAnalysisSection<T extends StandardExpandedChange>({ record }: Imp
             </Space>
           </Col>
         </Row>
-        
-        {/* View options */}
-        <Row justify="end" align="middle">
-          <Space>
-            <Button 
-              type={showRelationships ? "primary" : "default"} 
-              icon={<NodeIndexOutlined />}
-              onClick={toggleRelationships}
-              size="small"
-            >
-              {showRelationships ? "Hide Relationships" : "Show Relationships"}
-            </Button>
-            <Button 
-              type={viewMode === 'timeline' ? "primary" : "default"}
-              icon={<ClockCircleOutlined />}
-              onClick={toggleViewMode}
-              size="small"
-            >
-              {viewMode === 'timeline' ? "Card View" : "Timeline View"}
-            </Button>
-          </Space>
-        </Row>
 
+        {/* Statistics Chart */}
+        {showStatistics && renderStatisticsChart()}
+        
         {hasData ? (
           <>
             {viewMode === 'cards' ? (
               // Card View
               <Row gutter={[24, 24]} className={showRelationships ? "relationship-container" : ""}>
                 {activeDomains.map(domain => {
-                  // Skip if domain is not visible
-                  if (!visibleDomains[domain.key]) {
+                  // Skip if domain is not visible or not the focused domain when in focus mode
+                  if (!visibleDomains[domain.key] || (focusedDomain && domain.key !== focusedDomain)) {
                     return null;
                   }
                   
@@ -562,7 +766,7 @@ function ImpactAnalysisSection<T extends StandardExpandedChange>({ record }: Imp
                   const domainColor = getDomainColor(domain.key);
                   
                   return (
-                    <Col key={domain.key} xs={24} sm={12} md={8} lg={6} xl={4}>
+                    <Col key={domain.key} xs={24} sm={focusedDomain ? 24 : 12} md={focusedDomain ? 24 : 8} lg={focusedDomain ? 24 : 6} xl={focusedDomain ? 24 : 4}>
                       <Card 
                         title={domain.label}
                         size="small"
@@ -574,9 +778,24 @@ function ImpactAnalysisSection<T extends StandardExpandedChange>({ record }: Imp
                         }}
                         bodyStyle={{ 
                           padding: 0, 
-                          maxHeight: '400px', 
+                          maxHeight: focusedDomain ? '600px' : '400px', 
                           overflowY: 'auto'
                         }}
+                        extra={
+                          focusedDomain ? null : (
+                            <Tooltip title="Focus on this domain">
+                              <Button 
+                                type="text" 
+                                size="small" 
+                                icon={<ExpandOutlined />} 
+                                onClick={(e) => {
+                                  e.stopPropagation();
+                                  focusDomain(domain.key);
+                                }}
+                              />
+                            </Tooltip>
+                          )
+                        }
                       >
                         {domainItems.map((item, index) => {
                           const isExpanded = expandedItems[item.id] || false;
@@ -653,6 +872,33 @@ function ImpactAnalysisSection<T extends StandardExpandedChange>({ record }: Imp
           <Text>No impact information available</Text>
         )}
       </Space>
+
+      {/* Save Preset Modal */}
+      <Modal
+        title="Save Current View"
+        open={savePresetModalVisible}
+        onCancel={() => setSavePresetModalVisible(false)}
+        footer={null}
+      >
+        <Form
+          form={form}
+          layout="vertical"
+          onFinish={savePreset}
+        >
+          <Form.Item
+            name="name"
+            label="Preset Name"
+            rules={[{ required: true, message: 'Please enter a name for this view' }]}
+          >
+            <Input placeholder="e.g., Requirements and CAD only" />
+          </Form.Item>
+          <Form.Item>
+            <Button type="primary" htmlType="submit">
+              Save
+            </Button>
+          </Form.Item>
+        </Form>
+      </Modal>
 
       {/* Add CSS for relationship lines */}
       {showRelationships && (
