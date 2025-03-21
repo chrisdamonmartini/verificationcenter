@@ -12,7 +12,11 @@ import {
   DatabaseOutlined,
   AuditOutlined,
   BarChartOutlined,
-  SettingOutlined
+  SettingOutlined,
+  NodeIndexOutlined,
+  AppstoreOutlined,
+  PlayCircleOutlined,
+  BranchesOutlined
 } from '@ant-design/icons';
 
 // Updated navigation items for Verification Management - Flattened structure
@@ -33,19 +37,9 @@ export const SidebarData = [
     icon: <FileProtectOutlined />
   },
   {
-    title: 'Verification Planning',
+    title: 'Verification Mgmt.',
     path: '/verification-planning',
-    icon: <ProjectOutlined />
-  },
-  {
-    title: 'Verification Matrix',
-    path: '/verification-matrix',
-    icon: <BsIcons.BsTable />
-  },
-  {
-    title: 'Test Management',
-    path: '/test-management',
-    icon: <CheckCircleOutlined />
+    icon: <FaIcons.FaClipboardCheck />
   },
   {
     title: 'Analysis',
@@ -53,14 +47,24 @@ export const SidebarData = [
     icon: <FundOutlined />
   },
   {
+    title: 'Digital Thread',
+    path: '/digital-thread',
+    icon: <NodeIndexOutlined />
+  },
+  {
+    title: 'Test Management',
+    path: '/test-management',
+    icon: <CheckCircleOutlined />
+  },
+  {
+    title: 'Flight Test',
+    path: '/flight-test',
+    icon: <FaIcons.FaPlane />
+  },
+  {
     title: 'Test Results',
     path: '/test-results',
     icon: <FileSearchOutlined />
-  },
-  {
-    title: 'Data Management',
-    path: '/data-management',
-    icon: <DatabaseOutlined />
   },
   {
     title: 'Access Compliance',

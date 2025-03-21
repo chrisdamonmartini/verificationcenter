@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { LineChart, Line, XAxis, YAxis, CartesianGrid, Tooltip, Legend, ResponsiveContainer, BarChart, Bar } from 'recharts';
+import { LineChart, Line, XAxis, YAxis, CartesianGrid, Tooltip, Legend, ResponsiveContainer, BarChart, Bar, ComposedChart, Rectangle, PieChart, Pie, Cell } from 'recharts';
 import * as FaIcons from 'react-icons/fa';
 import { motion } from 'framer-motion';
 
@@ -22,6 +22,59 @@ interface TestEfficiency {
   variance: number;
 }
 
+// Interface for Test Point Burndown data
+interface BurndownData {
+  quarter: string;
+  plan: number;
+  actual: number | null;
+  forecast: number | null;
+}
+
+// Interface for Approval Times data
+interface ApprovalTimeData {
+  name: string;
+  min: number;
+  worst: number;
+  median: number;
+  best: number;
+  max: number;
+}
+
+// Interface for quarter-based status data
+interface QuarterData {
+  name: string;
+  value: number;
+  color: string;
+}
+
+// Interface for Test Point Maturity data
+interface MaturityData {
+  name: string;
+  value: number;
+  color: string;
+}
+
+// Interface for Flight Test Delays data
+interface DelaysData {
+  name: string;
+  value: number;
+  color: string;
+}
+
+// Interface for Flight Test Effectiveness data
+interface EffectivenessData {
+  name: string;
+  value: number;
+  color: string;
+}
+
+// Interface for Flight Test Efficiency data
+interface EfficiencyData {
+  name: string;
+  value: number;
+  color: string;
+}
+
 export const Analysis: React.FC<AnalysisProps> = () => {
   const [dateRange, setDateRange] = useState<'week' | 'month' | 'quarter'>('month');
   const [selectedMetric, setSelectedMetric] = useState<string>('completion');
@@ -29,13 +82,47 @@ export const Analysis: React.FC<AnalysisProps> = () => {
   // Mock data for metrics
   const metrics: TestMetrics[] = [
     {
+      date: '2024-02-15',
+      completionRate: 65,
+      testPointsCompleted: 28,
+      issuesIdentified: 5,
+      avgTestDuration: 3.1
+    },
+    {
+      date: '2024-02-22',
+      completionRate: 72,
+      testPointsCompleted: 35,
+      issuesIdentified: 4,
+      avgTestDuration: 2.8
+    },
+    {
       date: '2024-03-01',
-      completionRate: 85,
-      testPointsCompleted: 42,
+      completionRate: 78,
+      testPointsCompleted: 38,
+      issuesIdentified: 3,
+      avgTestDuration: 2.6
+    },
+    {
+      date: '2024-03-08',
+      completionRate: 82,
+      testPointsCompleted: 40,
       issuesIdentified: 3,
       avgTestDuration: 2.5
     },
-    // Add more data points...
+    {
+      date: '2024-03-15',
+      completionRate: 85,
+      testPointsCompleted: 42,
+      issuesIdentified: 2,
+      avgTestDuration: 2.4
+    },
+    {
+      date: '2024-03-22',
+      completionRate: 90,
+      testPointsCompleted: 45,
+      issuesIdentified: 2,
+      avgTestDuration: 2.3
+    }
   ];
 
   const efficiencyData: TestEfficiency[] = [
@@ -58,6 +145,204 @@ export const Analysis: React.FC<AnalysisProps> = () => {
       variance: -16.7
     }
   ];
+
+  // Mock data for Test Point Burndown chart
+  const burndownData: BurndownData[] = [
+    { quarter: '24Q1', plan: 1800, actual: 1780, forecast: 1780 },
+    { quarter: '24Q2', plan: 1600, actual: 1650, forecast: 1650 },
+    { quarter: '24Q3', plan: 1400, actual: 1530, forecast: 1530 },
+    { quarter: '24Q4', plan: 1100, actual: 1300, forecast: 1300 },
+    { quarter: '25Q1', plan: 800, actual: 950, forecast: 950 },
+    { quarter: '25Q2', plan: 500, actual: 650, forecast: 600 },
+    { quarter: '25Q3', plan: 200, actual: null, forecast: 300 },
+    { quarter: '25Q4', plan: 0, actual: null, forecast: 0 },
+  ];
+
+  // Mock data for Approval Times chart
+  const approvalTimesData: ApprovalTimeData[] = [
+    { 
+      name: 'Test Request', 
+      min: 20, 
+      worst: 30, 
+      median: 45, 
+      best: 55, 
+      max: 65 
+    },
+    { 
+      name: 'Test Plan', 
+      min: 15, 
+      worst: 25, 
+      median: 35, 
+      best: 45, 
+      max: 55 
+    },
+    { 
+      name: 'Test Card', 
+      min: 25, 
+      worst: 35, 
+      median: 45, 
+      best: 55, 
+      max: 65 
+    },
+    { 
+      name: 'Mission', 
+      min: 30, 
+      worst: 40, 
+      median: 50, 
+      best: 55, 
+      max: 65 
+    }
+  ];
+
+  // Mock data for Test Request Status
+  const testRequestStatusData: QuarterData[] = [
+    { name: '1st Qtr', value: 45, color: '#4e79a7' },
+    { name: '2nd Qtr', value: 25, color: '#f28e2c' },
+    { name: '3rd Qtr', value: 15, color: '#bab0ac' },
+    { name: '4th Qtr', value: 15, color: '#e8c63e' },
+  ];
+
+  // Mock data for Test Plan Status
+  const testPlanStatusData: QuarterData[] = [
+    { name: '1st Qtr', value: 50, color: '#4e79a7' },
+    { name: '2nd Qtr', value: 20, color: '#f28e2c' },
+    { name: '3rd Qtr', value: 15, color: '#bab0ac' },
+    { name: '4th Qtr', value: 15, color: '#e8c63e' },
+  ];
+
+  // Mock data for Test Point Maturity
+  const testPointMaturityData: MaturityData[] = [
+    { name: 'Execution Approved', value: 8.2, color: '#4e79a7' },
+    { name: 'Released', value: 3.2, color: '#f28e2c' },
+    { name: 'Inwork', value: 1.4, color: '#bab0ac' },
+    { name: 'Planned', value: 1.2, color: '#e8c63e' },
+  ];
+
+  // Mock data for Flight Test Delays
+  const flightTestDelaysData: DelaysData[] = [
+    { name: 'Weather', value: 45, color: '#4e79a7' },
+    { name: 'Aircraft', value: 25, color: '#f28e2c' },
+    { name: 'Resources', value: 15, color: '#bab0ac' },
+    { name: 'Pilot', value: 15, color: '#e8c63e' },
+  ];
+
+  // Mock data for Flight Test Effectiveness
+  const flightTestEffectivenessData: EffectivenessData[] = [
+    { name: 'Executed OK', value: 75, color: '#4e79a7' },
+    { name: 'Behaved Ok', value: 15, color: '#f28e2c' },
+    { name: 'Data Good', value: 10, color: '#bab0ac' },
+  ];
+
+  // Mock data for Flight Test Efficiency
+  const flightTestEfficiencyData: EfficiencyData[] = [
+    { name: '0-15 min', value: 50, color: '#4e79a7' },
+    { name: '15-30', value: 25, color: '#f28e2c' },
+    { name: '30-60', value: 15, color: '#bab0ac' },
+    { name: '>60', value: 10, color: '#e8c63e' },
+  ];
+
+  // Custom box plot component
+  const BoxPlot = (props: any) => {
+    const { x, y, width, height, payload, dataKey, fill } = props;
+    const data = payload;
+    
+    const baseWidth = width * 0.7; // Make the boxes slightly narrower
+    const baseX = x + (width - baseWidth) / 2;
+    
+    return (
+      <g>
+        {/* Vertical line from min to max */}
+        <line
+          x1={x + width / 2}
+          y1={y + height - height * (data.min / 80)}
+          x2={x + width / 2}
+          y2={y + height - height * (data.max / 80)}
+          stroke="#000"
+          strokeWidth={1}
+        />
+        
+        {/* Box from worst to best */}
+        <rect
+          x={baseX}
+          y={y + height - height * (data.best / 80)}
+          width={baseWidth}
+          height={height * ((data.best - data.worst) / 80)}
+          fill={data.name === 'Mission' ? '#555' : '#fff'}
+          stroke="#000"
+          strokeWidth={1}
+        />
+        
+        {/* Median line */}
+        <line
+          x1={baseX}
+          y1={y + height - height * (data.median / 80)}
+          x2={baseX + baseWidth}
+          y2={y + height - height * (data.median / 80)}
+          stroke="#000"
+          strokeWidth={2}
+        />
+        
+        {/* Min whisker */}
+        <line
+          x1={baseX + baseWidth * 0.25}
+          y1={y + height - height * (data.min / 80)}
+          x2={baseX + baseWidth * 0.75}
+          y2={y + height - height * (data.min / 80)}
+          stroke="#000"
+          strokeWidth={1}
+        />
+        
+        {/* Max whisker */}
+        <line
+          x1={baseX + baseWidth * 0.25}
+          y1={y + height - height * (data.max / 80)}
+          x2={baseX + baseWidth * 0.75}
+          y2={y + height - height * (data.max / 80)}
+          stroke="#000"
+          strokeWidth={1}
+        />
+      </g>
+    );
+  };
+
+  // Custom Pie Chart rendering component
+  const renderPieChart = (data: any[], title: string, height = 200) => (
+    <div className="bg-white rounded-lg shadow-sm p-4">
+      <h4 className="font-medium mb-2 text-center text-sm">{title}</h4>
+      <div style={{ height: `${height}px` }}>
+        <ResponsiveContainer width="100%" height="100%">
+          <PieChart>
+            <Pie
+              data={data}
+              cx="50%"
+              cy="50%"
+              innerRadius={0}
+              outerRadius={60}
+              paddingAngle={1}
+              dataKey="value"
+              label={false}
+              strokeWidth={1}
+              stroke="#ffffff"
+            >
+              {data.map((entry, index) => (
+                <Cell key={`cell-${index}`} fill={entry.color} />
+              ))}
+            </Pie>
+            <Tooltip formatter={(value) => [`${value}`, '']} />
+          </PieChart>
+        </ResponsiveContainer>
+      </div>
+      {/* Legend */}
+      <div className="flex flex-wrap justify-center text-xs mt-2">
+        {data.map((entry, index) => (
+          <div key={index} className="flex items-center mr-3 mb-1">
+            <div className="w-3 h-3 mr-1" style={{ backgroundColor: entry.color }}></div>
+            <span>{entry.name}</span>
+          </div>
+        ))}
+      </div>
+    </div>
+  );
 
   return (
     <div className="space-y-6">
@@ -111,6 +396,56 @@ export const Analysis: React.FC<AnalysisProps> = () => {
         ))}
       </div>
 
+      {/* Grid of Pie Charts */}
+      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+        {renderPieChart(testRequestStatusData, 'Test Request Status')}
+        {renderPieChart(testPlanStatusData, 'Test Plan Status')}
+        {renderPieChart(testPointMaturityData, 'Test Point Maturity')}
+        {renderPieChart(flightTestDelaysData, 'Flight Test Delays')}
+        {renderPieChart(flightTestEffectivenessData, 'Flight Test Effectiveness')}
+        {renderPieChart(flightTestEfficiencyData, 'Flight Test Efficiency')}
+      </div>
+
+      {/* Test Point Burndown Chart */}
+      <div className="bg-white rounded-lg shadow-sm p-6">
+        <h4 className="font-medium mb-4 text-center">Test Point Burndown</h4>
+        <div className="h-[300px]">
+          <ResponsiveContainer width="100%" height="100%">
+            <LineChart data={burndownData}>
+              <CartesianGrid strokeDasharray="3 3" stroke="#f0f0f0" />
+              <XAxis dataKey="quarter" />
+              <YAxis domain={[0, 2000]} />
+              <Tooltip />
+              <Legend />
+              <Line 
+                type="monotone" 
+                dataKey="plan" 
+                stroke="#3B82F6" 
+                name="Plan" 
+                strokeWidth={2}
+                dot={{ r: 3 }}
+              />
+              <Line 
+                type="monotone" 
+                dataKey="actual" 
+                stroke="#F97316" 
+                name="Actual" 
+                strokeWidth={2}
+                dot={{ r: 3 }}
+              />
+              <Line 
+                type="monotone" 
+                dataKey="forecast" 
+                stroke="#9CA3AF" 
+                name="Forecast" 
+                strokeWidth={2}
+                dot={{ r: 3 }}
+              />
+            </LineChart>
+          </ResponsiveContainer>
+        </div>
+      </div>
+
       {/* Trend Analysis */}
       <div className="bg-white rounded-lg shadow-sm p-6">
         <h4 className="font-medium mb-4">Performance Trends</h4>
@@ -119,12 +454,52 @@ export const Analysis: React.FC<AnalysisProps> = () => {
             <LineChart data={metrics}>
               <CartesianGrid strokeDasharray="3 3" />
               <XAxis dataKey="date" />
-              <YAxis />
+              <YAxis domain={[0, 100]} />
               <Tooltip />
               <Legend />
-              <Line type="monotone" dataKey="completionRate" stroke="#3B82F6" name="Completion Rate" />
-              <Line type="monotone" dataKey="testPointsCompleted" stroke="#10B981" name="Test Points" />
+              <Line type="monotone" dataKey="completionRate" stroke="#3B82F6" name="Completion Rate" strokeWidth={2} dot={{ r: 3 }} />
+              <Line type="monotone" dataKey="testPointsCompleted" stroke="#10B981" name="Test Points" strokeWidth={2} dot={{ r: 3 }} />
             </LineChart>
+          </ResponsiveContainer>
+        </div>
+      </div>
+
+      {/* Approval Times Chart */}
+      <div className="bg-white rounded-lg shadow-sm p-6">
+        <h4 className="font-medium mb-4 text-center">Approval Times</h4>
+        <div className="h-[300px]">
+          <ResponsiveContainer width="100%" height="100%">
+            <ComposedChart
+              data={approvalTimesData}
+              margin={{ top: 20, right: 30, left: 20, bottom: 40 }}
+            >
+              <CartesianGrid strokeDasharray="3 3" vertical={false} />
+              <XAxis 
+                dataKey="name" 
+              />
+              <YAxis
+                domain={[0, 80]}
+                ticks={[0, 20, 40, 60, 80]}
+              />
+              <Tooltip
+                formatter={(value, name) => [`${value} hours`, name]}
+              />
+              <Legend
+                verticalAlign="bottom" 
+                height={36}
+                payload={[
+                  { value: '-2σ', type: 'rect', color: '#000' },
+                  { value: 'Worse Case', type: 'rect', color: '#000' },
+                  { value: 'Best Case', type: 'rect', color: '#000' },
+                  { value: '+2σ', type: 'rect', color: '#000' }
+                ]}
+              />
+              <Bar
+                dataKey="median"
+                name="Approval Time"
+                shape={<BoxPlot />}
+              />
+            </ComposedChart>
           </ResponsiveContainer>
         </div>
       </div>

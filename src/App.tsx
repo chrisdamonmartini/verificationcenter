@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import './App.css';
 import * as FaIcons from 'react-icons/fa';
 import * as BiIcons from 'react-icons/bi';
@@ -44,6 +44,11 @@ import { ProductProvider } from './context/ProductContext';
 import { TeamcenterProvider } from './context/TeamcenterContext';
 // Import Change Awareness components
 import ChangeAwareness from './components/ChangeAwareness/ChangeAwareness';
+import CADDesignChanges from './components/ChangeAwareness/CADDesignChanges';
+import EngineeringBOMChanges from './components/ChangeAwareness/EngineeringBOMChanges';
+import { FlightTestManagement } from './components/FlightTest/FlightTestManagement';
+import { Aircraft } from './types';
+import DigitalThread from './components/DigitalThread/DigitalThread';
 
 // Define a type for requirements
 interface Requirement {
@@ -148,7 +153,7 @@ const CoverageAnalysis = () => (
       <div className="bg-white p-6 rounded-lg shadow-lg">
     <h2 className="text-2xl font-bold mb-6">Coverage Analysis</h2>
     <p className="text-gray-600 mb-4">Analyze verification coverage and identify gaps.</p>
-    </div>
+          </div>
   );
 
 // Replace placeholder components for verification methods
@@ -171,7 +176,7 @@ const DataCollectionTab = () => <DataCollection />;
 
 // Placeholder components for test results
 const ResultsAnalysisTab = () => (
-      <div className="bg-white p-6 rounded-lg shadow-lg">
+        <div className="bg-white p-6 rounded-lg shadow-lg">
     <h2 className="text-2xl font-bold mb-6">Results Analysis</h2>
     <p className="text-gray-600 mb-4">Analyze and interpret test data to verify requirements.</p>
     </div>
@@ -181,7 +186,7 @@ const Anomalies = () => (
     <div className="bg-white p-6 rounded-lg shadow-lg">
     <h2 className="text-2xl font-bold mb-6">Anomalies</h2>
     <p className="text-gray-600 mb-4">Track and manage test anomalies and their resolution.</p>
-    </div>
+                    </div>
   );
 
 // Verification Closure tab
@@ -199,15 +204,15 @@ const VerificationClosure = () => (
   <div className="bg-white p-6 rounded-lg shadow-lg">
     <h2 className="text-2xl font-bold mb-6">Verification Closure</h2>
     <p className="text-gray-600 mb-4">Close out verification activities and document compliance.</p>
-  </div>
-);
+        </div>
+      );
 
 const ComplianceReports = () => (
   <div className="bg-white p-6 rounded-lg shadow-lg">
     <h2 className="text-2xl font-bold mb-6">Compliance Reports</h2>
     <p className="text-gray-600 mb-4">Generate and manage compliance reports.</p>
-  </div>
-);
+      </div>
+    );
 
 // Replace placeholder components for reports and analytics
 const VerificationStatus = () => <VerificationStatusComponent />;
@@ -217,6 +222,9 @@ const ResourceUtilization = () => <ResourceUtilizationComponent />;
 const CostAnalysis = () => <CostAnalysisComponent />;
 
 const SchedulePerformance = () => <SchedulePerformanceComponent />;
+
+// Digital Thread (with three tabs)
+const DigitalThreadComponent = () => <DigitalThread />;
 
 // Main App function
 function App() {
@@ -290,7 +298,11 @@ function App() {
       case 'test-management':
         return <UnitTests />;
         
-      // Simulation
+      // Flight Test
+      case 'flight-test':
+        return <FlightTestManagement aircraft={[]} />;
+        
+      // Simulation/Analysis routes
       case 'simulation/models':
         return <ModelsManagement />;
       case 'simulation/runs':
@@ -299,6 +311,10 @@ function App() {
         return <ResultsAnalysis />;
       case 'simulation':
         return <ModelsManagement />;
+      
+      // Digital Thread route - should show the component with three tabs
+      case 'digital-thread':
+        return <DigitalThreadComponent />;
         
       // Test Results
       case 'test-results/data':
@@ -342,18 +358,18 @@ function App() {
       case 'risks':
       case 'trade-studies':
       case 'integration':
-        return (
-          <div className="bg-white p-6 rounded-lg shadow-lg">
+  return (
+    <div className="bg-white p-6 rounded-lg shadow-lg">
             <h2 className="text-xl font-bold">This module has been migrated</h2>
             <p className="mt-2">This functionality has been moved to the new verification management structure.</p>
-            <button 
+        <button 
               onClick={() => setActiveView('dashboard')}
               className="mt-4 bg-blue-600 text-white px-4 py-2 rounded hover:bg-blue-700"
             >
               Go to Dashboard
-            </button>
-          </div>
-        );
+        </button>
+    </div>
+  );
         
       // Settings
       case 'settings':
@@ -389,43 +405,43 @@ function App() {
   return (
     <ProductProvider>
       <TeamcenterProvider>
-        <div className="flex flex-col h-screen bg-gray-100">
-          {/* Header */}
-          <header className="bg-blue-900 text-white py-2 px-4 flex items-center">
-            {/* VERIFICATIONCENTER Logo */}
-            <div className="flex items-center">
-              <FaIcons.FaClipboardCheck className="text-white mr-2 text-2xl" />
-              <span className="font-bold text-lg mr-8">VERIFICATIONCENTER</span>
-            </div>
-            
-            {/* Spacer to push right-side buttons to the end */}
-            <div className="flex-grow"></div>
-            
-            <div className="flex items-center space-x-4">
-              <button className="p-2 hover:bg-blue-800 rounded-full">
-                <FaIcons.FaSearch className="text-xl" />
-              </button>
-              <button className="p-2 hover:bg-blue-800 rounded-full relative">
-                <FaIcons.FaBell className="text-xl" />
+    <div className="flex flex-col h-screen bg-gray-100">
+      {/* Header */}
+      <header className="bg-blue-900 text-white py-2 px-4 flex items-center">
+        {/* VERIFICATIONCENTER Logo */}
+        <div className="flex items-center">
+          <FaIcons.FaCheckCircle className="text-xl mr-2" />
+          <span className="font-bold text-xl mr-2">VERIFICATIONCENTER</span>
+        </div>
+        
+        {/* Spacer to push right-side buttons to the end */}
+        <div className="flex-grow"></div>
+        
+        <div className="flex items-center space-x-4">
+          <button className="p-2 hover:bg-blue-800 rounded-full">
+            <FaIcons.FaSearch className="text-xl" />
+          </button>
+          <button className="p-2 hover:bg-blue-800 rounded-full relative">
+            <FaIcons.FaBell className="text-xl" />
                 <span className="absolute top-0 right-0 h-4 w-4 bg-red-500 rounded-full text-xs flex items-center justify-center">3</span>
               </button>
               <button className="p-2 hover:bg-blue-800 rounded-full">
                 <FaIcons.FaUserCircle className="text-xl" />
-              </button>
-            </div>
-          </header>
+          </button>
+        </div>
+      </header>
 
-          {/* Main Content */}
+      {/* Main Content */}
           <div className="flex flex-grow overflow-hidden">
             {/* Sidebar */}
             <Sidebar currentView={activeView} onNavigate={handleNavigation} />
-            
+        
             {/* Main Content Area */}
             <main className="flex-grow p-4 overflow-auto">
-              {renderContent()}
-            </main>
-          </div>
-        </div>
+          {renderContent()}
+        </main>
+      </div>
+    </div>
       </TeamcenterProvider>
     </ProductProvider>
   );

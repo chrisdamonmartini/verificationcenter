@@ -1,7 +1,18 @@
-import React from 'react';
+import React, { useState } from 'react';
 import * as FaIcons from 'react-icons/fa';
+import { FiChevronUp, FiChevronDown, FiFilter } from 'react-icons/fi';
 
 const VerificationMatrixView: React.FC = () => {
+  // State for sorting and filtering
+  const [sortField, setSortField] = useState<string>('id');
+  const [sortDirection, setSortDirection] = useState<'asc' | 'desc'>('asc');
+  const [filters, setFilters] = useState<Record<string, string>>({
+    category: 'All Categories',
+    status: 'All Statuses'
+  });
+  const [currentPage, setCurrentPage] = useState(1);
+  const itemsPerPage = 50;
+
   // This would be loaded from a data source in a real application
   const verificationData = [
     {
@@ -12,6 +23,7 @@ const VerificationMatrixView: React.FC = () => {
       analysis: true,
       demonstration: false,
       test: true,
+      flightTest: true,
       simulation: true,
       status: 'In Progress'
     },
@@ -23,6 +35,7 @@ const VerificationMatrixView: React.FC = () => {
       analysis: true,
       demonstration: false,
       test: true,
+      flightTest: false,
       simulation: false,
       status: 'Verified'
     },
@@ -34,6 +47,7 @@ const VerificationMatrixView: React.FC = () => {
       analysis: true,
       demonstration: false,
       test: true,
+      flightTest: true,
       simulation: true,
       status: 'Not Started'
     },
@@ -45,6 +59,7 @@ const VerificationMatrixView: React.FC = () => {
       analysis: true,
       demonstration: false,
       test: false,
+      flightTest: false,
       simulation: true,
       status: 'Failed'
     },
@@ -56,9 +71,251 @@ const VerificationMatrixView: React.FC = () => {
       analysis: false,
       demonstration: true,
       test: false,
+      flightTest: false,
       simulation: false,
       status: 'Verified'
     },
+    // Adding 20 more mock data entries
+    {
+      id: 'SR-006',
+      description: 'The system shall provide real-time data processing with latency less than 100ms',
+      category: 'Performance',
+      inspection: false,
+      analysis: true,
+      demonstration: true,
+      test: true,
+      flightTest: false,
+      simulation: true,
+      status: 'In Progress'
+    },
+    {
+      id: 'SR-007',
+      description: 'The system shall maintain data integrity during power fluctuations',
+      category: 'Reliability',
+      inspection: false,
+      analysis: true,
+      demonstration: true,
+      test: true,
+      flightTest: false,
+      simulation: true,
+      status: 'Verified'
+    },
+    {
+      id: 'SR-008',
+      description: 'The system shall be capable of operating in humidity levels of 0-95%',
+      category: 'Environmental',
+      inspection: false,
+      analysis: true,
+      demonstration: false,
+      test: true,
+      flightTest: false,
+      simulation: false,
+      status: 'Not Started'
+    },
+    {
+      id: 'SR-009',
+      description: 'The system shall provide diagnostic capabilities for common failures',
+      category: 'Maintainability',
+      inspection: true,
+      analysis: true,
+      demonstration: true,
+      test: false,
+      flightTest: false,
+      simulation: false,
+      status: 'In Progress'
+    },
+    {
+      id: 'SR-010',
+      description: 'The system shall be capable of interfacing with standard communication protocols',
+      category: 'Interoperability',
+      inspection: false,
+      analysis: true,
+      demonstration: true,
+      test: true,
+      flightTest: false,
+      simulation: true,
+      status: 'Verified'
+    },
+    {
+      id: 'SR-011',
+      description: 'The system shall maintain data security during all operations',
+      category: 'Security',
+      inspection: false,
+      analysis: true,
+      demonstration: false,
+      test: true,
+      flightTest: false,
+      simulation: true,
+      status: 'In Progress'
+    },
+    {
+      id: 'SR-012',
+      description: 'The system shall provide backup capabilities for critical functions',
+      category: 'Reliability',
+      inspection: false,
+      analysis: true,
+      demonstration: true,
+      test: true,
+      flightTest: false,
+      simulation: true,
+      status: 'Not Started'
+    },
+    {
+      id: 'SR-013',
+      description: 'The system shall support multiple user roles with appropriate access controls',
+      category: 'Security',
+      inspection: false,
+      analysis: true,
+      demonstration: true,
+      test: true,
+      flightTest: false,
+      simulation: false,
+      status: 'Failed'
+    },
+    {
+      id: 'SR-014',
+      description: 'The system shall provide audit logging for all administrative actions',
+      category: 'Security',
+      inspection: false,
+      analysis: true,
+      demonstration: true,
+      test: true,
+      flightTest: false,
+      simulation: false,
+      status: 'Verified'
+    },
+    {
+      id: 'SR-015',
+      description: 'The system shall be capable of operating in altitude ranges from sea level to 10,000 feet',
+      category: 'Environmental',
+      inspection: false,
+      analysis: true,
+      demonstration: false,
+      test: true,
+      flightTest: true,
+      simulation: false,
+      status: 'In Progress'
+    },
+    {
+      id: 'SR-016',
+      description: 'The system shall maintain accuracy during GPS signal degradation',
+      category: 'Performance',
+      inspection: false,
+      analysis: true,
+      demonstration: false,
+      test: true,
+      flightTest: true,
+      simulation: true,
+      status: 'Not Started'
+    },
+    {
+      id: 'SR-017',
+      description: 'The system shall be capable of autonomous operation for periods up to 72 hours',
+      category: 'Reliability',
+      inspection: false,
+      analysis: true,
+      demonstration: true,
+      test: true,
+      flightTest: true,
+      simulation: true,
+      status: 'Verified'
+    },
+    {
+      id: 'SR-018',
+      description: 'The system shall provide user notifications for critical events within 5 seconds',
+      category: 'Performance',
+      inspection: false,
+      analysis: true,
+      demonstration: true,
+      test: true,
+      flightTest: false,
+      simulation: true,
+      status: 'In Progress'
+    },
+    {
+      id: 'SR-019',
+      description: 'The system shall be resistant to common electromagnetic interference',
+      category: 'Environmental',
+      inspection: false,
+      analysis: true,
+      demonstration: false,
+      test: true,
+      flightTest: false,
+      simulation: false,
+      status: 'Not Started'
+    },
+    {
+      id: 'SR-020',
+      description: 'The system shall implement graceful degradation for critical component failures',
+      category: 'Reliability',
+      inspection: false,
+      analysis: true,
+      demonstration: true,
+      test: true,
+      flightTest: false,
+      simulation: true,
+      status: 'Failed'
+    },
+    {
+      id: 'SR-021',
+      description: 'The system shall comply with industry standard data formats',
+      category: 'Interoperability',
+      inspection: true,
+      analysis: true,
+      demonstration: true,
+      test: true,
+      flightTest: false,
+      simulation: false,
+      status: 'Verified'
+    },
+    {
+      id: 'SR-022',
+      description: 'The system shall provide redundant power systems for critical components',
+      category: 'Reliability',
+      inspection: true,
+      analysis: true,
+      demonstration: true,
+      test: true,
+      flightTest: false,
+      simulation: false,
+      status: 'In Progress'
+    },
+    {
+      id: 'SR-023',
+      description: 'The system shall support modular component replacement within 30 minutes',
+      category: 'Maintainability',
+      inspection: true,
+      analysis: false,
+      demonstration: true,
+      test: false,
+      flightTest: false,
+      simulation: false,
+      status: 'Verified'
+    },
+    {
+      id: 'SR-024',
+      description: 'The system shall accommodate software updates without operational interruption',
+      category: 'Maintainability',
+      inspection: false,
+      analysis: true,
+      demonstration: true,
+      test: true,
+      flightTest: false,
+      simulation: false,
+      status: 'Not Started'
+    },
+    {
+      id: 'SR-025',
+      description: 'The system shall process and store up to 10TB of mission data',
+      category: 'Performance',
+      inspection: false,
+      analysis: true,
+      demonstration: false,
+      test: true,
+      flightTest: false,
+      simulation: true,
+      status: 'In Progress'
+    }
   ];
 
   // Helper function to render status badge
@@ -74,32 +331,172 @@ const VerificationMatrixView: React.FC = () => {
       case 'Not Started':
         color = 'bg-gray-100 text-gray-800';
         break;
-      case 'Failed':
-        color = 'bg-red-100 text-red-800';
-        break;
       default:
         color = 'bg-blue-100 text-blue-800';
     }
-    return <span className={`px-2 py-1 rounded ${color} text-xs font-medium`}>{status}</span>;
+    return <span className={`px-2 py-1 rounded-full text-xs font-medium ${color}`}>{status}</span>;
   };
+
+  // Helper function to render verification method icons with different statuses
+  const renderMethodStatus = (isActive: boolean, itemStatus: string, itemId: string, methodType: string) => {
+    if (!isActive) return null;
+    
+    // Use item ID to derive a consistent status for demo purposes
+    const hashCode = itemId.split('-')[1];
+    const lastNum = parseInt(hashCode) || 0;
+    
+    // Use different logic for each method type to demonstrate progression
+    // Analysis is always independent
+    if (methodType === 'analysis') {
+      if (itemStatus === 'Verified') {
+        return <FaIcons.FaCheck className="mx-auto text-green-500" />;
+      } else if (itemStatus === 'In Progress') {
+        const statusMod = lastNum % 4;
+        if (statusMod === 0) return <FaIcons.FaArrowRight className="mx-auto text-yellow-600" />;
+        if (statusMod === 1) return <FaIcons.FaClock className="mx-auto text-green-500" />;
+        if (statusMod === 2) return <FaIcons.FaClock className="mx-auto text-red-500" />;
+        return <FaIcons.FaTimes className="mx-auto text-red-500" />;
+      }
+      return <FaIcons.FaArrowRight className="mx-auto text-yellow-600" />;
+    }
+    
+    // Unit Test depends on Analysis
+    if (methodType === 'test') {
+      // If the item ID is even, Analysis is incomplete so Unit Test can't start
+      if (lastNum % 2 === 0) {
+        return null; // Can't start until Analysis is completed
+      }
+      // Analysis complete, show Unit Test status
+      if (itemStatus === 'Verified') {
+        return <FaIcons.FaCheck className="mx-auto text-green-500" />;
+      } else {
+        const statusMod = (lastNum + 1) % 4;
+        if (statusMod === 0) return <FaIcons.FaArrowRight className="mx-auto text-yellow-600" />;
+        if (statusMod === 1) return <FaIcons.FaClock className="mx-auto text-green-500" />;
+        if (statusMod === 2) return <FaIcons.FaClock className="mx-auto text-red-500" />;
+        return <FaIcons.FaTimes className="mx-auto text-red-500" />;
+      }
+    }
+    
+    // Demo depends on Unit Test
+    if (methodType === 'demonstration') {
+      // If the item ID is not divisible by 3, Unit Test is incomplete
+      if (lastNum % 3 !== 0) {
+        return null; // Can't start until Unit Test is completed
+      }
+      // Unit Test complete, show Demo status
+      if (itemStatus === 'Verified') {
+        return <FaIcons.FaCheck className="mx-auto text-green-500" />;
+      } else {
+        const statusMod = (lastNum + 2) % 4;
+        if (statusMod === 0) return <FaIcons.FaArrowRight className="mx-auto text-yellow-600" />;
+        if (statusMod === 1) return <FaIcons.FaClock className="mx-auto text-green-500" />;
+        if (statusMod === 2) return <FaIcons.FaClock className="mx-auto text-red-500" />;
+        return <FaIcons.FaTimes className="mx-auto text-red-500" />;
+      }
+    }
+    
+    // Flight Test depends on Demo
+    if (methodType === 'flightTest') {
+      // If the item ID is not divisible by 5, Demo is incomplete
+      if (lastNum % 5 !== 0) {
+        return null; // Can't start until Demo is completed
+      }
+      // Demo complete, show Flight Test status
+      if (itemStatus === 'Verified') {
+        return <FaIcons.FaCheck className="mx-auto text-green-500" />;
+      } else {
+        const statusMod = (lastNum + 3) % 4;
+        if (statusMod === 0) return <FaIcons.FaArrowRight className="mx-auto text-yellow-600" />;
+        if (statusMod === 1) return <FaIcons.FaClock className="mx-auto text-green-500" />;
+        if (statusMod === 2) return <FaIcons.FaClock className="mx-auto text-red-500" />;
+        return <FaIcons.FaTimes className="mx-auto text-red-500" />;
+      }
+    }
+    
+    return null;
+  };
+
+  // Function to handle sort
+  const handleSort = (field: string) => {
+    if (sortField === field) {
+      // Toggle direction if same field
+      setSortDirection(sortDirection === 'asc' ? 'desc' : 'asc');
+    } else {
+      // Set new field and default to ascending
+      setSortField(field);
+      setSortDirection('asc');
+    }
+  };
+
+  // Function to handle filter changes
+  const handleFilterChange = (filterName: string, value: string) => {
+    setFilters({
+      ...filters,
+      [filterName]: value
+    });
+    setCurrentPage(1); // Reset to first page on filter change
+  };
+
+  // Function to get unique category values
+  const getUniqueCategories = () => {
+    const categories = verificationData.map(item => item.category);
+    return ['All Categories', ...Array.from(new Set(categories))];
+  };
+
+  // Function to get unique status values
+  const getUniqueStatuses = () => {
+    const statuses = verificationData.map(item => item.status);
+    return ['All Statuses', ...Array.from(new Set(statuses))];
+  };
+
+  // Function to render sort indicator
+  const renderSortIndicator = (field: string) => {
+    if (sortField === field) {
+      return sortDirection === 'asc' ? 
+        <FiChevronUp className="inline ml-1" /> : 
+        <FiChevronDown className="inline ml-1" />;
+    }
+    return null;
+  };
+
+  // Filter and sort data
+  const filteredAndSortedData = verificationData
+    .filter(item => {
+      return (filters.category === 'All Categories' || item.category === filters.category) &&
+             (filters.status === 'All Statuses' || item.status === filters.status);
+    })
+    .sort((a, b) => {
+      const aValue = a[sortField as keyof typeof a];
+      const bValue = b[sortField as keyof typeof b];
+      
+      if (typeof aValue === 'string' && typeof bValue === 'string') {
+        return sortDirection === 'asc' 
+          ? aValue.localeCompare(bValue) 
+          : bValue.localeCompare(aValue);
+      }
+      
+      if (typeof aValue === 'boolean' && typeof bValue === 'boolean') {
+        return sortDirection === 'asc' 
+          ? (aValue === bValue ? 0 : aValue ? -1 : 1)
+          : (aValue === bValue ? 0 : aValue ? 1 : -1);
+      }
+      
+      return 0;
+    });
+
+  // Paginate data
+  const paginatedData = filteredAndSortedData.slice(
+    (currentPage - 1) * itemsPerPage,
+    currentPage * itemsPerPage
+  );
+
+  // Calculate total pages
+  const totalPages = Math.ceil(filteredAndSortedData.length / itemsPerPage);
 
   return (
     <div className="bg-white p-6 rounded-lg shadow-lg">
       <div className="flex justify-between items-center mb-6">
-        <h2 className="text-2xl font-bold">Verification Matrix</h2>
-        <div className="flex space-x-2">
-          <button className="bg-blue-600 text-white px-4 py-2 rounded hover:bg-blue-700 flex items-center">
-            <FaIcons.FaPlus className="mr-2" />
-            Add Requirement
-          </button>
-          <button className="bg-gray-100 text-gray-700 px-4 py-2 rounded hover:bg-gray-200 flex items-center">
-            <FaIcons.FaFileExport className="mr-2" />
-            Export
-          </button>
-        </div>
-      </div>
-      
-      <div className="mb-4 flex justify-between items-center">
         <div className="flex space-x-2">
           <div className="relative">
             <input 
@@ -109,120 +506,129 @@ const VerificationMatrixView: React.FC = () => {
             />
             <FaIcons.FaSearch className="absolute left-3 top-3 text-gray-400" />
           </div>
-          <select className="border rounded-lg px-4 py-2 focus:outline-none focus:ring-2 focus:ring-blue-500">
-            <option>All Categories</option>
-            <option>Performance</option>
-            <option>Environmental</option>
-            <option>Structural</option>
-            <option>Reliability</option>
-            <option>Maintainability</option>
+          <select 
+            className="border rounded-lg px-4 py-2 focus:outline-none focus:ring-2 focus:ring-blue-500"
+            value={filters.category}
+            onChange={(e) => handleFilterChange('category', e.target.value)}
+          >
+            {getUniqueCategories().map(category => (
+              <option key={category} value={category}>{category}</option>
+            ))}
           </select>
-          <select className="border rounded-lg px-4 py-2 focus:outline-none focus:ring-2 focus:ring-blue-500">
-            <option>All Statuses</option>
-            <option>Verified</option>
-            <option>In Progress</option>
-            <option>Not Started</option>
-            <option>Failed</option>
+          <select 
+            className="border rounded-lg px-4 py-2 focus:outline-none focus:ring-2 focus:ring-blue-500"
+            value={filters.status}
+            onChange={(e) => handleFilterChange('status', e.target.value)}
+          >
+            {getUniqueStatuses().map(status => (
+              <option key={status} value={status}>{status}</option>
+            ))}
           </select>
         </div>
         
-        <div className="flex items-center">
-          <span className="text-sm text-gray-600 mr-2">Showing 5 of 248 requirements</span>
+        {/* Status legend - moved inline with filters */}
+        <div className="flex items-center space-x-3">
+          <FaIcons.FaCheck className="text-green-500" /> 
+          <span className="mr-3">Completed</span>
+          
+          <FaIcons.FaArrowRight className="text-yellow-600" /> 
+          <span className="mr-3">In Progress</span>
+          
+          <FaIcons.FaClock className="text-green-500" /> 
+          <span className="mr-3">On Schedule</span>
+          
+          <FaIcons.FaClock className="text-red-500" /> 
+          <span className="mr-3">Late</span>
+          
+          <FaIcons.FaTimes className="text-red-500" /> 
+          <span className="mr-3">Failed</span>
+        </div>
+        
+        <div className="flex space-x-2">
+          <button className="bg-gray-100 text-gray-700 px-4 py-2 rounded hover:bg-gray-200 flex items-center">
+            <FaIcons.FaFileExport className="mr-2" />
+            Export
+          </button>
         </div>
       </div>
-      
+
       <div className="overflow-x-auto">
         <table className="min-w-full bg-white border">
           <thead>
             <tr className="bg-gray-50 border-b">
-              <th className="py-3 px-4 text-left font-medium text-gray-600">ID</th>
-              <th className="py-3 px-4 text-left font-medium text-gray-600">Description</th>
-              <th className="py-3 px-4 text-left font-medium text-gray-600">Category</th>
-              <th className="py-3 px-4 text-center font-medium text-gray-600">
-                <div className="flex flex-col items-center">
-                  <FaIcons.FaSearchPlus className="mb-1" />
-                  <span>Inspection</span>
-                </div>
+              <th 
+                className="py-3 px-4 text-left font-medium text-gray-600 cursor-pointer"
+                onClick={() => handleSort('id')}
+              >
+                ID {renderSortIndicator('id')}
               </th>
-              <th className="py-3 px-4 text-center font-medium text-gray-600">
+              <th 
+                className="py-3 px-4 text-left font-medium text-gray-600 cursor-pointer"
+                onClick={() => handleSort('description')}
+              >
+                Description {renderSortIndicator('description')}
+              </th>
+              <th 
+                className="py-3 px-4 text-left font-medium text-gray-600 cursor-pointer"
+                onClick={() => handleSort('category')}
+              >
+                Category {renderSortIndicator('category')}
+              </th>
+              <th 
+                className="py-3 px-4 text-center font-medium text-gray-600 cursor-pointer"
+                onClick={() => handleSort('analysis')}
+              >
                 <div className="flex flex-col items-center">
                   <FaIcons.FaCalculator className="mb-1" />
-                  <span>Analysis</span>
+                  <span>Analysis {renderSortIndicator('analysis')}</span>
                 </div>
               </th>
-              <th className="py-3 px-4 text-center font-medium text-gray-600">
+              <th 
+                className="py-3 px-4 text-center font-medium text-gray-600 cursor-pointer"
+                onClick={() => handleSort('test')}
+              >
                 <div className="flex flex-col items-center">
-                  <FaIcons.FaPlayCircle className="mb-1" />
-                  <span>Demo</span>
+                  <FaIcons.FaFlask className="mb-1" />
+                  <span>Unit Test {renderSortIndicator('test')}</span>
                 </div>
               </th>
-              <th className="py-3 px-4 text-center font-medium text-gray-600">
+              <th 
+                className="py-3 px-4 text-center font-medium text-gray-600 cursor-pointer"
+                onClick={() => handleSort('demonstration')}
+              >
                 <div className="flex flex-col items-center">
-                  <FaIcons.FaVial className="mb-1" />
-                  <span>Test</span>
+                  <FaIcons.FaPlay className="mb-1" />
+                  <span>Demo {renderSortIndicator('demonstration')}</span>
                 </div>
               </th>
-              <th className="py-3 px-4 text-center font-medium text-gray-600">
+              <th 
+                className="py-3 px-4 text-center font-medium text-gray-600 cursor-pointer"
+                onClick={() => handleSort('flightTest')}
+              >
                 <div className="flex flex-col items-center">
-                  <FaIcons.FaDesktop className="mb-1" />
-                  <span>Simulation</span>
+                  <FaIcons.FaPlane className="mb-1" />
+                  <span>Flight Test {renderSortIndicator('flightTest')}</span>
                 </div>
               </th>
-              <th className="py-3 px-4 text-left font-medium text-gray-600">Status</th>
-              <th className="py-3 px-4 text-center font-medium text-gray-600">Actions</th>
             </tr>
           </thead>
           <tbody>
-            {verificationData.map((item, index) => (
+            {paginatedData.map((item, index) => (
               <tr key={item.id} className={`border-b ${index % 2 === 0 ? 'bg-gray-50' : 'bg-white'}`}>
                 <td className="py-3 px-4 text-blue-600 font-medium">{item.id}</td>
                 <td className="py-3 px-4">{item.description}</td>
                 <td className="py-3 px-4">{item.category}</td>
                 <td className="py-3 px-4 text-center">
-                  {item.inspection ? 
-                    <FaIcons.FaCheck className="mx-auto text-green-500" /> : 
-                    <FaIcons.FaTimes className="mx-auto text-red-500" />
-                  }
+                  {renderMethodStatus(item.analysis, item.status, item.id, 'analysis')}
                 </td>
                 <td className="py-3 px-4 text-center">
-                  {item.analysis ? 
-                    <FaIcons.FaCheck className="mx-auto text-green-500" /> : 
-                    <FaIcons.FaTimes className="mx-auto text-red-500" />
-                  }
+                  {renderMethodStatus(item.test, item.status, item.id, 'test')}
                 </td>
                 <td className="py-3 px-4 text-center">
-                  {item.demonstration ? 
-                    <FaIcons.FaCheck className="mx-auto text-green-500" /> : 
-                    <FaIcons.FaTimes className="mx-auto text-red-500" />
-                  }
+                  {renderMethodStatus(item.demonstration, item.status, item.id, 'demonstration')}
                 </td>
                 <td className="py-3 px-4 text-center">
-                  {item.test ? 
-                    <FaIcons.FaCheck className="mx-auto text-green-500" /> : 
-                    <FaIcons.FaTimes className="mx-auto text-red-500" />
-                  }
-                </td>
-                <td className="py-3 px-4 text-center">
-                  {item.simulation ? 
-                    <FaIcons.FaCheck className="mx-auto text-green-500" /> : 
-                    <FaIcons.FaTimes className="mx-auto text-red-500" />
-                  }
-                </td>
-                <td className="py-3 px-4">
-                  {renderStatusBadge(item.status)}
-                </td>
-                <td className="py-3 px-4 text-center">
-                  <div className="flex justify-center space-x-2">
-                    <button className="p-1 text-blue-600 hover:text-blue-800">
-                      <FaIcons.FaEdit />
-                    </button>
-                    <button className="p-1 text-gray-600 hover:text-gray-800">
-                      <FaIcons.FaCopy />
-                    </button>
-                    <button className="p-1 text-red-600 hover:text-red-800">
-                      <FaIcons.FaTrash />
-                    </button>
-                  </div>
+                  {renderMethodStatus(item.flightTest, item.status, item.id, 'flightTest')}
                 </td>
               </tr>
             ))}
@@ -230,18 +636,52 @@ const VerificationMatrixView: React.FC = () => {
         </table>
       </div>
       
-      <div className="mt-4 flex justify-between items-center">
+      {/* Pagination controls */}
+      <div className="mt-4 flex items-center justify-between">
         <div>
-          <span className="text-sm text-gray-600">Showing 1-5 of 248 items</span>
+          <span className="text-sm text-gray-600">
+            Showing {(currentPage - 1) * itemsPerPage + 1} to {Math.min(currentPage * itemsPerPage, filteredAndSortedData.length)} of {filteredAndSortedData.length} items
+          </span>
         </div>
-        <div className="flex space-x-1">
-          <button className="px-3 py-1 border rounded-md text-gray-600 hover:bg-gray-100">Previous</button>
-          <button className="px-3 py-1 border rounded-md bg-blue-600 text-white">1</button>
-          <button className="px-3 py-1 border rounded-md text-gray-600 hover:bg-gray-100">2</button>
-          <button className="px-3 py-1 border rounded-md text-gray-600 hover:bg-gray-100">3</button>
-          <button className="px-3 py-1 border rounded-md text-gray-600 hover:bg-gray-100">...</button>
-          <button className="px-3 py-1 border rounded-md text-gray-600 hover:bg-gray-100">25</button>
-          <button className="px-3 py-1 border rounded-md text-gray-600 hover:bg-gray-100">Next</button>
+        <div className="flex items-center space-x-2">
+          <button
+            onClick={() => setCurrentPage(page => Math.max(page - 1, 1))}
+            disabled={currentPage === 1}
+            className={`px-3 py-1 rounded ${currentPage === 1 ? 'bg-gray-100 text-gray-400' : 'bg-gray-200 text-gray-700 hover:bg-gray-300'}`}
+          >
+            Previous
+          </button>
+          {Array.from({ length: Math.min(5, totalPages) }, (_, i) => {
+            // Show at most 5 page numbers centered around the current page
+            let pageNum = currentPage;
+            if (currentPage <= 3) {
+              pageNum = i + 1;
+            } else if (currentPage >= totalPages - 2) {
+              pageNum = totalPages - 4 + i;
+            } else {
+              pageNum = currentPage - 2 + i;
+            }
+            
+            if (pageNum > 0 && pageNum <= totalPages) {
+              return (
+                <button
+                  key={pageNum}
+                  onClick={() => setCurrentPage(pageNum)}
+                  className={`px-3 py-1 rounded ${currentPage === pageNum ? 'bg-blue-500 text-white' : 'bg-gray-200 text-gray-700 hover:bg-gray-300'}`}
+                >
+                  {pageNum}
+                </button>
+              );
+            }
+            return null;
+          })}
+          <button
+            onClick={() => setCurrentPage(page => Math.min(page + 1, totalPages))}
+            disabled={currentPage === totalPages}
+            className={`px-3 py-1 rounded ${currentPage === totalPages ? 'bg-gray-100 text-gray-400' : 'bg-gray-200 text-gray-700 hover:bg-gray-300'}`}
+          >
+            Next
+          </button>
         </div>
       </div>
     </div>

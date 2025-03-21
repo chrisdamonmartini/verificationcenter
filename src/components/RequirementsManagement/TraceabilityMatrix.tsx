@@ -519,13 +519,10 @@ const TraceabilityMatrix: React.FC = () => {
   };
 
   return (
-    <div className="bg-white p-6 rounded-lg shadow-md">
+    <div className="bg-white p-6 rounded-lg shadow-md" style={{ maxWidth: 'calc(100vw - 245px)' }}>
       <div className="flex justify-between items-center mb-6">
         <h2 className="text-xl font-semibold">Traceability Matrix</h2>
         <div className="flex space-x-2">
-          <button className="bg-blue-600 hover:bg-blue-700 text-white px-4 py-2 rounded-md text-sm flex items-center">
-            <FaPlus className="mr-2" /> Add Relationship
-          </button>
           <button className="bg-gray-200 hover:bg-gray-300 text-gray-700 px-4 py-2 rounded-md text-sm flex items-center">
             <FaDownload className="mr-2" /> Export
           </button>
