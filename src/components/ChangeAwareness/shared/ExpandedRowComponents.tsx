@@ -1,7 +1,7 @@
 import React from 'react';
-import { Typography, Row, Col, Space, Descriptions, Table, Card, Tabs, Tag, Divider } from 'antd';
+import { Typography, Row, Col, Space, Descriptions, Table, Card, Tabs, Tag, Divider, Input } from 'antd';
 import type { TableProps } from 'antd';
-import { NodeIndexOutlined } from '@ant-design/icons';
+import { NodeIndexOutlined, CloseCircleOutlined, UpOutlined, DownOutlined } from '@ant-design/icons';
 import { BaseChange } from '../../../types/changeAwareness';
 import { Code, SeverityTag, ChangeTypeTag } from './UtilityComponents';
 
@@ -120,6 +120,8 @@ function ImpactAnalysisSection<T extends StandardExpandedChange>({ record }: Imp
   }, {} as Record<string, boolean>);
 
   const [visibleDomains, setVisibleDomains] = React.useState<Record<string, boolean>>(initialVisibility);
+  const [searchQuery, setSearchQuery] = React.useState<string>('');
+  const [expandedItems, setExpandedItems] = React.useState<Record<string, boolean>>({});
 
   // Toggle domain visibility
   const toggleDomain = (domain: string) => {
@@ -127,6 +129,19 @@ function ImpactAnalysisSection<T extends StandardExpandedChange>({ record }: Imp
       ...prev,
       [domain]: !prev[domain]
     }));
+  };
+
+  // Toggle item expansion
+  const toggleItemExpansion = (itemId: string) => {
+    setExpandedItems(prev => ({
+      ...prev,
+      [itemId]: !prev[itemId]
+    }));
+  };
+
+  // Clear search query
+  const clearSearch = () => {
+    setSearchQuery('');
   };
 
   // Calculate total impact from the record data
@@ -250,6 +265,35 @@ function ImpactAnalysisSection<T extends StandardExpandedChange>({ record }: Imp
   const activeDomains = domains.filter(domain => !!impactData[domain.key]?.length);
   const hasData = activeDomains.length > 0;
 
+  // Filter items based on search query
+  const filteredImpactData = React.useMemo(() => {
+    if (!searchQuery.trim()) {
+      return impactData; // Return all data if no search query
+    }
+
+    const query = searchQuery.toLowerCase().trim();
+    const filtered: Record<string, Array<any>> = {};
+
+    // Filter each domain's items
+    Object.entries(impactData).forEach(([domainKey, items]) => {
+      filtered[domainKey] = items.filter(item => 
+        item.id.toLowerCase().includes(query) || 
+        item.title.toLowerCase().includes(query) || 
+        (item.lastModified && item.lastModified.includes(query)) ||
+        (item.modifiedBy && item.modifiedBy.toLowerCase().includes(query))
+      );
+    });
+
+    return filtered;
+  }, [impactData, searchQuery]);
+
+  // Count total filtered items
+  const totalFilteredItems = React.useMemo(() => {
+    return Object.values(filteredImpactData).reduce(
+      (sum, items) => sum + items.length, 0
+    );
+  }, [filteredImpactData]);
+
   return (
     <div>
       <Space direction="vertical" size="middle" style={{ width: '100%' }}>
@@ -258,13 +302,22 @@ function ImpactAnalysisSection<T extends StandardExpandedChange>({ record }: Imp
           <Col xs={24} md={8}>
             <Space align="center">
               <Tag color="red">{totalImpact} affected items</Tag>
+              {searchQuery && (
+                <Tag color="blue">
+                  {totalFilteredItems} filtered items
+                  <CloseCircleOutlined 
+                    onClick={clearSearch} 
+                    style={{ marginLeft: 8, cursor: 'pointer' }} 
+                  />
+                </Tag>
+              )}
             </Space>
           </Col>
           <Col xs={24} md={16} style={{ textAlign: 'right' }}>
             <Text style={{ marginRight: 8 }}>Toggle Visibility:</Text>
             <Space wrap>
               {activeDomains.map(domain => {
-                const itemCount = impactData[domain.key]?.length || 0;
+                const itemCount = filteredImpactData[domain.key]?.length || 0;
                 
                 return (
                   <Tag 
@@ -283,6 +336,15 @@ function ImpactAnalysisSection<T extends StandardExpandedChange>({ record }: Imp
             </Space>
           </Col>
         </Row>
+
+        {/* Search bar */}
+        <Input.Search
+          placeholder="Search by ID, title, date, or author..."
+          onChange={(e) => setSearchQuery(e.target.value)}
+          value={searchQuery}
+          allowClear
+          style={{ marginBottom: 16 }}
+        />
         
         {hasData ? (
           <>
@@ -294,7 +356,11 @@ function ImpactAnalysisSection<T extends StandardExpandedChange>({ record }: Imp
                   return null;
                 }
                 
-                const domainItems = impactData[domain.key] || [];
+                const domainItems = filteredImpactData[domain.key] || [];
+                if (domainItems.length === 0) {
+                  return null; // Skip empty domains after filtering
+                }
+                
                 const domainColor = getDomainColor(domain.key);
                 
                 return (
@@ -314,36 +380,55 @@ function ImpactAnalysisSection<T extends StandardExpandedChange>({ record }: Imp
                         overflowY: 'auto'
                       }}
                     >
-                      {domainItems.map((item, index) => (
-                        <div
-                          key={`${item.id}-${index}`}
-                          style={{
-                            padding: '8px 12px',
-                            borderBottom: index < domainItems.length - 1 ? '1px solid #f0f0f0' : 'none'
-                          }}
-                        >
-                          <div>
-                            <Text strong style={{ fontSize: '13px' }}>{item.id}</Text>
+                      {domainItems.map((item, index) => {
+                        const isExpanded = expandedItems[item.id] || false;
+                        
+                        return (
+                          <div
+                            key={`${item.id}-${index}`}
+                            style={{
+                              padding: '8px 12px',
+                              borderBottom: index < domainItems.length - 1 ? '1px solid #f0f0f0' : 'none',
+                              cursor: 'pointer'
+                            }}
+                            onClick={() => toggleItemExpansion(item.id)}
+                          >
+                            <Row align="middle" justify="space-between">
+                              <Col>
+                                <Text strong style={{ fontSize: '13px' }}>{item.id}</Text>
+                              </Col>
+                              <Col>
+                                {isExpanded ? 
+                                  <UpOutlined style={{ fontSize: '12px' }} /> : 
+                                  <DownOutlined style={{ fontSize: '12px' }} />
+                                }
+                              </Col>
+                            </Row>
+                            
+                            {/* Always show title */}
+                            <div style={{ marginBottom: isExpanded ? '8px' : '0' }}>
+                              <Text style={{ fontSize: '13px' }}>{item.title}</Text>
+                            </div>
+                            
+                            {/* Expanded details */}
+                            {isExpanded && item.lastModified && (
+                              <>
+                                <Divider style={{ margin: '8px 0' }} />
+                                <div>
+                                  <Text type="secondary" style={{ fontSize: '12px' }}>
+                                    Last modified: {item.lastModified}
+                                  </Text>
+                                </div>
+                                <div>
+                                  <Text type="secondary" style={{ fontSize: '12px' }}>
+                                    {item.modifiedBy && `by ${item.modifiedBy}`}
+                                  </Text>
+                                </div>
+                              </>
+                            )}
                           </div>
-                          <div style={{ marginBottom: '4px' }}>
-                            <Text style={{ fontSize: '13px' }}>{item.title}</Text>
-                          </div>
-                          {item.lastModified && (
-                            <>
-                              <div>
-                                <Text type="secondary" style={{ fontSize: '12px' }}>
-                                  Last modified: {item.lastModified}
-                                </Text>
-                              </div>
-                              <div>
-                                <Text type="secondary" style={{ fontSize: '12px' }}>
-                                  {item.modifiedBy && `by ${item.modifiedBy}`}
-                                </Text>
-                              </div>
-                            </>
-                          )}
-                        </div>
-                      ))}
+                        );
+                      })}
                     </Card>
                   </Col>
                 );
