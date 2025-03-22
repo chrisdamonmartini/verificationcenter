@@ -3,7 +3,7 @@
   "name": "Verification Center Management System",
   "icons": [
     {
-      "src": "icons/verificationcenterico.jpeg",
+      "src": "verificationcenterico.jpeg",
       "sizes": "192x192",
       "type": "image/jpeg"
     }
