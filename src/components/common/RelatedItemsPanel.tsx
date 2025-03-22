@@ -271,16 +271,30 @@ const RelatedItemsPanel: React.FC<RelatedItemsPanelProps> = ({
   
   // Always show all categories - no longer filter by items.length
   const categories = categoryConfigs.map(category => {
-    // If this is not the current expanded item's category, use a neutral color
-    // Otherwise, keep the original color
-    if (currentItemType && category.key !== currentItemType) {
+    // Rule 1: If it is the category of the item that we are expanded on
+    if (currentItemType && category.key === currentItemType) {
       return {
         ...category,
-        color: colors.text.secondary,
+        color: colors.category.parameter, // Orange theme for the category of expanded item
+        bgcolor: `${colors.category.parameter}10` // Light fill
+      };
+    } 
+    // Rule 2: If it has related objects
+    else if (category.items.length > 0) {
+      return {
+        ...category,
+        color: colors.brand.primary, // Darker blue theme for categories with objects
+        bgcolor: `${colors.brand.primary}10` // Light fill
+      };
+    } 
+    // Rule 3: If it doesn't have any related objects
+    else {
+      return {
+        ...category,
+        color: colors.text.secondary, // Neutral theme
         bgcolor: colors.background.paper
       };
     }
-    return category;
   });
 
   // Add current item to categories if it exists and is not already included
@@ -379,10 +393,7 @@ const RelatedItemsPanel: React.FC<RelatedItemsPanelProps> = ({
                     border: `1px solid ${category.color}40`,
                     height: '100%',
                     width: '100%',
-                    ...(currentItemType && category.key !== currentItemType && {
-                      boxShadow: 'none',
-                      border: `1px solid ${colors.ui.border}`
-                    })
+                    // No additional styling needed - the category color rules are handled above
                   }}
                   bodyStyle={{ padding: '8px' }}
                 >
@@ -397,11 +408,11 @@ const RelatedItemsPanel: React.FC<RelatedItemsPanelProps> = ({
                             key={item.id}
                             size="small"
                             style={{
-                              backgroundColor: isCurrentItem ? `${category.color}15` : '#ffffff',
+                              backgroundColor: '#FFFFFF', // Always white fill for actual objects
                               boxShadow: isCurrentItem ? `0 0 8px ${category.color}80` : '0 1px 2px rgba(0,0,0,0.1)',
                               cursor: onItemClick ? 'pointer' : 'default',
                               width: '100%',
-                              border: isCurrentItem ? `1px solid ${category.color}` : undefined
+                              border: isCurrentItem ? `2px solid ${category.color}` : `1px solid ${category.color}40`
                             }}
                             onClick={() => onItemClick && onItemClick(item, category.key)}
                             bodyStyle={{ padding: '8px' }}
