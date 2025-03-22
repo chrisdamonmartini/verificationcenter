@@ -4,14 +4,20 @@ import * as GiIcons from 'react-icons/gi';
 import ChangeTracker from './ChangeTracker';
 import useColors from '../hooks/useColors';
 import ContentPanel from './common/ContentPanel';
+import { Card } from 'antd';
 
 const VerificationDashboard: React.FC = () => {
   const colors = useColors();
 
   return (
-    <div className="p-6 rounded-lg">
-      <h2 className="text-2xl font-bold mb-6">Verification Center Dashboard</h2>
-      
+    <Card 
+      className="dashboard-main-card" 
+      style={{
+        margin: '0',
+        boxShadow: '0 2px 10px rgba(0, 0, 0, 0.05)',
+        borderRadius: '8px'
+      }}
+    >
       <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4 mb-8">
         {/* Verification Status Card */}
         <ContentPanel style={{ 
@@ -270,7 +276,7 @@ const VerificationDashboard: React.FC = () => {
           </div>
         </ContentPanel>
       </div>
-    </div>
+    </Card>
   );
 };
 
