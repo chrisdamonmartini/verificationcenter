@@ -332,6 +332,46 @@ const RelatedItemsPanel: React.FC<RelatedItemsPanelProps> = ({
     );
   };
 
+  // Render expanded item summary - for the category we're expanded on
+  const renderExpandedItemSummary = (item: RelatedItem, categoryColor: string) => {
+    return (
+      <Card
+        key={item.id}
+        size="small"
+        style={{
+          backgroundColor: '#FFFFFF',
+          boxShadow: `0 0 8px ${categoryColor}80`,
+          width: '100%',
+          border: `2px solid ${categoryColor}`
+        }}
+        bodyStyle={{ padding: '8px' }}
+      >
+        <Space direction="vertical" size={4} style={{ width: '100%' }}>
+          <div>
+            <Text
+              strong
+              style={{ color: categoryColor, marginRight: '8px', display: 'block' }}
+            >
+              <ExpandOutlined style={{ marginRight: '5px' }} />
+              {item.id}
+            </Text>
+            <Text style={{ fontSize: '0.9rem', whiteSpace: 'normal' }}>{item.title}</Text>
+          </div>
+          
+          <div>
+            <Space>
+              <Tag color={categoryColor}>Current</Tag>
+              <Text type="secondary" style={{ fontSize: '12px' }}>
+                <ClockCircleOutlined style={{ marginRight: '4px' }} />
+                {formatDate(item.date)}
+              </Text>
+            </Space>
+          </div>
+        </Space>
+      </Card>
+    );
+  };
+
   // No items to display - since we're now showing all categories, this should no longer happen
   if (categories.length === 0) {
     return renderEmpty();
@@ -393,11 +433,15 @@ const RelatedItemsPanel: React.FC<RelatedItemsPanelProps> = ({
                     border: `1px solid ${category.color}40`,
                     height: '100%',
                     width: '100%',
-                    // No additional styling needed - the category color rules are handled above
                   }}
                   bodyStyle={{ padding: '8px' }}
                 >
-                  {category.items.length > 0 ? (
+                  {/* Special case: This is the category of the current expanded item, but has no items yet */}
+                  {category.items.length === 0 && currentItemType && category.key === currentItemType && currentItem ? (
+                    <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', padding: '8px 0' }}>
+                      {renderExpandedItemSummary(currentItem, category.color)}
+                    </div>
+                  ) : category.items.length > 0 ? (
                     <Space direction="vertical" style={{ width: '100%' }} size={8}>
                       {category.items.map(item => {
                         // Check if this is the current item being expanded
@@ -448,12 +492,13 @@ const RelatedItemsPanel: React.FC<RelatedItemsPanelProps> = ({
                     </Space>
                   ) : (
                     <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', padding: '16px 8px' }}>
+                      {/* Flip the order: Create Relationship button first, then "No related items" message */}
+                      {onCreateRelationship && renderCreateRelationshipButton(category.key, category.color)}
                       <Empty 
                         image={Empty.PRESENTED_IMAGE_SIMPLE} 
                         description="No related items" 
-                        style={{ margin: '0 0 16px' }}
+                        style={{ margin: '16px 0 0' }}
                       />
-                      {onCreateRelationship && renderCreateRelationshipButton(category.key, category.color)}
                     </div>
                   )}
                 </Card>
