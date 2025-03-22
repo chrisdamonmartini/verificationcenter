@@ -255,6 +255,7 @@ const ImprovedOverviewChanges: React.FC = () => {
           }}
           tableOptions={{
             showImpact: true,
+            hiddenColumns: ['category', 'changeType', 'status'],
             additionalColumns: [{
               title: 'Source',
               dataIndex: 'source',
@@ -339,7 +340,16 @@ const ImprovedOverviewChanges: React.FC = () => {
                   formatter={(value, name) => [`${value} Changes`, name]}
                   labelFormatter={() => 'Source Distribution'}
                 />
-                <Legend />
+                <Legend 
+                  layout="vertical"
+                  align="left"
+                  verticalAlign="middle"
+                  iconSize={10}
+                  wrapperStyle={{
+                    paddingLeft: 10,
+                    paddingRight: 10
+                  }}
+                />
               </PieChart>
             </ResponsiveContainer>
           </div>

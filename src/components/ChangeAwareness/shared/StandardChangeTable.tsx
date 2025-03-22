@@ -58,6 +58,7 @@ export interface StandardChangeTableProps<T extends BaseChange> {
     additionalColumns?: ColumnsType<T>;
     searchableFields?: string[];
     hideStatsCard?: boolean;
+    hiddenColumns?: string[];
   };
 }
 
@@ -118,13 +119,17 @@ export function StandardChangeTable<T extends StandardBaseChange>({
   );
   
   // Add any additional columns
-  const allColumns = [...columns];
-  if (tableOptions?.additionalColumns) {
-    allColumns.push(...tableOptions.additionalColumns);
-  }
+  const allColumns = tableOptions?.additionalColumns
+    ? [...columns, ...tableOptions.additionalColumns]
+    : columns;
+
+  // Filter out hidden columns if specified
+  const visibleColumns = tableOptions?.hiddenColumns
+    ? allColumns.filter(column => !tableOptions.hiddenColumns?.includes(column.key as string))
+    : allColumns;
   
   // Apply search props to columns
-  const columnsWithSearch = allColumns.map(col => {
+  const columnsWithSearch = visibleColumns.map(col => {
     if ('dataIndex' in col && typeof col.dataIndex === 'string' && searchableFields.includes(col.dataIndex)) {
       return {
         ...col,
