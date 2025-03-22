@@ -126,6 +126,7 @@ const sliderStyles = {
 // New ImprovedOverviewChanges component for consistent UI with other tabs
 const ImprovedOverviewChanges: React.FC = () => {
   const [weeks, setWeeks] = useState<number>(8);
+  const [productType, setProductType] = useState<'missile' | 'fighter'>('missile');
   const colors = useColors();
 
   return (
@@ -136,7 +137,7 @@ const ImprovedOverviewChanges: React.FC = () => {
           title="All Changes"
           weeks={weeks}
           setWeeks={setWeeks}
-          productType="missile"
+          productType={productType}
           categoryRenderer={renderAutoDetectedCategory}
           expandedRowOptions={{
             showImpact: true,

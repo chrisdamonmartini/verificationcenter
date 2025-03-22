@@ -630,21 +630,39 @@ export const getAllChanges = (): ChangesMap => {
 };
 
 // Filter changes based on domain and other criteria
-export const getFilteredChanges = (domain: keyof ChangesMap, weeks: number, productType: ProductType = 'missile') => {
+export const getFilteredChanges = (domain: keyof ChangesMap | 'all', weeks: number, productType: ProductType = 'missile') => {
   console.log(`getFilteredChanges called with domain: ${domain}, weeks: ${weeks}, productType: ${productType}`);
   
   const allChanges = getAllChanges();
   console.log('All changes:', allChanges);
   
-  const filteredChanges = allChanges[domain] || [];
-  console.log(`Changes for domain ${domain}:`, filteredChanges);
+  let filteredChanges: BaseChange[] = [];
+  
+  if (domain === 'all') {
+    // For 'all' domain, combine changes from all domains
+    console.log('Combining all domains');
+    filteredChanges = [
+      ...allChanges.mission,
+      ...allChanges.operationalScenario,
+      ...allChanges.requirement,
+      ...allChanges.parameter,
+      ...allChanges.function,
+      ...allChanges.logical,
+      ...allChanges.cad,
+      ...allChanges.bom
+    ];
+    console.log('Combined changes from all domains:', filteredChanges);
+  } else {
+    filteredChanges = allChanges[domain] || [];
+    console.log(`Changes for domain ${domain}:`, filteredChanges);
+  }
 
   // Apply time filter (last N weeks)
   const cutoffDate = new Date();
   cutoffDate.setDate(cutoffDate.getDate() - (weeks * 7));
   console.log('Cutoff date:', cutoffDate);
   
-  const result = (filteredChanges as BaseChange[]).filter(change => {
+  const result = filteredChanges.filter(change => {
     // Filter by date
     const changeDate = new Date(change.date);
     console.log(`Change date: ${changeDate}, included: ${changeDate >= cutoffDate}`);
