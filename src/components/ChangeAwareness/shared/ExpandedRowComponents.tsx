@@ -100,7 +100,7 @@ export const StandardExpandedRow = <T extends StandardExpandedChange>({
       title: 'ID',
       dataIndex: 'id',
       key: 'id',
-      render: (text) => <CodeDisplay value={text} monospace />,
+      render: (text) => <CodeDisplay>{text}</CodeDisplay>,
     }
   ];
 
@@ -217,16 +217,4 @@ interface DocumentsSectionProps<T extends StandardExpandedChange> {
 
 function DocumentsSection<T extends StandardExpandedChange>({ record }: DocumentsSectionProps<T>) {
   return null;
-}
-
-// For impacted items table
-export const getImpactedItemsColumns = (): TableProps<ImpactedItem>['columns'] => {
-  return [
-    {
-      title: 'ID',
-      dataIndex: 'id',
-      key: 'id',
-      render: (text) => <CodeDisplay value={text} monospace />,
-    }
-  ];
-}; 
+} 

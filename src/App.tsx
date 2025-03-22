@@ -500,11 +500,11 @@ function App() {
     
         {/* Main Content Area */}
         <main 
-          className="flex-grow p-2 overflow-auto transition-all duration-300" 
+          className="flex-grow p-4 overflow-auto transition-all duration-300" 
           style={{ 
             marginLeft: '60px',
             width: 'calc(100% - 60px)',
-            marginTop: '70px', /* Reduced from 90px to 70px */
+            marginTop: '90px', /* This positions content below header and subheader */
             position: 'fixed',
             top: '0',
             right: '0',

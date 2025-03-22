@@ -107,7 +107,11 @@ export interface CodeProps {
 
 export interface StatisticProps {
   value: number | string;
-  title?: ReactNode;
+  label: string;
+  icon?: ReactNode;
+  trend?: 'up' | 'down' | 'none';
+  trendValue?: number;
+  title?: string;
   prefix?: ReactNode;
   valueStyle?: React.CSSProperties;
 } 

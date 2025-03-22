@@ -15,7 +15,7 @@ interface ToggleVisibilityProps {
  * Provides category filter toggles that use the standardized color palette
  */
 const ToggleVisibility: React.FC<ToggleVisibilityProps> = ({
-  selectedCategories,
+  selectedCategories = [],
   onToggleCategory
 }) => {
   const colors = useColors();
@@ -60,7 +60,7 @@ const ToggleVisibility: React.FC<ToggleVisibilityProps> = ({
       <Text type="secondary" style={{ fontSize: '12px' }}>Toggle Visibility:</Text>
       <Space wrap>
         {categories.map(category => {
-          const isSelected = selectedCategories.includes(category.id);
+          const isSelected = selectedCategories?.includes(category.id) ?? false;
           
           return (
             <Tag

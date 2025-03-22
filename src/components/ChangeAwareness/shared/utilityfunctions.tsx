@@ -1,1 +1,0 @@
-// If this file exists, add code to remove Current status labels 
