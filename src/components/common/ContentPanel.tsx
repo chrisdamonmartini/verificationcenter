@@ -30,7 +30,7 @@ const ContentPanel: React.FC<ContentPanelProps> = ({
         backgroundColor: '#f9f9f9', // Lighter gray background (was #f5f5f5)
         boxShadow: '0 2px 6px rgba(0, 0, 0, 0.08)', // Subtle shadow for raised effect
         borderRadius: '4px',
-        margin: '0 0 16px 0',
+        margin: '0 0 8px 0',
         overflow: 'hidden',
         border: '1px solid #e8e8e8',
         ...style
