@@ -38,6 +38,8 @@ import EngineeringBOMChanges from './EngineeringBOMChanges';
 import ImprovedEngineeringBOMChanges from './ImprovedEngineeringBOMChanges';
 import ImprovedParametersChanges from './ImprovedParametersChanges';
 import ImprovedLogicalChanges from './ImprovedLogicalChanges';
+// Import ContentPanel component
+import ContentPanel from '../common/ContentPanel';
 
 const { Title, Text, Paragraph } = Typography;
 const { TabPane } = Tabs;
@@ -230,7 +232,7 @@ const ChangeAwareness: React.FC = () => {
           key="overview"
         >
           {/* Weeks filter control */}
-          <Card style={{ marginBottom: 16 }}>
+          <ContentPanel style={{ marginBottom: 16 }}>
             <Row gutter={16} align="middle">
               <Col xs={24} md={4}>
                 <Text strong>Time Period:</Text>
@@ -263,7 +265,7 @@ const ChangeAwareness: React.FC = () => {
                 </Text>
               </Col>
             </Row>
-          </Card>
+          </ContentPanel>
 
           {/* Main statistics cards */}
           <Row gutter={[16, 16]} style={{ marginBottom: 24 }}>
@@ -326,7 +328,7 @@ const ChangeAwareness: React.FC = () => {
           </Row>
 
           {/* Changes by domain */}
-          <Card title="Changes by Domain" style={{ marginBottom: 16 }}>
+          <ContentPanel title="Changes by Domain" style={{ marginBottom: 16 }}>
             <Row gutter={[16, 16]}>
               <Col xs={24} sm={12} md={8} lg={4}>
                 <Card bordered={false} style={{ background: '#f0f5ff', borderRadius: '6px' }}>
@@ -389,7 +391,7 @@ const ChangeAwareness: React.FC = () => {
                 </Card>
               </Col>
             </Row>
-          </Card>
+          </ContentPanel>
 
           <Alert
             message="Recent Critical Changes"
@@ -399,7 +401,7 @@ const ChangeAwareness: React.FC = () => {
             style={{ marginBottom: 16 }}
           />
 
-          <Card title="Change Impact Summary">
+          <ContentPanel title="Change Impact Summary">
             <Timeline mode="left">
               <Timeline.Item
                 color="red"
@@ -442,7 +444,7 @@ const ChangeAwareness: React.FC = () => {
                 <Paragraph>Supplier changed for part "P-567", requires verification of compatibility with existing components.</Paragraph>
               </Timeline.Item>
             </Timeline>
-          </Card>
+          </ContentPanel>
         </TabPane>
 
         <TabPane
