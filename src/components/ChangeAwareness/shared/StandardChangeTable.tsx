@@ -10,15 +10,12 @@ import {
   DatePicker,
   Select,
   Row,
-  Col,
-  Tag
+  Col
 } from 'antd';
 import type { ColumnsType, ColumnType } from 'antd/es/table';
 import { 
   ReloadOutlined, 
   SearchOutlined, 
-  FilterOutlined,
-  DownloadOutlined
 } from '@ant-design/icons';
 import { BaseChange, AnyChange } from '../../../types/changeAwareness';
 import { StandardExpandedRow } from './ExpandedRowComponents';
@@ -31,7 +28,7 @@ import {
 } from './hooks';
 import TimeRangeSelector from './TimeRangeSelector';
 
-const { Text, Title } = Typography;
+const { Text } = Typography;
 const { RangePicker } = DatePicker;
 const { Option } = Select;
 
@@ -147,16 +144,27 @@ export function StandardChangeTable<T extends StandardBaseChange>({
 
   return (
     <Card>
-      <Space direction="vertical" size="large" style={{ width: '100%' }}>
-        <Row justify="space-between" align="middle">
-          <Col>
-            <Title level={4}>{title}</Title>
+      <Space direction="vertical" style={{ width: '100%' }}>
+        <Row gutter={16} align="middle" style={{ marginBottom: 16 }}>
+          <Col span={16}>
+            <TimeRangeSelector weeks={weeks} setWeeks={setWeeks} />
           </Col>
-          <Col>
+          <Col span={8} style={{ display: 'flex', justifyContent: 'flex-end' }}>
             <Space>
-              <Button icon={<ReloadOutlined />} onClick={refreshData}>Refresh</Button>
-              <Button icon={<FilterOutlined />} onClick={() => setIsFilterDrawerOpen(true)}>Filter</Button>
-              <Button icon={<DownloadOutlined />}>Export</Button>
+              <Input
+                placeholder="Search..."
+                value={searchText}
+                onChange={e => setSearchText(e.target.value)}
+                style={{ width: 200 }}
+                prefix={<SearchOutlined />}
+              />
+              <Button 
+                onClick={refreshData} 
+                loading={loading}
+                icon={<ReloadOutlined />}
+              >
+                Refresh
+              </Button>
             </Space>
           </Col>
         </Row>
