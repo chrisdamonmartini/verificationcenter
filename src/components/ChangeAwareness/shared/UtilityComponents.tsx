@@ -58,23 +58,22 @@ export const Statistic: React.FC<StatisticProps> = ({ title, value, prefix, valu
   </div>
 );
 
-// Helper functions for severity tags
-export const getSeverityTagColor = (severity: string): string => {
-  const colors = useColors();
+// Helper functions for severity tags - accept colors as parameter
+export const getSeverityTagColor = (severity: string, colorObj: any): string => {
   switch (severity.toLowerCase()) {
     case 'critical':
-      return colors.status.critical;
+      return colorObj.status.critical;
     case 'major':
-      return colors.status.major;
+      return colorObj.status.major;
     case 'minor':
-      return colors.status.minor;
+      return colorObj.status.minor;
     default:
-      return colors.status.minor;
+      return colorObj.status.minor;
   }
 };
 
-export const getSeverityTagIcon = (severity: string) => {
-  const color = getSeverityTagColor(severity);
+export const getSeverityTagIcon = (severity: string, colorObj: any) => {
+  const color = getSeverityTagColor(severity, colorObj);
   switch (severity.toLowerCase()) {
     case 'critical':
       return <ExclamationCircleOutlined style={{ color }} />;
@@ -87,23 +86,22 @@ export const getSeverityTagIcon = (severity: string) => {
   }
 };
 
-// Helper functions for change type tags
-export const getChangeTypeTagColor = (type: string): string => {
-  const colors = useColors();
+// Helper functions for change type tags - accept colors as parameter
+export const getChangeTypeTagColor = (type: string, colorObj: any): string => {
   switch (type.toLowerCase()) {
     case 'added':
-      return colors.status.minor;
+      return colorObj.status.minor;
     case 'modified':
-      return colors.status.major;
+      return colorObj.status.major;
     case 'removed':
-      return colors.status.critical;
+      return colorObj.status.critical;
     default:
-      return colors.chart.textSecondary;
+      return colorObj.chart.textSecondary;
   }
 };
 
-export const getChangeTypeTagIcon = (type: string) => {
-  const color = getChangeTypeTagColor(type);
+export const getChangeTypeTagIcon = (type: string, colorObj: any) => {
+  const color = getChangeTypeTagColor(type, colorObj);
   switch (type.toLowerCase()) {
     case 'added':
       return <AntPlusOutlined style={{ color }} />;
@@ -116,30 +114,29 @@ export const getChangeTypeTagIcon = (type: string) => {
   }
 };
 
-// Helper functions for status
-export const getStatusColor = (status: string): string => {
-  const colors = useColors();
+// Helper functions for status - accept colors as parameter
+export const getStatusColor = (status: string, colorObj: any): string => {
   switch (status.toLowerCase()) {
     case 'active':
     case 'current':
     case 'completed':
     case 'released':
-      return colors.status.minor;
+      return colorObj.status.minor;
     case 'pending':
     case 'in progress':
     case 'in development':
     case 'modified':
-      return colors.status.major;
+      return colorObj.status.major;
     case 'deprecated':
     case 'archived':
-      return colors.chart.textSecondary;
+      return colorObj.chart.textSecondary;
     default:
-      return colors.status.critical;
+      return colorObj.status.critical;
   }
 };
 
-export const getStatusIcon = (status: string) => {
-  const color = getStatusColor(status);
+export const getStatusIcon = (status: string, colorObj: any) => {
+  const color = getStatusColor(status, colorObj);
   switch (status.toLowerCase()) {
     case 'active':
     case 'current':
@@ -161,11 +158,11 @@ export const getStatusIcon = (status: string) => {
 // Component for displaying severity
 export const SeverityTag: React.FC<{ severity: string }> = ({ severity }) => {
   const colors = useColors();
-  const color = getSeverityTagColor(severity);
+  const color = getSeverityTagColor(severity, colors);
   
   return (
     <Tag
-      icon={getSeverityTagIcon(severity)}
+      icon={getSeverityTagIcon(severity, colors)}
       style={{
         backgroundColor: `${color}15`,
         color: color,
@@ -180,11 +177,11 @@ export const SeverityTag: React.FC<{ severity: string }> = ({ severity }) => {
 // Component for displaying change type
 export const ChangeTypeTag: React.FC<{ type: string }> = ({ type }) => {
   const colors = useColors();
-  const color = getChangeTypeTagColor(type);
+  const color = getChangeTypeTagColor(type, colors);
   
   return (
     <Tag
-      icon={getChangeTypeTagIcon(type)}
+      icon={getChangeTypeTagIcon(type, colors)}
       style={{
         backgroundColor: `${color}15`,
         color: color,

@@ -8,7 +8,8 @@ const colorPalette = {
   // Brand colors
   brand: {
     primary: '#00688C',  // Deep blue
-    secondary: '#5B8C9A' // Muted blue-gray
+    secondary: '#5B8C9A', // Muted blue-gray
+    accent: '#1890ff'    // Accent blue
   },
 
   // Status/severity colors
@@ -73,9 +74,20 @@ const colorPalette = {
   }
 };
 
+/**
+ * Helper function to create a linear gradient from a base color
+ */
+const getLinearGradient = (baseColor: string, angle = '135deg', opacity = '15') => {
+  return `linear-gradient(${angle}, ${baseColor}, ${baseColor}${opacity})`;
+};
+
 // Hook to access color palette
 const useColors = () => {
-  return colorPalette;
+  return {
+    ...colorPalette,
+    // Helper functions
+    getGradient: getLinearGradient
+  };
 };
 
 export default useColors; 
