@@ -40,6 +40,9 @@ import ImprovedParametersChanges from './ImprovedParametersChanges';
 import ImprovedLogicalChanges from './ImprovedLogicalChanges';
 // Import ContentPanel component
 import ContentPanel from '../common/ContentPanel';
+// Import our color palette and hook
+import colorPalette, { getLinearGradient } from '../../utils/colorPalette';
+import useColors from '../../hooks/useColors';
 
 const { Title, Text, Paragraph } = Typography;
 const { TabPane } = Tabs;
@@ -97,23 +100,23 @@ const tabStyles = {
     color: 'rgba(255, 255, 255, 0.85) !important',
   },
   '.ant-tabs-tab-active': {
-    color: '#00688C !important',
+    color: `${colorPalette.brand.primary} !important`,
   },
   '.ant-tabs-ink-bar': {
-    backgroundColor: '#00688C !important',
+    backgroundColor: `${colorPalette.brand.primary} !important`,
   }
 };
 
 // Custom slider styles to match the header/sidebar color
 const sliderStyles = {
   '.ant-slider-track': {
-    backgroundColor: '#00688C !important',
+    backgroundColor: `${colorPalette.brand.primary} !important`,
   },
   '.ant-slider-handle': {
-    borderColor: '#00688C !important',
+    borderColor: `${colorPalette.brand.primary} !important`,
   },
   '.ant-slider-handle:focus': {
-    boxShadow: '0 0 0 5px rgba(0, 104, 140, 0.2) !important',
+    boxShadow: `0 0 0 5px rgba(0, 104, 140, 0.2) !important`,
   }
 };
 
@@ -121,6 +124,7 @@ const ChangeAwareness: React.FC = () => {
   const [activeTab, setActiveTab] = useState('overview');
   const [weeksFilter, setWeeksFilter] = useState<number>(8);
   const [dashboardData, setDashboardData] = useState(generateMockData(8));
+  const colors = useColors();
 
   // Extract the current tab from the URL if it exists
   React.useEffect(() => {
@@ -137,28 +141,28 @@ const ChangeAwareness: React.FC = () => {
     const styleElement = document.createElement('style');
     styleElement.textContent = `
       .ant-tabs-tab.ant-tabs-tab-active .ant-tabs-tab-btn {
-        color: #00688C !important;
+        color: ${colors.brand.primary} !important;
       }
       /* Add hover state styling for tab buttons */
       .ant-tabs-tab:hover .ant-tabs-tab-btn {
-        color: #00688C !important;
+        color: ${colors.brand.primary} !important;
       }
       .ant-tabs-ink-bar {
-        background-color: #00688C !important;
+        background-color: ${colors.brand.primary} !important;
       }
       .ant-slider-track {
-        background-color: #00688C !important;
+        background-color: ${colors.brand.primary} !important;
       }
       .ant-slider-handle {
-        border-color: #00688C !important;
+        border-color: ${colors.brand.primary} !important;
       }
       .ant-slider-handle:focus {
-        box-shadow: 0 0 0 5px rgba(0, 104, 140, 0.2) !important;
+        box-shadow: 0 0 0 5px ${colors.brand.primary}33 !important;
       }
       /* Table header styles */
       .ant-table-thead > tr > th {
         background-color: #E6E6E6 !important;
-        color: rgba(0, 0, 0, 0.85) !important;
+        color: ${colors.chart.textPrimary} !important;
         border: 0.5px solid #BFBFBF !important; /* Thinner border */
         padding: 8px 12px !important; /* Reduced vertical padding for headers */
       }
@@ -169,11 +173,11 @@ const ChangeAwareness: React.FC = () => {
       }
       /* Table row hover styles - updated to match sidebar color */
       .ant-table-tbody > tr:hover > td {
-        background-color: rgba(0, 104, 140, 0.1) !important;
+        background-color: ${colors.brand.primary}1A !important;
       }
       /* Make sure hover state is consistent */
       .ant-table-tbody > tr.ant-table-row:hover > td {
-        background-color: rgba(0, 104, 140, 0.1) !important;
+        background-color: ${colors.brand.primary}1A !important;
       }
       /* Make table header resize handles visible and functional */
       .react-resizable {
@@ -195,7 +199,7 @@ const ChangeAwareness: React.FC = () => {
     return () => {
       document.head.removeChild(styleElement);
     };
-  }, []);
+  }, [colors]);
   
   // Update dashboard data when weeks filter changes
   useEffect(() => {
@@ -206,18 +210,18 @@ const ChangeAwareness: React.FC = () => {
   const renderTrend = (value: number) => {
     if (value > 0) {
       return (
-        <span style={{ color: value > 10 ? '#f5222d' : '#fa8c16', marginLeft: 8 }}>
+        <span style={{ color: value > 10 ? colors.status.critical : colors.status.major, marginLeft: 8 }}>
           <ArrowUpOutlined /> {value}%
         </span>
       );
     } else if (value < 0) {
       return (
-        <span style={{ color: '#52c41a', marginLeft: 8 }}>
+        <span style={{ color: colors.status.minor, marginLeft: 8 }}>
           <ArrowDownOutlined /> {Math.abs(value)}%
         </span>
       );
     }
-    return <span style={{ color: '#8c8c8c', marginLeft: 8 }}>0%</span>;
+    return <span style={{ color: colors.chart.textSecondary, marginLeft: 8 }}>0%</span>;
   };
 
   return (
@@ -275,7 +279,11 @@ const ChangeAwareness: React.FC = () => {
             {/* Main statistics cards */}
             <Row gutter={[16, 16]} style={{ marginBottom: 24 }}>
               <Col xs={24} sm={12} md={6}>
-                <Card bordered={false} style={{ background: 'linear-gradient(135deg, #1890ff, #096dd9)', borderRadius: '8px', boxShadow: '0 2px 12px rgba(24, 144, 255, 0.3)' }}>
+                <Card bordered={false} style={{ 
+                  background: colors.getGradient(colors.brand.primary), 
+                  borderRadius: '8px', 
+                  boxShadow: `0 2px 12px ${colors.brand.primary}4D` 
+                }}>
                   <Statistic
                     title={<Text style={{ color: 'white', fontSize: '16px' }}>Total Changes</Text>}
                     value={dashboardData.totalChanges}
@@ -289,7 +297,11 @@ const ChangeAwareness: React.FC = () => {
                 </Card>
               </Col>
               <Col xs={24} sm={12} md={6}>
-                <Card bordered={false} style={{ background: 'linear-gradient(135deg, #ff4d4f, #cf1322)', borderRadius: '8px', boxShadow: '0 2px 12px rgba(255, 77, 79, 0.3)' }}>
+                <Card bordered={false} style={{ 
+                  background: colors.getGradient(colors.status.critical), 
+                  borderRadius: '8px', 
+                  boxShadow: `0 2px 12px ${colors.status.critical}4D` 
+                }}>
                   <Statistic
                     title={<Text style={{ color: 'white', fontSize: '16px' }}>Critical Changes</Text>}
                     value={dashboardData.criticalChanges}
@@ -303,7 +315,11 @@ const ChangeAwareness: React.FC = () => {
                 </Card>
               </Col>
               <Col xs={24} sm={12} md={6}>
-                <Card bordered={false} style={{ background: 'linear-gradient(135deg, #faad14, #d48806)', borderRadius: '8px', boxShadow: '0 2px 12px rgba(250, 173, 20, 0.3)' }}>
+                <Card bordered={false} style={{ 
+                  background: colors.getGradient(colors.status.major), 
+                  borderRadius: '8px', 
+                  boxShadow: `0 2px 12px ${colors.status.major}4D` 
+                }}>
                   <Statistic
                     title={<Text style={{ color: 'white', fontSize: '16px' }}>Major Changes</Text>}
                     value={dashboardData.majorChanges}
@@ -317,7 +333,11 @@ const ChangeAwareness: React.FC = () => {
                 </Card>
               </Col>
               <Col xs={24} sm={12} md={6}>
-                <Card bordered={false} style={{ background: 'linear-gradient(135deg, #52c41a, #389e0d)', borderRadius: '8px', boxShadow: '0 2px 12px rgba(82, 196, 26, 0.3)' }}>
+                <Card bordered={false} style={{ 
+                  background: colors.getGradient(colors.status.minor), 
+                  borderRadius: '8px', 
+                  boxShadow: `0 2px 12px ${colors.status.minor}4D` 
+                }}>
                   <Statistic
                     title={<Text style={{ color: 'white', fontSize: '16px' }}>Minor Changes</Text>}
                     value={dashboardData.minorChanges}
@@ -336,61 +356,79 @@ const ChangeAwareness: React.FC = () => {
             <ContentPanel title="Changes by Domain" style={{ marginBottom: 16 }}>
               <Row gutter={[16, 16]}>
                 <Col xs={24} sm={12} md={8} lg={4}>
-                  <Card bordered={false} style={{ background: '#f0f5ff', borderRadius: '6px' }}>
+                  <Card bordered={false} style={{ 
+                    background: `${colors.category.mission}15`, 
+                    borderRadius: '6px' 
+                  }}>
                     <Statistic
                       title={<Text strong>Mission</Text>}
                       value={dashboardData.domains.mission}
-                      valueStyle={{ color: '#1890ff' }}
+                      valueStyle={{ color: colors.category.mission }}
                       prefix={<RocketOutlined />}
                     />
                   </Card>
                 </Col>
                 <Col xs={24} sm={12} md={8} lg={4}>
-                  <Card bordered={false} style={{ background: '#f6ffed', borderRadius: '6px' }}>
+                  <Card bordered={false} style={{ 
+                    background: `${colors.chart.series3}15`, 
+                    borderRadius: '6px' 
+                  }}>
                     <Statistic
                       title={<Text strong>Op. Scenarios</Text>}
                       value={dashboardData.domains.operational}
-                      valueStyle={{ color: '#52c41a' }}
+                      valueStyle={{ color: colors.chart.series3 }}
                       prefix={<ClockCircleOutlined />}
                     />
                   </Card>
                 </Col>
                 <Col xs={24} sm={12} md={8} lg={4}>
-                  <Card bordered={false} style={{ background: '#fffbe6', borderRadius: '6px' }}>
+                  <Card bordered={false} style={{ 
+                    background: `${colors.category.requirements}15`, 
+                    borderRadius: '6px' 
+                  }}>
                     <Statistic
                       title={<Text strong>Requirements</Text>}
                       value={dashboardData.domains.requirements}
-                      valueStyle={{ color: '#faad14' }}
+                      valueStyle={{ color: colors.category.requirements }}
                       prefix={<FileTextOutlined />}
                     />
                   </Card>
                 </Col>
                 <Col xs={24} sm={12} md={8} lg={4}>
-                  <Card bordered={false} style={{ background: '#f9f0ff', borderRadius: '6px' }}>
+                  <Card bordered={false} style={{ 
+                    background: `${colors.category.functions}15`, 
+                    borderRadius: '6px' 
+                  }}>
                     <Statistic
                       title={<Text strong>Functions</Text>}
                       value={dashboardData.domains.functions}
-                      valueStyle={{ color: '#722ed1' }}
+                      valueStyle={{ color: colors.category.functions }}
                       prefix={<FunctionOutlined />}
                     />
                   </Card>
                 </Col>
                 <Col xs={24} sm={12} md={8} lg={4}>
-                  <Card bordered={false} style={{ background: '#e6f7ff', borderRadius: '6px' }}>
+                  <Card bordered={false} style={{ 
+                    background: `${colors.category.cad}15`, 
+                    borderRadius: '6px' 
+                  }}>
                     <Statistic
                       title={<Text strong>CAD Design</Text>}
                       value={dashboardData.domains.cad}
-                      valueStyle={{ color: '#1890ff' }}
+                      valueStyle={{ color: colors.category.cad }}
                       prefix={<ApartmentOutlined />}
                     />
                   </Card>
                 </Col>
                 <Col xs={24} sm={12} md={8} lg={4}>
-                  <Card bordered={false} style={{ background: '#fff2e8', borderRadius: '6px' }}>
+                  <Card bordered={false} style={{ 
+                    background: `${colors.category.bom}15`, 
+                    borderRadius: '6px' 
+                  }}>
                     <Statistic
                       title={<Text strong>Eng. BOM</Text>}
                       value={dashboardData.domains.bom}
-                      valueStyle={{ color: '#fa541c' }}
+                      valueStyle={{ color: colors.category.bom }}
                       prefix={<ToolOutlined />}
                     />
                   </Card>
@@ -409,7 +447,7 @@ const ChangeAwareness: React.FC = () => {
             <ContentPanel title="Change Impact Summary">
               <Timeline mode="left">
                 <Timeline.Item
-                  color="red"
+                  color={colors.status.critical}
                   label="2 days ago"
                   dot={<WarningOutlined style={{ fontSize: '16px' }} />}
                 >
@@ -417,7 +455,7 @@ const ChangeAwareness: React.FC = () => {
                   <Paragraph>Mission objective "M-002" was modified, affecting 3 operational scenarios and 12 requirements.</Paragraph>
                 </Timeline.Item>
                 <Timeline.Item
-                  color="orange"
+                  color={colors.status.major}
                   label="3 days ago"
                   dot={<InfoCircleOutlined style={{ fontSize: '16px' }} />}
                 >
@@ -425,7 +463,7 @@ const ChangeAwareness: React.FC = () => {
                   <Paragraph>Scenario "OS-105" updated with new environmental conditions, impacting 5 requirements.</Paragraph>
                 </Timeline.Item>
                 <Timeline.Item
-                  color="red"
+                  color={colors.status.critical}
                   label="4 days ago"
                   dot={<WarningOutlined style={{ fontSize: '16px' }} />}
                 >
@@ -433,7 +471,7 @@ const ChangeAwareness: React.FC = () => {
                   <Paragraph>Requirement "REQ-F-123" performance threshold increased from 2.5s to 1.8s, affecting 4 functions and 2 components.</Paragraph>
                 </Timeline.Item>
                 <Timeline.Item
-                  color="green"
+                  color={colors.status.minor}
                   label="5 days ago"
                   dot={<CheckCircleOutlined style={{ fontSize: '16px' }} />}
                 >
@@ -441,7 +479,7 @@ const ChangeAwareness: React.FC = () => {
                   <Paragraph>Minor dimension update to component "C-234" within acceptable tolerances, no downstream impact.</Paragraph>
                 </Timeline.Item>
                 <Timeline.Item
-                  color="orange"
+                  color={colors.status.major}
                   label="7 days ago"
                   dot={<InfoCircleOutlined style={{ fontSize: '16px' }} />}
                 >
