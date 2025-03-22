@@ -238,140 +238,134 @@ const ImprovedOverviewChanges: React.FC = () => {
   };
 
   return (
-    <div className="overview-changes">
-      {/* Chart Row - Positioned above table and aligned to the right */}
-      <Row justify="end" style={{ marginBottom: 16 }}>
-        <Col span={chartCollapsed ? 1 : 8} style={{ 
-          transition: 'all 0.3s ease',
-          transform: chartCollapsed ? 'translateX(100%)' : 'translateX(0%)',
-          opacity: chartCollapsed ? 0 : 1,
-          position: 'relative'
-        }}>
-          <Card 
-            style={{ 
-              marginBottom: 0,
-              boxShadow: '0 2px 8px rgba(0,0,0,0.15)'
-            }}
-            title={
-              <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
-                <PieChartOutlined style={{ marginRight: 8 }} />
-                <span>Changes by Source</span>
-                <Button 
-                  type="text" 
-                  icon={<LeftOutlined />}
-                  onClick={() => setChartCollapsed(true)}
-                  style={{ marginLeft: 'auto' }}
+    <div className="overview-changes" style={{ position: 'relative' }}>
+      {/* Table - Full width */}
+      <ContentPanel>
+        <StandardChangeTable<AnyChange>
+          domain="all"
+          title="All Changes"
+          weeks={weeks}
+          setWeeks={setWeeks}
+          productType={productType}
+          categoryRenderer={renderAutoDetectedCategory}
+          expandedRowOptions={{
+            showImpact: true,
+            showTechnicalDetails: true,
+            showDependencies: true,
+          }}
+          tableOptions={{
+            showImpact: true,
+            additionalColumns: [{
+              title: 'Source',
+              dataIndex: 'source',
+              key: 'source',
+              render: (_, record) => {
+                // Use the domain property which exists on all change types
+                switch (record.domain) {
+                  case 'mission':
+                    return 'Mission';
+                  case 'operationalScenario':
+                    return 'Operational Scenario';
+                  case 'requirement':
+                    return 'Requirement';
+                  case 'parameter':
+                    return 'Parameter';
+                  case 'function':
+                    return 'Function';
+                  case 'logical':
+                    return 'Logical';
+                  case 'cad':
+                    return 'CAD Design';
+                  case 'bom':
+                    return 'Engineering BOM';
+                  default:
+                    return record.domain || 'Unknown';
+                }
+              }
+            }]
+          }}
+        />
+      </ContentPanel>
+      
+      {/* Pie Chart - Positioned as overlay from right */}
+      <div style={{ 
+        position: 'absolute',
+        top: '16px',
+        right: chartCollapsed ? '-340px' : '16px',
+        width: '320px',
+        transition: 'right 0.3s ease',
+        zIndex: 1000,
+        opacity: chartCollapsed ? 0 : 1,
+      }}>
+        <Card 
+          style={{ 
+            boxShadow: '0 4px 12px rgba(0,0,0,0.2)',
+            borderRadius: '8px'
+          }}
+          title={
+            <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
+              <PieChartOutlined style={{ marginRight: 8 }} />
+              <span>Changes by Source</span>
+              <Button 
+                type="text" 
+                icon={<LeftOutlined />}
+                onClick={() => setChartCollapsed(true)}
+                style={{ marginLeft: 'auto' }}
+              />
+            </div>
+          }
+        >
+          <div style={{ height: 300 }}>
+            <ResponsiveContainer width="100%" height="100%">
+              <PieChart>
+                <Pie
+                  data={pieChartData}
+                  cx="50%"
+                  cy="50%"
+                  labelLine={false}
+                  label={renderCustomizedLabel}
+                  outerRadius={100}
+                  fill="#8884d8"
+                  dataKey="value"
+                >
+                  {pieChartData.map((entry, index) => (
+                    <Cell 
+                      key={`cell-${index}`} 
+                      fill={getDomainColor(entry.domain)} 
+                    />
+                  ))}
+                </Pie>
+                <RechartsTooltip 
+                  formatter={(value, name) => [`${value} Changes`, name]}
+                  labelFormatter={() => 'Source Distribution'}
                 />
-              </div>
-            }
-            bodyStyle={{ 
-              padding: 16,
-              overflow: 'hidden'
-            }}
-          >
-            <div style={{ height: 300 }}>
-              <ResponsiveContainer width="100%" height="100%">
-                <PieChart>
-                  <Pie
-                    data={pieChartData}
-                    cx="50%"
-                    cy="50%"
-                    labelLine={false}
-                    label={renderCustomizedLabel}
-                    outerRadius={100}
-                    fill="#8884d8"
-                    dataKey="value"
-                  >
-                    {pieChartData.map((entry, index) => (
-                      <Cell 
-                        key={`cell-${index}`} 
-                        fill={getDomainColor(entry.domain)} 
-                      />
-                    ))}
-                  </Pie>
-                  <RechartsTooltip 
-                    formatter={(value, name) => [`${value} Changes`, name]}
-                    labelFormatter={() => 'Source Distribution'}
-                  />
-                  <Legend />
-                </PieChart>
-              </ResponsiveContainer>
-            </div>
-            <div style={{ marginTop: 16, textAlign: 'center' }}>
-              <Text type="secondary">
-                Total: {data.length} changes in last {weeks} weeks
-              </Text>
-            </div>
-          </Card>
-        </Col>
-        
-        {/* Show toggle button when chart is collapsed */}
-        {chartCollapsed && (
-          <Col span={1}>
-            <Button 
-              type="primary"
-              icon={<PieChartOutlined />}
-              onClick={() => setChartCollapsed(false)}
-              style={{ 
-                height: '100%',
-                borderRadius: '4px 0 0 4px'
-              }}
-            />
-          </Col>
-        )}
-      </Row>
-        
-      {/* Table Row - Full width */}
-      <Row>
-        <Col span={24}>
-          <ContentPanel>
-            <StandardChangeTable<AnyChange>
-              domain="all"
-              title="All Changes"
-              weeks={weeks}
-              setWeeks={setWeeks}
-              productType={productType}
-              categoryRenderer={renderAutoDetectedCategory}
-              expandedRowOptions={{
-                showImpact: true,
-                showTechnicalDetails: true,
-                showDependencies: true,
-              }}
-              tableOptions={{
-                showImpact: true,
-                additionalColumns: [{
-                  title: 'Source',
-                  dataIndex: 'source',
-                  key: 'source',
-                  render: (_, record) => {
-                    // Use the domain property which exists on all change types
-                    switch (record.domain) {
-                      case 'mission':
-                        return 'Mission';
-                      case 'operationalScenario':
-                        return 'Operational Scenario';
-                      case 'requirement':
-                        return 'Requirement';
-                      case 'parameter':
-                        return 'Parameter';
-                      case 'function':
-                        return 'Function';
-                      case 'logical':
-                        return 'Logical';
-                      case 'cad':
-                        return 'CAD Design';
-                      case 'bom':
-                        return 'Engineering BOM';
-                      default:
-                        return record.domain || 'Unknown';
-                    }
-                  }
-                }]
-              }}
-            />
-          </ContentPanel>
-        </Col>
-      </Row>
+                <Legend />
+              </PieChart>
+            </ResponsiveContainer>
+          </div>
+          <div style={{ marginTop: 16, textAlign: 'center' }}>
+            <Text type="secondary">
+              Total: {data.length} changes in last {weeks} weeks
+            </Text>
+          </div>
+        </Card>
+      </div>
+      
+      {/* Show toggle button when chart is collapsed */}
+      <Button 
+        type="primary"
+        icon={<PieChartOutlined />}
+        onClick={() => setChartCollapsed(false)}
+        style={{ 
+          position: 'absolute',
+          top: '16px',
+          right: chartCollapsed ? '0' : '-100px',
+          transition: 'right 0.3s ease',
+          zIndex: 1000,
+          borderRadius: '4px 0 0 4px',
+          opacity: chartCollapsed ? 1 : 0,
+        }}
+      />
     </div>
   );
 };
