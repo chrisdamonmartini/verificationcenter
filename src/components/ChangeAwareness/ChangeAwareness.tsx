@@ -21,8 +21,20 @@ import {
   ArrowUpOutlined,
   ArrowDownOutlined,
   ControlOutlined,
-  ClusterOutlined
+  ClusterOutlined,
+  PieChartOutlined,
+  LeftOutlined,
+  RightOutlined
 } from '@ant-design/icons';
+// Import recharts components
+import { 
+  PieChart, 
+  Pie, 
+  Cell, 
+  ResponsiveContainer, 
+  Tooltip as RechartsTooltip,
+  Legend 
+} from 'recharts';
 // Import the components
 import MissionChanges from './MissionChanges';
 import ImprovedMissionChanges from './ImprovedMissionChanges';
@@ -46,6 +58,7 @@ import useColors from '../../hooks/useColors';
 import { AnyChange } from '../../types/changeAwareness';
 import { StandardChangeTable } from './shared/StandardChangeTable';
 import { renderAutoDetectedCategory } from './shared/TableConfigurations';
+import { useChangesData } from './shared/hooks';
 
 const { Title, Text, Paragraph } = Typography;
 const { TabPane } = Tabs;
@@ -127,56 +140,222 @@ const sliderStyles = {
 const ImprovedOverviewChanges: React.FC = () => {
   const [weeks, setWeeks] = useState<number>(8);
   const [productType, setProductType] = useState<'missile' | 'fighter'>('missile');
+  const [chartCollapsed, setChartCollapsed] = useState<boolean>(false);
   const colors = useColors();
+
+  // Custom colors for the pie chart segments
+  const DOMAIN_COLORS = {
+    mission: colors.category.mission,
+    operationalScenario: colors.chart.series3,
+    requirement: colors.category.requirements,
+    function: colors.category.functions,
+    logical: colors.chart.series2,
+    parameter: colors.chart.series5,
+    cad: colors.category.cad,
+    bom: colors.category.bom
+  };
+
+  // Fetch data using the useChangesData hook
+  const { 
+    data,
+    loading 
+  } = useChangesData<AnyChange>('all', weeks, productType);
+
+  // Prepare data for the pie chart
+  const preparePieChartData = () => {
+    if (!data || data.length === 0) return [];
+    
+    // Count the number of changes by domain
+    const domainCounts: Record<string, number> = {};
+    
+    data.forEach((change: AnyChange) => {
+      const domain = change.domain;
+      domainCounts[domain] = (domainCounts[domain] || 0) + 1;
+    });
+    
+    // Convert to format needed for pie chart
+    return Object.entries(domainCounts).map(([domain, value]) => ({
+      name: getDomainDisplayName(domain),
+      value,
+      domain
+    }));
+  };
+  
+  // Get a human-readable display name for each domain
+  const getDomainDisplayName = (domain: string): string => {
+    switch (domain) {
+      case 'mission':
+        return 'Mission';
+      case 'operationalScenario':
+        return 'Operational Scenario';
+      case 'requirement':
+        return 'Requirement';
+      case 'parameter':
+        return 'Parameter';
+      case 'function':
+        return 'Function';
+      case 'logical':
+        return 'Logical';
+      case 'cad':
+        return 'CAD Design';
+      case 'bom':
+        return 'Engineering BOM';
+      default:
+        return domain || 'Unknown';
+    }
+  };
+
+  // Get color for a specific domain
+  const getDomainColor = (domain: string): string => {
+    return DOMAIN_COLORS[domain as keyof typeof DOMAIN_COLORS] || colors.chart.textSecondary;
+  };
+
+  // Prepare pie chart data
+  const pieChartData = preparePieChartData();
+
+  // Custom label renderer for the pie chart
+  const renderCustomizedLabel = (props: any) => {
+    const { cx, cy, midAngle, innerRadius, outerRadius, percent, value, name } = props;
+    const radius = innerRadius + (outerRadius - innerRadius) * 0.5;
+    const x = cx + radius * Math.cos(-midAngle * Math.PI / 180);
+    const y = cy + radius * Math.sin(-midAngle * Math.PI / 180);
+    
+    if (percent < 0.05) return null; // Don't show labels for small slices
+    
+    return (
+      <text 
+        x={x} 
+        y={y} 
+        fill="white" 
+        textAnchor="middle" 
+        dominantBaseline="central"
+        fontSize={12}
+        fontWeight="bold"
+      >
+        {`${value}`}
+      </text>
+    );
+  };
 
   return (
     <div className="overview-changes">
-      <ContentPanel>
-        <StandardChangeTable<AnyChange>
-          domain="all"
-          title="All Changes"
-          weeks={weeks}
-          setWeeks={setWeeks}
-          productType={productType}
-          categoryRenderer={renderAutoDetectedCategory}
-          expandedRowOptions={{
-            showImpact: true,
-            showTechnicalDetails: true,
-            showDependencies: true,
-          }}
-          tableOptions={{
-            showImpact: true,
-            additionalColumns: [{
-              title: 'Source',
-              dataIndex: 'source',
-              key: 'source',
-              render: (_, record) => {
-                // Use the domain property which exists on all change types
-                switch (record.domain) {
-                  case 'mission':
-                    return 'Mission';
-                  case 'operationalScenario':
-                    return 'Operational Scenario';
-                  case 'requirement':
-                    return 'Requirement';
-                  case 'parameter':
-                    return 'Parameter';
-                  case 'function':
-                    return 'Function';
-                  case 'logical':
-                    return 'Logical';
-                  case 'cad':
-                    return 'CAD Design';
-                  case 'bom':
-                    return 'Engineering BOM';
-                  default:
-                    return record.domain || 'Unknown';
-                }
-              }
-            }]
-          }}
-        />
-      </ContentPanel>
+      <Row gutter={16}>
+        {/* Pie Chart Section - Collapsible */}
+        <Col span={chartCollapsed ? 1 : 8} style={{ transition: 'all 0.3s ease' }}>
+          <Card 
+            style={{ height: '100%', marginBottom: 0 }}
+            title={
+              <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
+                {!chartCollapsed && (
+                  <>
+                    <PieChartOutlined style={{ marginRight: 8 }} />
+                    <span>Changes by Source</span>
+                  </>
+                )}
+                <Button 
+                  type="text" 
+                  icon={chartCollapsed ? <RightOutlined /> : <LeftOutlined />}
+                  onClick={() => setChartCollapsed(!chartCollapsed)}
+                  style={{ marginLeft: 'auto' }}
+                />
+              </div>
+            }
+            bodyStyle={{ 
+              padding: chartCollapsed ? 0 : 16,
+              height: chartCollapsed ? 0 : 'calc(100% - 58px)',
+              overflow: 'hidden'
+            }}
+          >
+            {!chartCollapsed && (
+              <>
+                <div style={{ height: 300 }}>
+                  <ResponsiveContainer width="100%" height="100%">
+                    <PieChart>
+                      <Pie
+                        data={pieChartData}
+                        cx="50%"
+                        cy="50%"
+                        labelLine={false}
+                        label={renderCustomizedLabel}
+                        outerRadius={100}
+                        fill="#8884d8"
+                        dataKey="value"
+                      >
+                        {pieChartData.map((entry, index) => (
+                          <Cell 
+                            key={`cell-${index}`} 
+                            fill={getDomainColor(entry.domain)} 
+                          />
+                        ))}
+                      </Pie>
+                      <RechartsTooltip 
+                        formatter={(value, name) => [`${value} Changes`, name]}
+                        labelFormatter={() => 'Source Distribution'}
+                      />
+                      <Legend />
+                    </PieChart>
+                  </ResponsiveContainer>
+                </div>
+                <div style={{ marginTop: 16, textAlign: 'center' }}>
+                  <Text type="secondary">
+                    Total: {data.length} changes in last {weeks} weeks
+                  </Text>
+                </div>
+              </>
+            )}
+          </Card>
+        </Col>
+        
+        {/* Table Section */}
+        <Col span={chartCollapsed ? 23 : 16}>
+          <ContentPanel>
+            <StandardChangeTable<AnyChange>
+              domain="all"
+              title="All Changes"
+              weeks={weeks}
+              setWeeks={setWeeks}
+              productType={productType}
+              categoryRenderer={renderAutoDetectedCategory}
+              expandedRowOptions={{
+                showImpact: true,
+                showTechnicalDetails: true,
+                showDependencies: true,
+              }}
+              tableOptions={{
+                showImpact: true,
+                additionalColumns: [{
+                  title: 'Source',
+                  dataIndex: 'source',
+                  key: 'source',
+                  render: (_, record) => {
+                    // Use the domain property which exists on all change types
+                    switch (record.domain) {
+                      case 'mission':
+                        return 'Mission';
+                      case 'operationalScenario':
+                        return 'Operational Scenario';
+                      case 'requirement':
+                        return 'Requirement';
+                      case 'parameter':
+                        return 'Parameter';
+                      case 'function':
+                        return 'Function';
+                      case 'logical':
+                        return 'Logical';
+                      case 'cad':
+                        return 'CAD Design';
+                      case 'bom':
+                        return 'Engineering BOM';
+                      default:
+                        return record.domain || 'Unknown';
+                    }
+                  }
+                }]
+              }}
+            />
+          </ContentPanel>
+        </Col>
+      </Row>
     </div>
   );
 };
