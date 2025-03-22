@@ -155,28 +155,24 @@ export function StandardChangeTable<T extends StandardBaseChange>({
             <Card 
               className="dashboard-stat-card" 
               style={{ 
-                background: colors.getGradient(colors.brand.primary, '135deg', '20'),
+                background: colors.status.major,
                 borderRadius: '8px',
-                boxShadow: '0 2px 8px rgba(0, 0, 0, 0.15)',
+                boxShadow: '0 1px 2px rgba(0, 0, 0, 0.05)',
                 textAlign: 'center',
                 padding: '0',
-                height: '100%',
-                transition: 'all 0.3s',
-                transform: data.length ? 'translateY(0)' : 'translateY(2px)',
                 border: 'none'
               }}
-              bodyStyle={{ padding: '12px' }}
+              bodyStyle={{ padding: '6px 12px', display: 'flex', alignItems: 'center', height: '32px' }}
             >
-              <Statistic
-                title={<span style={{ color: 'white', fontWeight: 'normal', fontSize: '14px' }}>{title} Changes</span>}
-                value={data.length}
-                valueStyle={{ color: 'white', fontWeight: 'bold', fontSize: '28px' }}
-                prefix={<BarChartOutlined style={{ marginRight: '8px' }} />}
-              />
-              <div style={{ marginTop: '8px', fontSize: '12px', opacity: 0.8, color: 'white' }}>
-                <ClockCircleOutlined style={{ marginRight: '4px' }} />
-                Last {weeks} {weeks === 1 ? 'week' : 'weeks'}
-              </div>
+              <Space>
+                <BarChartOutlined style={{ color: 'white' }} />
+                <Text strong style={{ color: 'white', margin: 0 }}>
+                  {data.length} {title} Changes
+                </Text>
+                <Text style={{ color: 'white', fontSize: '12px', opacity: 0.8, margin: 0 }}>
+                  (Last {weeks} {weeks === 1 ? 'week' : 'weeks'})
+                </Text>
+              </Space>
             </Card>
           </Col>
           <Col span={12}>
