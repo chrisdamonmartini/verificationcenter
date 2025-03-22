@@ -270,7 +270,18 @@ const RelatedItemsPanel: React.FC<RelatedItemsPanelProps> = ({
   ];
   
   // Always show all categories - no longer filter by items.length
-  const categories = categoryConfigs;
+  const categories = categoryConfigs.map(category => {
+    // If this is not the current expanded item's category, use a neutral color
+    // Otherwise, keep the original color
+    if (currentItemType && category.key !== currentItemType) {
+      return {
+        ...category,
+        color: colors.text.secondary,
+        bgcolor: colors.background.paper
+      };
+    }
+    return category;
+  });
 
   // Add current item to categories if it exists and is not already included
   if (currentItem && currentItemType) {
@@ -289,7 +300,7 @@ const RelatedItemsPanel: React.FC<RelatedItemsPanelProps> = ({
   }
 
   // Render the "Create Relationship" button for empty categories
-  const renderCreateRelationshipButton = (categoryKey: string) => {
+  const renderCreateRelationshipButton = (categoryKey: string, categoryColor: string) => {
     return (
       <Button 
         type="dashed" 
@@ -297,7 +308,8 @@ const RelatedItemsPanel: React.FC<RelatedItemsPanelProps> = ({
         style={{ 
           width: '100%', 
           marginTop: '8px',
-          borderColor: colors.ui.borderDark
+          borderColor: categoryColor,
+          color: categoryColor
         }}
         onClick={() => onCreateRelationship && onCreateRelationship(categoryKey)}
       >
@@ -366,7 +378,11 @@ const RelatedItemsPanel: React.FC<RelatedItemsPanelProps> = ({
                     backgroundColor: category.bgcolor,
                     border: `1px solid ${category.color}40`,
                     height: '100%',
-                    width: '100%'
+                    width: '100%',
+                    ...(currentItemType && category.key !== currentItemType && {
+                      boxShadow: 'none',
+                      border: `1px solid ${colors.ui.border}`
+                    })
                   }}
                   bodyStyle={{ padding: '8px' }}
                 >
@@ -426,7 +442,7 @@ const RelatedItemsPanel: React.FC<RelatedItemsPanelProps> = ({
                         description="No related items" 
                         style={{ margin: '0 0 16px' }}
                       />
-                      {onCreateRelationship && renderCreateRelationshipButton(category.key)}
+                      {onCreateRelationship && renderCreateRelationshipButton(category.key, category.color)}
                     </div>
                   )}
                 </Card>
