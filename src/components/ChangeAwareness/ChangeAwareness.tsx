@@ -163,13 +163,13 @@ const ChangeAwareness: React.FC = () => {
         border: 0.5px solid #BFBFBF !important; /* Thinner border */
         padding: 4px 12px !important; /* Reduced vertical padding */
       }
-      /* Table row hover styles */
+      /* Table row hover styles - updated to match sidebar color */
       .ant-table-tbody > tr:hover > td {
-        background-color: #CDE6EB !important;
+        background-color: rgba(0, 104, 140, 0.1) !important;
       }
       /* Make sure hover state is consistent */
       .ant-table-tbody > tr.ant-table-row:hover > td {
-        background-color: #CDE6EB !important;
+        background-color: rgba(0, 104, 140, 0.1) !important;
       }
       /* Make table header resize handles visible and functional */
       .react-resizable {

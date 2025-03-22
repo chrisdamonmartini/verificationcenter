@@ -27,7 +27,7 @@ const ContentPanel: React.FC<ContentPanelProps> = ({
     <div 
       className={`content-panel ${className}`}
       style={{
-        backgroundColor: '#f5f5f5', // Light gray background similar to TeamCenter
+        backgroundColor: '#f9f9f9', // Lighter gray background (was #f5f5f5)
         boxShadow: '0 2px 6px rgba(0, 0, 0, 0.08)', // Subtle shadow for raised effect
         borderRadius: '4px',
         margin: '0 0 16px 0',
@@ -39,7 +39,7 @@ const ContentPanel: React.FC<ContentPanelProps> = ({
       {title && (
         <div 
           style={{
-            padding: '12px 16px',
+            padding: '6px 8px',
             borderBottom: '1px solid #e8e8e8',
             backgroundColor: '#fafafa',
             display: 'flex',
@@ -54,7 +54,7 @@ const ContentPanel: React.FC<ContentPanelProps> = ({
           {headerExtra && <div>{headerExtra}</div>}
         </div>
       )}
-      <div style={{ padding: '16px' }}>
+      <div style={{ padding: '8px' }}>
         {children}
       </div>
     </div>
