@@ -224,101 +224,68 @@ const ImprovedOverviewChanges: React.FC = () => {
   React.useEffect(() => {
     const styleElement = document.createElement('style');
     styleElement.textContent = `
-      .chart-container-animate {
-        transition: all 0.5s ease;
-      }
-      .chart-toggle-button:hover {
-        transform: scale(1.05);
-      }
-      .recharts-pie {
-        position: relative;
-        z-index: 2;
-      }
-      /* Fix any artifacts or overflow issues */
-      .recharts-wrapper {
-        position: relative;
-        z-index: 10;
-        overflow: visible;
-      }
-      .recharts-surface {
-        overflow: visible;
+      /* Clean pie chart animation styles */
+      .pie-chart-container {
+        transition: all 0.6s ease;
       }
       
-      /* Setup for sequential reveal animations */
-      .recharts-sector {
+      /* Base styles for pie sectors */
+      .pie-chart-sectors .recharts-sector {
         opacity: 0;
         transform-origin: center center;
+        transition: opacity 0.5s ease, transform 0.5s ease;
       }
       
-      /* Animation for opening the chart */
-      .chart-container-animate.open .recharts-sector {
-        animation: sectorRevealIn 0.5s ease forwards;
+      /* When chart is visible, animate sectors in */
+      .pie-chart-container.visible .pie-chart-sectors .recharts-sector {
+        opacity: 1;
+        transform: scale(1);
       }
       
-      /* Animation for closing the chart */
-      .chart-container-animate:not(.open) .recharts-sector {
-        animation: sectorRevealOut 0.4s ease forwards;
+      /* Sequential reveal with delays */
+      .sector-0 { transition-delay: 0ms; }
+      .sector-1 { transition-delay: 80ms; }
+      .sector-2 { transition-delay: 160ms; }
+      .sector-3 { transition-delay: 240ms; }
+      .sector-4 { transition-delay: 320ms; }
+      .sector-5 { transition-delay: 400ms; }
+      .sector-6 { transition-delay: 480ms; }
+      .sector-7 { transition-delay: 560ms; }
+      
+      /* Hidden state - scale to zero */
+      .pie-chart-container.hidden .pie-chart-sectors .recharts-sector {
+        opacity: 0;
+        transform: scale(0);
       }
       
-      /* Each sector appears with a sequential delay */
-      .recharts-sector:nth-child(1) { animation-delay: 0ms; }
-      .recharts-sector:nth-child(2) { animation-delay: 80ms; }
-      .recharts-sector:nth-child(3) { animation-delay: 160ms; }
-      .recharts-sector:nth-child(4) { animation-delay: 240ms; }
-      .recharts-sector:nth-child(5) { animation-delay: 320ms; }
-      .recharts-sector:nth-child(6) { animation-delay: 400ms; }
-      .recharts-sector:nth-child(7) { animation-delay: 480ms; }
-      .recharts-sector:nth-child(8) { animation-delay: 560ms; }
-      
-      /* Sequential reveal in animation */
-      @keyframes sectorRevealIn {
-        0% {
-          opacity: 0;
-          transform: scale(0);
-        }
-        100% {
-          opacity: 1;
-          transform: scale(1);
-        }
-      }
-      
-      /* Sequential reveal out animation */
-      @keyframes sectorRevealOut {
-        0% {
-          opacity: 1;
-          transform: scale(1);
-        }
-        100% {
-          opacity: 0;
-          transform: scale(0);
-        }
-      }
-      
-      /* Hide any elements causing artifacts */
-      .recharts-legend-item-text {
+      /* Fix for any rendering artifacts */
+      .recharts-wrapper {
         position: relative;
-        z-index: 20;
       }
       
-      /* Fix the bottom artifact */
-      .recharts-pie-sector:last-child {
-        stroke: none;
+      .recharts-surface {
+        overflow: hidden;
       }
       
-      /* Additional fixes for chart artifacts */
-      .recharts-pie-sector {
-        outline: none;
-      }
       .recharts-layer {
         outline: none;
       }
-      .recharts-surface {
-        overflow: hidden !important;
+      
+      /* Fix for bottom artifact */
+      .recharts-pie-sector {
+        outline: none;
+        stroke-width: 0;
       }
       
-      /* Ensure nothing renders outside the chart container */
-      .recharts-wrapper {
-        clip-path: inset(0 0 0 0);
+      /* Prevent any overflow */
+      .pie-chart-container .recharts-responsive-container {
+        overflow: hidden;
+      }
+      
+      /* Make legend text clearer */
+      .recharts-legend-item-text {
+        position: relative;
+        z-index: 5;
       }
     `;
     document.head.appendChild(styleElement);
@@ -403,9 +370,9 @@ const ImprovedOverviewChanges: React.FC = () => {
         />
       </ContentPanel>
       
-      {/* Pie Chart - Positioned as overlay from right */}
+      {/* Rebuilt Pie Chart - Clean implementation */}
       <div 
-        className={`chart-container-animate ${!chartCollapsed ? 'open' : ''}`}
+        className={`pie-chart-container ${!chartCollapsed ? 'visible' : 'hidden'}`}
         style={{ 
           position: 'absolute',
           top: '16px',
@@ -414,17 +381,17 @@ const ImprovedOverviewChanges: React.FC = () => {
           transition: 'right 0.6s ease, opacity 0.4s ease',
           zIndex: 1000,
           opacity: chartCollapsed ? 0 : 1,
-          transform: 'translateX(0)',
           boxShadow: chartCollapsed ? 'none' : '0 4px 20px rgba(0,0,0,0.25)',
-          overflow: 'visible',
+          backgroundColor: 'white',
+          borderRadius: '8px',
+          overflow: 'hidden'
         }}
       >
         <Card 
           style={{ 
-            boxShadow: '0 4px 12px rgba(0,0,0,0.2)',
+            boxShadow: 'none',
             borderRadius: '8px',
             transition: 'all 0.5s ease',
-            transform: chartCollapsed ? 'scale(0.95)' : 'scale(1)',
           }}
           title={
             <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
@@ -434,23 +401,21 @@ const ImprovedOverviewChanges: React.FC = () => {
                 type="text" 
                 icon={<RightOutlined />}
                 onClick={() => setChartCollapsed(true)}
-                style={{ marginLeft: 'auto', transition: 'transform 0.3s ease' }}
-                className="chart-toggle-button"
+                style={{ marginLeft: 'auto' }}
               />
             </div>
           }
+          bodyStyle={{ padding: '0 16px 16px 16px' }}
         >
-          <div style={{ height: 350 }}>
+          <div style={{ height: 350, position: 'relative' }}>
             <ResponsiveContainer width="100%" height="100%">
-              <PieChart 
-                width={600} 
-                height={350}
-                style={{ 
-                  background: 'white',
-                  borderRadius: '8px',
-                  overflow: 'hidden'
-                }}
-              >
+              <PieChart>
+                <defs>
+                  {/* Create clip path to prevent any element from rendering outside */}
+                  <clipPath id="chartClip">
+                    <rect x="0" y="0" width="100%" height="100%" />
+                  </clipPath>
+                </defs>
                 <Pie
                   data={pieChartData}
                   cx="50%"
@@ -462,14 +427,14 @@ const ImprovedOverviewChanges: React.FC = () => {
                   dataKey="value"
                   startAngle={90}
                   endAngle={-270}
-                  animationBegin={0}
-                  animationDuration={0}
                   isAnimationActive={false}
+                  className="pie-chart-sectors"
                 >
                   {pieChartData.map((entry, index) => (
                     <Cell 
                       key={`cell-${index}`} 
                       fill={getDomainColor(entry.domain)} 
+                      className={`sector-${index}`}
                     />
                   ))}
                 </Pie>
@@ -499,7 +464,7 @@ const ImprovedOverviewChanges: React.FC = () => {
         </Card>
       </div>
       
-      {/* Show toggle button when chart is collapsed */}
+      {/* Toggle button - simplified implementation */}
       <Button 
         type="primary"
         icon={<PieChartOutlined />}
@@ -514,8 +479,6 @@ const ImprovedOverviewChanges: React.FC = () => {
           opacity: chartCollapsed ? 1 : 0,
           backgroundColor: colors.brand.primary,
           borderColor: colors.brand.primary,
-          transform: 'translateX(0)',
-          boxShadow: '0 2px 8px rgba(0,0,0,0.2)',
         }}
       />
     </div>
