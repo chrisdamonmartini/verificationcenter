@@ -18,7 +18,7 @@ import {
   PlayCircleOutlined,
   BranchesOutlined
 } from '@ant-design/icons';
-import vcLogo from '../../icons/vc.png';
+import vcLogo from '../../icons/verificationcenterico.jpeg';
 
 // Updated navigation items for Verification Management - Flattened structure
 export const SidebarData = [
