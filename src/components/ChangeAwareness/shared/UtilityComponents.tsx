@@ -22,7 +22,8 @@ export const CodeDisplay: React.FC<{
   monospace?: boolean; 
   bold?: boolean;
   children?: React.ReactNode;
-}> = ({ value, type, monospace = false, bold = false, children }) => {
+  size?: 'small' | 'default' | 'large';
+}> = ({ value, type, monospace = false, bold = false, children, size = 'default' }) => {
   const colors = useColors();
   const displayValue = value || (children ? String(children) : '');
   
@@ -31,7 +32,7 @@ export const CodeDisplay: React.FC<{
     fontWeight: bold ? 'bold' : 'normal',
     padding: '2px 4px',
     borderRadius: '3px',
-    fontSize: '0.9em',
+    fontSize: size === 'small' ? '0.8em' : size === 'large' ? '1em' : '0.9em',
   };
 
   return (
@@ -255,3 +256,8 @@ export const ItemID: React.FC<{ id: string }> = ({ id }) => {
 };
 
 // If file exists, add code to hide Current status labels 
+
+// Code component for backward compatibility
+export const Code: React.FC<CodeProps> = ({ children, size = 'default' }) => {
+  return <CodeDisplay value={children?.toString()} size={size} />;
+}; 
