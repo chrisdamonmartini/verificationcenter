@@ -220,6 +220,34 @@ const ImprovedOverviewChanges: React.FC = () => {
   // Prepare pie chart data
   const pieChartData = preparePieChartData();
 
+  // Add animation styles when component mounts
+  React.useEffect(() => {
+    const styleElement = document.createElement('style');
+    styleElement.textContent = `
+      .chart-container-animate {
+        transition: all 0.5s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+      }
+      .chart-toggle-button:hover {
+        transform: scale(1.1);
+      }
+      .recharts-pie {
+        transition: transform 0.5s ease;
+      }
+      .chart-container-animate.open .recharts-pie {
+        animation: pieEnter 0.8s forwards;
+      }
+      @keyframes pieEnter {
+        0% { transform: scale(0.8); opacity: 0; }
+        100% { transform: scale(1); opacity: 1; }
+      }
+    `;
+    document.head.appendChild(styleElement);
+    
+    return () => {
+      document.head.removeChild(styleElement);
+    };
+  }, []);
+
   // Custom label renderer for the pie chart
   const renderCustomizedLabel = (props: any) => {
     const { cx, cy, midAngle, innerRadius, outerRadius, percent, value, name } = props;
@@ -296,19 +324,27 @@ const ImprovedOverviewChanges: React.FC = () => {
       </ContentPanel>
       
       {/* Pie Chart - Positioned as overlay from right */}
-      <div style={{ 
-        position: 'absolute',
-        top: '16px',
-        right: chartCollapsed ? '-550px' : '16px',
-        width: '400px',
-        transition: 'right 0.3s ease',
-        zIndex: 1000,
-        opacity: chartCollapsed ? 0 : 1,
-      }}>
+      <div 
+        className={`chart-container-animate ${!chartCollapsed ? 'open' : ''}`}
+        style={{ 
+          position: 'absolute',
+          top: '16px',
+          right: chartCollapsed ? '-650px' : '16px',
+          width: '400px',
+          transition: 'right 0.5s cubic-bezier(0.175, 0.885, 0.32, 1.275), opacity 0.4s ease, transform 0.5s ease',
+          zIndex: 1000,
+          opacity: chartCollapsed ? 0 : 1,
+          transform: chartCollapsed ? 'translateX(50px)' : 'translateX(0)',
+          transformOrigin: 'right center',
+          boxShadow: chartCollapsed ? 'none' : '0 4px 20px rgba(0,0,0,0.25)',
+        }}
+      >
         <Card 
           style={{ 
             boxShadow: '0 4px 12px rgba(0,0,0,0.2)',
-            borderRadius: '8px'
+            borderRadius: '8px',
+            transition: 'transform 0.4s ease',
+            transform: chartCollapsed ? 'scale(0.9)' : 'scale(1)',
           }}
           title={
             <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
@@ -318,7 +354,8 @@ const ImprovedOverviewChanges: React.FC = () => {
                 type="text" 
                 icon={<LeftOutlined />}
                 onClick={() => setChartCollapsed(true)}
-                style={{ marginLeft: 'auto' }}
+                style={{ marginLeft: 'auto', transition: 'transform 0.3s ease' }}
+                className="chart-toggle-button"
               />
             </div>
           }
@@ -377,12 +414,14 @@ const ImprovedOverviewChanges: React.FC = () => {
           position: 'absolute',
           top: '16px',
           right: chartCollapsed ? '0' : '-100px',
-          transition: 'right 0.3s ease',
+          transition: 'right 0.5s cubic-bezier(0.175, 0.885, 0.32, 1.275), opacity 0.4s ease, transform 0.3s ease',
           zIndex: 1000,
           borderRadius: '4px 0 0 4px',
           opacity: chartCollapsed ? 1 : 0,
           backgroundColor: colors.brand.primary,
-          borderColor: colors.brand.primary
+          borderColor: colors.brand.primary,
+          transform: chartCollapsed ? 'translateX(0)' : 'translateX(50px)',
+          boxShadow: '0 2px 8px rgba(0,0,0,0.2)',
         }}
       />
     </div>
@@ -434,16 +473,6 @@ const ChangeAwareness: React.FC = () => {
         color: ${colors.chart.textPrimary} !important;
         border: 0.5px solid #BFBFBF !important; /* Thinner border */
         padding: 8px 12px !important; /* Reduced vertical padding for headers */
-      }
-      /* Table sort highlight - match to sidebar color */
-      .ant-table-column-sort {
-        background-color: ${colors.brand.primary}10 !important;
-      }
-      .ant-table-thead th.ant-table-column-has-sorters:hover {
-        background-color: ${colors.brand.primary}20 !important;
-      }
-      .ant-table-column-sorter-up.active, .ant-table-column-sorter-down.active {
-        color: ${colors.brand.primary} !important;
       }
       /* Table cell styles */
       .ant-table-tbody > tr > td {
