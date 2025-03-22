@@ -166,7 +166,7 @@ export function StandardChangeTable<T extends StandardBaseChange>({
             >
               <div style={{ color: 'white' }}>
                 <div style={{ fontSize: '14px', fontWeight: 'normal' }}>
-                  {title} Changes
+                  {title}
                 </div>
                 <div style={{ fontSize: '14px' }}>
                   {data.length} in last {weeks} {weeks === 1 ? 'week' : 'weeks'}
