@@ -98,7 +98,8 @@ const RelatedItemsPanel: React.FC<RelatedItemsPanelProps> = ({
   showFilter = true,
 }) => {
   const colors = useColors();
-  const [showAll, setShowAll] = useState(true);
+  // Always show all items, keep the state for backward compatibility
+  const [showAll] = useState(true);
   const [activeCategories, setActiveCategories] = useState<Record<string, boolean>>({
     mission: true,
     requirements: true,
@@ -245,7 +246,7 @@ const RelatedItemsPanel: React.FC<RelatedItemsPanelProps> = ({
       {/* Filter controls */}
       {showFilter && categories.length > 1 && (
         <Row 
-          justify="space-between" 
+          justify="start" 
           align="middle"
           style={{ 
             padding: '8px 16px', 
@@ -256,16 +257,6 @@ const RelatedItemsPanel: React.FC<RelatedItemsPanelProps> = ({
         >
           <Col>
             <Typography.Title level={5} style={{ margin: 0 }}>Related Items</Typography.Title>
-          </Col>
-          <Col>
-            <Space>
-              <Text type="secondary" style={{ fontSize: '12px' }}>Show only current</Text>
-              <Switch 
-                size="small" 
-                checked={!showAll} 
-                onChange={checked => setShowAll(!checked)} 
-              />
-            </Space>
           </Col>
         </Row>
       )}
