@@ -59,8 +59,23 @@ export const Statistic: React.FC<StatisticProps> = ({ title, value, prefix, valu
 );
 
 // Helper functions for severity tags - accept colors as parameter
-export const getSeverityTagColor = (severity: string, colorObj: any): string => {
-  switch (severity.toLowerCase()) {
+export const getSeverityTagColor = (severity: string, colorObj?: any): string => {
+  // If colorObj is not provided, use fallback colors for backward compatibility
+  if (!colorObj) {
+    switch (severity?.toLowerCase()) {
+      case 'critical':
+        return '#BC3D38'; // Red
+      case 'major':
+        return '#E9963C'; // Orange
+      case 'minor':
+        return '#34A06B'; // Green
+      default:
+        return '#34A06B'; // Green
+    }
+  }
+  
+  // Normal case with colorObj
+  switch (severity?.toLowerCase()) {
     case 'critical':
       return colorObj.status.critical;
     case 'major':
@@ -72,9 +87,9 @@ export const getSeverityTagColor = (severity: string, colorObj: any): string => 
   }
 };
 
-export const getSeverityTagIcon = (severity: string, colorObj: any) => {
+export const getSeverityTagIcon = (severity: string, colorObj?: any) => {
   const color = getSeverityTagColor(severity, colorObj);
-  switch (severity.toLowerCase()) {
+  switch (severity?.toLowerCase()) {
     case 'critical':
       return <ExclamationCircleOutlined style={{ color }} />;
     case 'major':
@@ -87,8 +102,23 @@ export const getSeverityTagIcon = (severity: string, colorObj: any) => {
 };
 
 // Helper functions for change type tags - accept colors as parameter
-export const getChangeTypeTagColor = (type: string, colorObj: any): string => {
-  switch (type.toLowerCase()) {
+export const getChangeTypeTagColor = (type: string, colorObj?: any): string => {
+  // If colorObj is not provided, use fallback colors for backward compatibility
+  if (!colorObj) {
+    switch (type?.toLowerCase()) {
+      case 'added':
+        return '#34A06B'; // Green
+      case 'modified':
+        return '#E9963C'; // Orange
+      case 'removed':
+        return '#BC3D38'; // Red
+      default:
+        return '#707070'; // Gray
+    }
+  }
+  
+  // Normal case with colorObj
+  switch (type?.toLowerCase()) {
     case 'added':
       return colorObj.status.minor;
     case 'modified':
@@ -100,9 +130,9 @@ export const getChangeTypeTagColor = (type: string, colorObj: any): string => {
   }
 };
 
-export const getChangeTypeTagIcon = (type: string, colorObj: any) => {
+export const getChangeTypeTagIcon = (type: string, colorObj?: any) => {
   const color = getChangeTypeTagColor(type, colorObj);
-  switch (type.toLowerCase()) {
+  switch (type?.toLowerCase()) {
     case 'added':
       return <AntPlusOutlined style={{ color }} />;
     case 'modified':
@@ -115,8 +145,32 @@ export const getChangeTypeTagIcon = (type: string, colorObj: any) => {
 };
 
 // Helper functions for status - accept colors as parameter
-export const getStatusColor = (status: string, colorObj: any): string => {
-  switch (status.toLowerCase()) {
+export const getStatusColor = (status: string, colorObj?: any): string => {
+  // If colorObj is not provided, get colors through hook
+  // This is for backward compatibility with code that doesn't pass colorObj
+  if (!colorObj) {
+    // Return fallback colors for backward compatibility
+    switch (status?.toLowerCase()) {
+      case 'active':
+      case 'current':
+      case 'completed':
+      case 'released':
+        return '#34A06B'; // Green - minor
+      case 'pending':
+      case 'in progress':
+      case 'in development':
+      case 'modified':
+        return '#E9963C'; // Orange - major
+      case 'deprecated':
+      case 'archived':
+        return '#707070'; // Gray - text secondary
+      default:
+        return '#BC3D38'; // Red - critical
+    }
+  }
+  
+  // With colorObj provided (normal case)
+  switch (status?.toLowerCase()) {
     case 'active':
     case 'current':
     case 'completed':
@@ -135,9 +189,9 @@ export const getStatusColor = (status: string, colorObj: any): string => {
   }
 };
 
-export const getStatusIcon = (status: string, colorObj: any) => {
+export const getStatusIcon = (status: string, colorObj?: any) => {
   const color = getStatusColor(status, colorObj);
-  switch (status.toLowerCase()) {
+  switch (status?.toLowerCase()) {
     case 'active':
     case 'current':
     case 'completed':
