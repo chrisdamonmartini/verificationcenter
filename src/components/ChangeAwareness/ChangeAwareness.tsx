@@ -304,6 +304,22 @@ const ImprovedOverviewChanges: React.FC = () => {
       .recharts-pie-sector:last-child {
         stroke: none;
       }
+      
+      /* Additional fixes for chart artifacts */
+      .recharts-pie-sector {
+        outline: none;
+      }
+      .recharts-layer {
+        outline: none;
+      }
+      .recharts-surface {
+        overflow: hidden !important;
+      }
+      
+      /* Ensure nothing renders outside the chart container */
+      .recharts-wrapper {
+        clip-path: inset(0 0 0 0);
+      }
     `;
     document.head.appendChild(styleElement);
     
@@ -426,7 +442,15 @@ const ImprovedOverviewChanges: React.FC = () => {
         >
           <div style={{ height: 350 }}>
             <ResponsiveContainer width="100%" height="100%">
-              <PieChart width={600} height={350}>
+              <PieChart 
+                width={600} 
+                height={350}
+                style={{ 
+                  background: 'white',
+                  borderRadius: '8px',
+                  overflow: 'hidden'
+                }}
+              >
                 <Pie
                   data={pieChartData}
                   cx="50%"
