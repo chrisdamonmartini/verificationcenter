@@ -24,12 +24,12 @@ const ToggleVisibility: React.FC<ToggleVisibilityProps> = ({
   // Filter to commonly used categories
   const categories = [
     {
-      id: 'requirement',
+      id: 'requirements',
       name: 'Requirements',
       color: colors.category.requirements,
     },
     {
-      id: 'function',
+      id: 'functions',
       name: 'Functions',
       color: colors.category.functions,
     },
@@ -44,9 +44,14 @@ const ToggleVisibility: React.FC<ToggleVisibilityProps> = ({
       color: colors.category.cad,
     },
     {
-      id: 'bom',
+      id: 'ebom',
       name: 'BOM',
       color: colors.category.bom,
+    },
+    {
+      id: 'mission',
+      name: 'Mission',
+      color: colors.category.mission,
     }
   ];
   

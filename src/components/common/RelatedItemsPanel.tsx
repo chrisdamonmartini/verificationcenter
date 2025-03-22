@@ -3,6 +3,7 @@ import { Card, Row, Col, Badge, Typography, Tooltip, Empty, Switch, Space, Tag }
 import { ClockCircleOutlined, CheckCircleOutlined, ExclamationCircleOutlined } from '@ant-design/icons';
 import dayjs from 'dayjs';
 import useColors from '../../hooks/useColors';
+import ToggleVisibility from '../ChangeAwareness/shared/ToggleVisibility';
 
 const { Text } = Typography;
 
@@ -83,49 +84,6 @@ interface CategoryConfig {
   active: boolean;
   items: any[];
 }
-
-// Toggle visibility component
-const ToggleVisibility: React.FC<{
-  activeCategories: Record<string, boolean>;
-  setActiveCategories: (categories: Record<string, boolean>) => void;
-}> = ({ activeCategories, setActiveCategories }) => {
-  const colors = useColors();
-  
-  return (
-    <div className="filter-controls">
-      <Space align="center">
-        <span style={{ marginRight: '8px' }}>Toggle Visibility:</span>
-        {Object.entries(activeCategories).map(([key, isActive]) => {
-          let color;
-          switch(key) {
-            case 'requirements': color = colors.category.requirements; break;
-            case 'mission': color = colors.category.mission; break;
-            case 'functions': color = colors.category.functions; break;
-            case 'logical': color = colors.chart.series4; break;
-            case 'cad': color = colors.category.cad; break;
-            case 'ebom': color = colors.category.bom; break;
-            default: color = colors.chart.series8;
-          }
-          
-          return (
-            <Tag 
-              key={key} 
-              onClick={() => setActiveCategories({ ...activeCategories, [key]: !isActive })}
-              style={{ 
-                cursor: 'pointer', 
-                backgroundColor: isActive ? `${color}15` : '#f0f0f0',
-                color: isActive ? color : colors.chart.textSecondary,
-                borderColor: isActive ? color : '#d9d9d9'
-              }}
-            >
-              {key.charAt(0).toUpperCase() + key.slice(1)}
-            </Tag>
-          );
-        })}
-      </Space>
-    </div>
-  );
-};
 
 const RelatedItemsPanel: React.FC<RelatedItemsPanelProps> = ({
   mission = [],
@@ -283,58 +241,6 @@ const RelatedItemsPanel: React.FC<RelatedItemsPanelProps> = ({
     return renderEmpty();
   }
 
-  // Toggle category visibility
-  const toggleCategory = (key: string) => {
-    setActiveCategories({
-      ...activeCategories,
-      [key]: !activeCategories[key]
-    });
-  };
-
-  // Render an individual item
-  const renderItem = (item: RelatedItem, category: CategoryConfig) => {
-    return (
-      <div
-        key={item.id}
-        style={{
-          padding: '8px 12px',
-          borderBottom: '1px solid #f0f0f0',
-          cursor: onItemClick ? 'pointer' : 'default',
-        }}
-        onClick={() => onItemClick && onItemClick(item, category.key)}
-      >
-        <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start' }}>
-          <Space direction="vertical" size={0} style={{ flex: 1 }}>
-            <div>
-              <Text
-                strong
-                style={{ color: category.color, marginRight: '8px' }}
-              >
-                {item.id}
-              </Text>
-              <Text>{item.title}</Text>
-            </div>
-            
-            <div style={{ marginTop: '4px' }}>
-              <Space>
-                {renderStatusTag(item.status)}
-                <Text type="secondary" style={{ fontSize: '12px' }}>
-                  <ClockCircleOutlined style={{ marginRight: '4px' }} />
-                  {formatDate(item.date)}
-                </Text>
-              </Space>
-            </div>
-          </Space>
-        </div>
-      </div>
-    );
-  };
-
-  // Calculate active categories for filter
-  const activeCategoryKeys = Object.entries(activeCategories)
-    .filter(([_, active]) => active)
-    .map(([key]) => key);
-
   return (
     <div className="related-items-panel">
       {/* Filter controls */}
@@ -351,8 +257,13 @@ const RelatedItemsPanel: React.FC<RelatedItemsPanelProps> = ({
         >
           <Col>
             <ToggleVisibility 
-              activeCategories={activeCategories} 
-              setActiveCategories={setActiveCategories} 
+              selectedCategories={Object.keys(activeCategories).filter(key => activeCategories[key])}
+              onToggleCategory={(category) => {
+                setActiveCategories({
+                  ...activeCategories,
+                  [category]: !activeCategories[category]
+                });
+              }}
             />
           </Col>
           <Col>
@@ -391,7 +302,41 @@ const RelatedItemsPanel: React.FC<RelatedItemsPanelProps> = ({
                 }}
                 bodyStyle={{ padding: 0 }}
               >
-                {category.items.map(item => renderItem(item, category))}
+                {category.items.map(item => (
+                  <div
+                    key={item.id}
+                    style={{
+                      padding: '8px 12px',
+                      borderBottom: '1px solid #f0f0f0',
+                      cursor: onItemClick ? 'pointer' : 'default',
+                    }}
+                    onClick={() => onItemClick && onItemClick(item, category.key)}
+                  >
+                    <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start' }}>
+                      <Space direction="vertical" size={0} style={{ flex: 1 }}>
+                        <div>
+                          <Text
+                            strong
+                            style={{ color: category.color, marginRight: '8px' }}
+                          >
+                            {item.id}
+                          </Text>
+                          <Text>{item.title}</Text>
+                        </div>
+                        
+                        <div style={{ marginTop: '4px' }}>
+                          <Space>
+                            {renderStatusTag(item.status)}
+                            <Text type="secondary" style={{ fontSize: '12px' }}>
+                              <ClockCircleOutlined style={{ marginRight: '4px' }} />
+                              {formatDate(item.date)}
+                            </Text>
+                          </Space>
+                        </div>
+                      </Space>
+                    </div>
+                  </div>
+                ))}
               </Card>
             </Col>
           ))}

@@ -32,7 +32,7 @@ import {
   CheckCircleOutlined,
   EditOutlined,
   DeleteOutlined,
-  TaskOutlined,
+  TagsOutlined,
   ProfileOutlined,
   SlidersFilled,
   DashboardOutlined,
@@ -40,10 +40,11 @@ import {
   AppstoreOutlined,
   BranchesOutlined,
   LayoutOutlined,
-  RobotOutlined
+  RobotOutlined,
+  AreaChartOutlined
 } from '@ant-design/icons';
 import { 
-  Code, 
+  CodeDisplay, 
   SeverityTag, 
   ChangeTypeTag, 
   getStatusColor
@@ -515,7 +516,7 @@ export const useCategoryConfigurations = () => {
       color: colors.category.functions,
       bgColor: `${colors.category.functions}15`,
       borderColor: `${colors.category.functions}40`,
-      icon: <TaskOutlined style={{ color: colors.category.functions }} />,
+      icon: <TagsOutlined style={{ color: colors.category.functions }} />,
       defaultColumns: ['id', 'title', 'status', 'changedBy', 'changedDate'],
     },
     
