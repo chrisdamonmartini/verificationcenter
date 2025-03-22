@@ -171,6 +171,8 @@ export const StandardExpandedRow = <T extends StandardExpandedChange>({
   
   // Create a current item object from the record
   const currentItemType = record.category.toLowerCase();
+  console.log(`Original currentItemType: ${currentItemType}, record:`, record);
+  
   // Convert category to the appropriate RelatedItemsPanel category key
   let mappedCurrentItemType = currentItemType;
   if (currentItemType === 'requirement') mappedCurrentItemType = 'requirements';
@@ -178,9 +180,13 @@ export const StandardExpandedRow = <T extends StandardExpandedChange>({
   else if (currentItemType === 'function') mappedCurrentItemType = 'functions';
   else if (currentItemType === 'logical') mappedCurrentItemType = 'logical';
   else if (currentItemType === 'parameter') mappedCurrentItemType = 'parameters';
+  // Special case for parameter items that might have different naming
+  else if (currentItemType.includes('param')) mappedCurrentItemType = 'parameters';
   else if (currentItemType === 'cad') mappedCurrentItemType = 'cad';
   else if (currentItemType === 'bom') mappedCurrentItemType = 'ebom';
   else if (currentItemType === 'operationalscenario') mappedCurrentItemType = 'operationalScenario';
+  
+  console.log(`Mapped currentItemType: ${mappedCurrentItemType}`);
   
   // Create the current item in the format expected by RelatedItemsPanel
   const currentItem = {

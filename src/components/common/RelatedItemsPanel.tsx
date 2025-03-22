@@ -113,6 +113,12 @@ const RelatedItemsPanel: React.FC<RelatedItemsPanelProps> = ({
   onCreateRelationship,
 }) => {
   const colors = useColors();
+  
+  // Log parameters data for debugging
+  console.log('Parameters data:', parameters);
+  console.log('Current item:', currentItem);
+  console.log('Current item type:', currentItemType);
+  
   // Always show all items, keep the state for backward compatibility
   const [showAll] = useState(true);
   const [activeCategories, setActiveCategories] = useState<Record<string, boolean>>({
@@ -271,8 +277,34 @@ const RelatedItemsPanel: React.FC<RelatedItemsPanelProps> = ({
   
   // Always show all categories - no longer filter by items.length
   const categories = categoryConfigs.map(category => {
+    // For debugging - log what's happening with the currentItemType
+    console.log(`Category: ${category.key}, currentItemType: ${currentItemType}, is matching: ${currentItemType && category.key === currentItemType}`);
+    
+    // Force Parameter category to be orange when current item ID starts with "PARAM-"
+    if (category.key === 'parameters' && currentItem && currentItem.id && currentItem.id.includes('PARAM')) {
+      console.log('Found parameter item by ID - applying orange theme');
+      return {
+        ...category,
+        color: colors.category.parameter, // Orange theme for parameters
+        bgcolor: `${colors.category.parameter}10` // Light fill
+      };
+    }
+    // Special case for Parameter category - force it to be orange when expanded
+    else if (category.key === 'parameters' && (
+      // Either it is the direct current item type
+      (currentItemType === 'parameters') || 
+      // Or the current type is 'parameter' (singular)
+      (currentItemType === 'parameter')
+    )) {
+      console.log('Found parameter category - applying orange theme');
+      return {
+        ...category,
+        color: colors.category.parameter, // Orange theme for parameters
+        bgcolor: `${colors.category.parameter}10` // Light fill
+      };
+    }
     // Rule 1: If it is the category of the item that we are expanded on
-    if (currentItemType && category.key === currentItemType) {
+    else if (currentItemType && category.key === currentItemType) {
       return {
         ...category,
         color: colors.category.parameter, // Orange theme for the category of expanded item
