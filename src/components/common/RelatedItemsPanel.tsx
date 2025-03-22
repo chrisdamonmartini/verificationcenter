@@ -271,11 +271,11 @@ const RelatedItemsPanel: React.FC<RelatedItemsPanelProps> = ({
       )}
 
       {/* Related items grid */}
-      <Row gutter={[16, 16]}>
+      <Row gutter={[16, 16]} wrap={true}>
         {categories
           .filter(category => category.active && category.items.length > 0)
           .map(category => (
-            <Col xs={24} sm={12} md={8} lg={8} xl={6} key={category.key}>
+            <Col xs={24} sm={12} md={6} lg={4} xl={3} key={category.key}>
               <Card
                 title={
                   <div style={{ color: category.color }}>
@@ -290,50 +290,48 @@ const RelatedItemsPanel: React.FC<RelatedItemsPanelProps> = ({
                 style={{ 
                   backgroundColor: category.bgcolor,
                   border: `1px solid ${category.color}40`,
-                  marginBottom: '16px'
+                  height: '100%'
                 }}
                 bodyStyle={{ padding: '8px' }}
               >
-                <Row gutter={[8, 8]}>
+                <Space direction="vertical" style={{ width: '100%' }} size={8}>
                   {category.items.map(item => (
-                    <Col key={item.id} xs={24} sm={12} md={8} lg={6} xl={4} xxl={3}>
-                      <Card
-                        size="small"
-                        style={{
-                          backgroundColor: '#ffffff',
-                          boxShadow: '0 1px 2px rgba(0,0,0,0.1)',
-                          cursor: onItemClick ? 'pointer' : 'default',
-                        }}
-                        onClick={() => onItemClick && onItemClick(item, category.key)}
-                        bodyStyle={{ padding: '8px' }}
-                      >
-                        <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', flexDirection: 'column' }}>
-                          <Space direction="vertical" size={0} style={{ width: '100%' }}>
-                            <div>
-                              <Text
-                                strong
-                                style={{ color: category.color, marginRight: '8px', display: 'block' }}
-                              >
-                                {item.id}
-                              </Text>
-                              <Text style={{ fontSize: '0.9rem' }}>{item.title}</Text>
-                            </div>
-                            
-                            <div style={{ marginTop: '4px' }}>
-                              <Space>
-                                {renderStatusTag(item.status)}
-                                <Text type="secondary" style={{ fontSize: '12px' }}>
-                                  <ClockCircleOutlined style={{ marginRight: '4px' }} />
-                                  {formatDate(item.date)}
-                                </Text>
-                              </Space>
-                            </div>
+                    <Card
+                      key={item.id}
+                      size="small"
+                      style={{
+                        backgroundColor: '#ffffff',
+                        boxShadow: '0 1px 2px rgba(0,0,0,0.1)',
+                        cursor: onItemClick ? 'pointer' : 'default',
+                        width: '100%'
+                      }}
+                      onClick={() => onItemClick && onItemClick(item, category.key)}
+                      bodyStyle={{ padding: '8px' }}
+                    >
+                      <Space direction="vertical" size={4} style={{ width: '100%' }}>
+                        <div>
+                          <Text
+                            strong
+                            style={{ color: category.color, marginRight: '8px', display: 'block' }}
+                          >
+                            {item.id}
+                          </Text>
+                          <Text style={{ fontSize: '0.9rem' }}>{item.title}</Text>
+                        </div>
+                        
+                        <div>
+                          <Space>
+                            {renderStatusTag(item.status)}
+                            <Text type="secondary" style={{ fontSize: '12px' }}>
+                              <ClockCircleOutlined style={{ marginRight: '4px' }} />
+                              {formatDate(item.date)}
+                            </Text>
                           </Space>
                         </div>
-                      </Card>
-                    </Col>
+                      </Space>
+                    </Card>
                   ))}
-                </Row>
+                </Space>
               </Card>
             </Col>
           ))}
