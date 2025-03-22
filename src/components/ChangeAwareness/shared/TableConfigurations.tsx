@@ -311,7 +311,6 @@ export const getStandardColumns = <T extends StandardBaseChange>(
       dataIndex: 'id',
       key: 'id',
       render: (text) => <Text>{text}</Text>,
-      width: 160,
       sorter: (a, b) => a.id.localeCompare(b.id),
       sortDirections: ['ascend', 'descend']
     },
@@ -319,22 +318,7 @@ export const getStandardColumns = <T extends StandardBaseChange>(
       title: 'Title',
       dataIndex: 'title',
       key: 'title',
-      render: (text, record) => (
-        <Space>
-          <Text>{text}</Text>
-          <Tooltip title="View details">
-            <Button 
-              type="link" 
-              icon={<InfoCircleOutlined />} 
-              onClick={(e) => {
-                e.stopPropagation();
-                handleViewDetails(record);
-              }}
-              size="small"
-            />
-          </Tooltip>
-        </Space>
-      ),
+      render: (text) => <Text>{text}</Text>,
       ellipsis: true
     },
     {
@@ -342,7 +326,6 @@ export const getStandardColumns = <T extends StandardBaseChange>(
       dataIndex: 'category',
       key: 'category',
       render: (category, record) => categoryRenderer(category, record),
-      width: 140,
       sorter: (a, b) => a.category.localeCompare(b.category),
       sortDirections: ['ascend', 'descend']
     },
@@ -351,7 +334,6 @@ export const getStandardColumns = <T extends StandardBaseChange>(
       dataIndex: 'changeType',
       key: 'changeType',
       render: (type) => <ChangeTypeTag type={type} />,
-      width: 120,
       filters: [
         { text: 'Added', value: 'added' },
         { text: 'Modified', value: 'modified' },
@@ -366,7 +348,6 @@ export const getStandardColumns = <T extends StandardBaseChange>(
       dataIndex: 'severity',
       key: 'severity',
       render: (severity) => <SeverityTag severity={severity} />,
-      width: 120,
       filters: [
         { text: 'Critical', value: 'critical' },
         { text: 'Major', value: 'major' },
@@ -394,8 +375,7 @@ export const getStandardColumns = <T extends StandardBaseChange>(
         );
       },
       sorter: (a, b) => new Date(b.date).getTime() - new Date(a.date).getTime(),
-      defaultSortOrder: 'descend',
-      width: 180
+      defaultSortOrder: 'descend'
     },
     {
       title: 'Status',
@@ -405,7 +385,6 @@ export const getStandardColumns = <T extends StandardBaseChange>(
         const color = getStatusColor(status);
         return <Badge status={color as any} text={status.charAt(0).toUpperCase() + status.slice(1)} />;
       },
-      width: 120,
       filters: [
         { text: 'Approved', value: 'approved' },
         { text: 'Pending', value: 'pending' },
@@ -426,7 +405,6 @@ export const getStandardColumns = <T extends StandardBaseChange>(
           <span>{author}</span>
         </Space>
       ),
-      width: 150,
       sorter: (a, b) => a.author.localeCompare(b.author),
       sortDirections: ['ascend', 'descend']
     }
