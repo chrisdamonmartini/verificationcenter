@@ -10,12 +10,15 @@ import {
   DatePicker,
   Select,
   Row,
-  Col
+  Col,
+  Statistic
 } from 'antd';
 import type { ColumnsType, ColumnType } from 'antd/es/table';
 import { 
   ReloadOutlined, 
-  SearchOutlined, 
+  SearchOutlined,
+  BarChartOutlined,
+  ClockCircleOutlined
 } from '@ant-design/icons';
 import { BaseChange, AnyChange } from '../../../types/changeAwareness';
 import { StandardExpandedRow } from './ExpandedRowComponents';
@@ -27,8 +30,9 @@ import {
   useTableSearch 
 } from './hooks';
 import TimeRangeSelector from './TimeRangeSelector';
+import useColors from '../../../hooks/useColors';
 
-const { Text } = Typography;
+const { Text, Title } = Typography;
 const { RangePicker } = DatePicker;
 const { Option } = Select;
 
@@ -68,6 +72,7 @@ export function StandardChangeTable<T extends StandardBaseChange>({
 }: StandardChangeTableProps<T>) {
   // Component state
   const [isFilterDrawerOpen, setIsFilterDrawerOpen] = useState(false);
+  const colors = useColors();
   
   // Use custom hooks
   const { 
@@ -128,7 +133,7 @@ export function StandardChangeTable<T extends StandardBaseChange>({
     return col;
   });
 
-  // Render expanded row content
+  // Expanded row component rendering
   const expandedRowRender = (record: T) => (
     <StandardExpandedRow
       record={record}
@@ -146,7 +151,35 @@ export function StandardChangeTable<T extends StandardBaseChange>({
     <Card>
       <Space direction="vertical" style={{ width: '100%' }}>
         <Row gutter={16} align="middle" style={{ marginBottom: 16 }}>
-          <Col span={16}>
+          <Col span={4}>
+            <Card 
+              className="dashboard-stat-card" 
+              style={{ 
+                background: colors.getGradient(colors.brand.primary, '135deg', '20'),
+                borderRadius: '8px',
+                boxShadow: '0 2px 8px rgba(0, 0, 0, 0.15)',
+                textAlign: 'center',
+                padding: '0',
+                height: '100%',
+                transition: 'all 0.3s',
+                transform: data.length ? 'translateY(0)' : 'translateY(2px)',
+                border: 'none'
+              }}
+              bodyStyle={{ padding: '12px' }}
+            >
+              <Statistic
+                title={<span style={{ color: 'white', fontWeight: 'normal', fontSize: '14px' }}>{title} Changes</span>}
+                value={data.length}
+                valueStyle={{ color: 'white', fontWeight: 'bold', fontSize: '28px' }}
+                prefix={<BarChartOutlined style={{ marginRight: '8px' }} />}
+              />
+              <div style={{ marginTop: '8px', fontSize: '12px', opacity: 0.8, color: 'white' }}>
+                <ClockCircleOutlined style={{ marginRight: '4px' }} />
+                Last {weeks} {weeks === 1 ? 'week' : 'weeks'}
+              </div>
+            </Card>
+          </Col>
+          <Col span={12}>
             <TimeRangeSelector weeks={weeks} setWeeks={setWeeks} />
           </Col>
           <Col span={8} style={{ display: 'flex', justifyContent: 'flex-end' }}>
