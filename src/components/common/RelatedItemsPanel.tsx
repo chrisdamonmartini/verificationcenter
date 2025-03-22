@@ -113,12 +113,6 @@ const RelatedItemsPanel: React.FC<RelatedItemsPanelProps> = ({
   onCreateRelationship,
 }) => {
   const colors = useColors();
-  
-  // Log parameters data for debugging
-  console.log('Parameters data:', parameters);
-  console.log('Current item:', currentItem);
-  console.log('Current item type:', currentItemType);
-  
   // Always show all items, keep the state for backward compatibility
   const [showAll] = useState(true);
   const [activeCategories, setActiveCategories] = useState<Record<string, boolean>>({
@@ -275,36 +269,41 @@ const RelatedItemsPanel: React.FC<RelatedItemsPanelProps> = ({
     }
   ];
   
+  // Get the current item category key in a normalized form for comparison
+  // This helps with cases where the naming might differ slightly (e.g., singular vs plural)
+  const getNormalizedCurrentKey = () => {
+    if (!currentItemType) return null;
+    
+    // Common variations in naming
+    const currentKey = currentItemType.toLowerCase();
+    
+    // Map known variations to their standard keys
+    if (currentKey === 'parameter' || currentKey.includes('param')) return 'parameters';
+    if (currentKey === 'requirement') return 'requirements';
+    if (currentKey === 'operationalscenario' || currentKey === 'scenario') return 'operationalScenario';
+    if (currentKey === 'function') return 'functions';
+    if (currentKey === 'logical') return 'logical';
+    if (currentKey === 'mission') return 'mission';
+    if (currentKey === 'cad') return 'cad';
+    if (currentKey === 'ebom' || currentKey === 'bom') return 'ebom';
+    if (currentKey === 'model') return 'models';
+    if (currentKey === 'automation') return 'automation';
+    
+    // If no mapping was found, return the original
+    return currentKey;
+  };
+  
+  const normalizedCurrentKey = getNormalizedCurrentKey();
+  console.log('Normalized current key:', normalizedCurrentKey);
+  
   // Always show all categories - no longer filter by items.length
   const categories = categoryConfigs.map(category => {
-    // For debugging - log what's happening with the currentItemType
-    console.log(`Category: ${category.key}, currentItemType: ${currentItemType}, is matching: ${currentItemType && category.key === currentItemType}`);
+    // Is this the category of the current expanded item?
+    const isCurrentCategory = normalizedCurrentKey === category.key;
+    console.log(`Category ${category.key} isCurrentCategory: ${isCurrentCategory}`);
     
-    // Force Parameter category to be orange when current item ID starts with "PARAM-"
-    if (category.key === 'parameters' && currentItem && currentItem.id && currentItem.id.includes('PARAM')) {
-      console.log('Found parameter item by ID - applying orange theme');
-      return {
-        ...category,
-        color: colors.category.parameter, // Orange theme for parameters
-        bgcolor: `${colors.category.parameter}10` // Light fill
-      };
-    }
-    // Special case for Parameter category - force it to be orange when expanded
-    else if (category.key === 'parameters' && (
-      // Either it is the direct current item type
-      (currentItemType === 'parameters') || 
-      // Or the current type is 'parameter' (singular)
-      (currentItemType === 'parameter')
-    )) {
-      console.log('Found parameter category - applying orange theme');
-      return {
-        ...category,
-        color: colors.category.parameter, // Orange theme for parameters
-        bgcolor: `${colors.category.parameter}10` // Light fill
-      };
-    }
     // Rule 1: If it is the category of the item that we are expanded on
-    else if (currentItemType && category.key === currentItemType) {
+    if (isCurrentCategory) {
       return {
         ...category,
         color: colors.category.parameter, // Orange theme for the category of expanded item

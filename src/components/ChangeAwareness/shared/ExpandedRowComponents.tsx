@@ -171,22 +171,10 @@ export const StandardExpandedRow = <T extends StandardExpandedChange>({
   
   // Create a current item object from the record
   const currentItemType = record.category.toLowerCase();
-  console.log(`Original currentItemType: ${currentItemType}, record:`, record);
+  console.log(`Original currentItemType: ${currentItemType}`);
   
-  // Convert category to the appropriate RelatedItemsPanel category key
-  let mappedCurrentItemType = currentItemType;
-  if (currentItemType === 'requirement') mappedCurrentItemType = 'requirements';
-  else if (currentItemType === 'mission') mappedCurrentItemType = 'mission';
-  else if (currentItemType === 'function') mappedCurrentItemType = 'functions';
-  else if (currentItemType === 'logical') mappedCurrentItemType = 'logical';
-  else if (currentItemType === 'parameter') mappedCurrentItemType = 'parameters';
-  // Special case for parameter items that might have different naming
-  else if (currentItemType.includes('param')) mappedCurrentItemType = 'parameters';
-  else if (currentItemType === 'cad') mappedCurrentItemType = 'cad';
-  else if (currentItemType === 'bom') mappedCurrentItemType = 'ebom';
-  else if (currentItemType === 'operationalscenario') mappedCurrentItemType = 'operationalScenario';
-  
-  console.log(`Mapped currentItemType: ${mappedCurrentItemType}`);
+  // We don't need to map the type here anymore - the RelatedItemsPanel handles normalization
+  // This simplifies our code and reduces the chance of mismatches
   
   // Create the current item in the format expected by RelatedItemsPanel
   const currentItem = {
@@ -223,7 +211,7 @@ export const StandardExpandedRow = <T extends StandardExpandedChange>({
               parameters={relatedItems.parameters}
               defaultActiveTab={Object.keys(relatedItems).find(key => relatedItems[key as keyof typeof relatedItems].length > 0)}
               currentItem={currentItem}
-              currentItemType={mappedCurrentItemType}
+              currentItemType={currentItemType}
               onCreateRelationship={handleCreateRelationship}
             />
           </Col>
