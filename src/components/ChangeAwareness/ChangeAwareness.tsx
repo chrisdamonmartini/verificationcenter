@@ -239,75 +239,91 @@ const ImprovedOverviewChanges: React.FC = () => {
 
   return (
     <div className="overview-changes">
-      <Row gutter={16}>
-        {/* Pie Chart Section - Collapsible */}
-        <Col span={chartCollapsed ? 1 : 8} style={{ transition: 'all 0.3s ease' }}>
+      {/* Chart Row - Positioned above table and aligned to the right */}
+      <Row justify="end" style={{ marginBottom: 16 }}>
+        <Col span={chartCollapsed ? 1 : 8} style={{ 
+          transition: 'all 0.3s ease',
+          transform: chartCollapsed ? 'translateX(100%)' : 'translateX(0%)',
+          opacity: chartCollapsed ? 0 : 1,
+          position: 'relative'
+        }}>
           <Card 
-            style={{ height: '100%', marginBottom: 0 }}
+            style={{ 
+              marginBottom: 0,
+              boxShadow: '0 2px 8px rgba(0,0,0,0.15)'
+            }}
             title={
               <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
-                {!chartCollapsed && (
-                  <>
-                    <PieChartOutlined style={{ marginRight: 8 }} />
-                    <span>Changes by Source</span>
-                  </>
-                )}
+                <PieChartOutlined style={{ marginRight: 8 }} />
+                <span>Changes by Source</span>
                 <Button 
                   type="text" 
-                  icon={chartCollapsed ? <RightOutlined /> : <LeftOutlined />}
-                  onClick={() => setChartCollapsed(!chartCollapsed)}
+                  icon={<LeftOutlined />}
+                  onClick={() => setChartCollapsed(true)}
                   style={{ marginLeft: 'auto' }}
                 />
               </div>
             }
             bodyStyle={{ 
-              padding: chartCollapsed ? 0 : 16,
-              height: chartCollapsed ? 0 : 'calc(100% - 58px)',
+              padding: 16,
               overflow: 'hidden'
             }}
           >
-            {!chartCollapsed && (
-              <>
-                <div style={{ height: 300 }}>
-                  <ResponsiveContainer width="100%" height="100%">
-                    <PieChart>
-                      <Pie
-                        data={pieChartData}
-                        cx="50%"
-                        cy="50%"
-                        labelLine={false}
-                        label={renderCustomizedLabel}
-                        outerRadius={100}
-                        fill="#8884d8"
-                        dataKey="value"
-                      >
-                        {pieChartData.map((entry, index) => (
-                          <Cell 
-                            key={`cell-${index}`} 
-                            fill={getDomainColor(entry.domain)} 
-                          />
-                        ))}
-                      </Pie>
-                      <RechartsTooltip 
-                        formatter={(value, name) => [`${value} Changes`, name]}
-                        labelFormatter={() => 'Source Distribution'}
+            <div style={{ height: 300 }}>
+              <ResponsiveContainer width="100%" height="100%">
+                <PieChart>
+                  <Pie
+                    data={pieChartData}
+                    cx="50%"
+                    cy="50%"
+                    labelLine={false}
+                    label={renderCustomizedLabel}
+                    outerRadius={100}
+                    fill="#8884d8"
+                    dataKey="value"
+                  >
+                    {pieChartData.map((entry, index) => (
+                      <Cell 
+                        key={`cell-${index}`} 
+                        fill={getDomainColor(entry.domain)} 
                       />
-                      <Legend />
-                    </PieChart>
-                  </ResponsiveContainer>
-                </div>
-                <div style={{ marginTop: 16, textAlign: 'center' }}>
-                  <Text type="secondary">
-                    Total: {data.length} changes in last {weeks} weeks
-                  </Text>
-                </div>
-              </>
-            )}
+                    ))}
+                  </Pie>
+                  <RechartsTooltip 
+                    formatter={(value, name) => [`${value} Changes`, name]}
+                    labelFormatter={() => 'Source Distribution'}
+                  />
+                  <Legend />
+                </PieChart>
+              </ResponsiveContainer>
+            </div>
+            <div style={{ marginTop: 16, textAlign: 'center' }}>
+              <Text type="secondary">
+                Total: {data.length} changes in last {weeks} weeks
+              </Text>
+            </div>
           </Card>
         </Col>
         
-        {/* Table Section */}
-        <Col span={chartCollapsed ? 23 : 16}>
+        {/* Show toggle button when chart is collapsed */}
+        {chartCollapsed && (
+          <Col span={1}>
+            <Button 
+              type="primary"
+              icon={<PieChartOutlined />}
+              onClick={() => setChartCollapsed(false)}
+              style={{ 
+                height: '100%',
+                borderRadius: '4px 0 0 4px'
+              }}
+            />
+          </Col>
+        )}
+      </Row>
+        
+      {/* Table Row - Full width */}
+      <Row>
+        <Col span={24}>
           <ContentPanel>
             <StandardChangeTable<AnyChange>
               domain="all"
