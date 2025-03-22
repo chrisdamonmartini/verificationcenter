@@ -155,6 +155,28 @@ export const StandardExpandedRow = <T extends StandardExpandedChange>({
   
   // Check if there are any related items to display
   const hasRelatedItems = Object.values(relatedItems).some(items => items.length > 0);
+  
+  // Create a current item object from the record
+  const currentItemType = record.category.toLowerCase();
+  // Convert category to the appropriate RelatedItemsPanel category key
+  let mappedCurrentItemType = currentItemType;
+  if (currentItemType === 'requirement') mappedCurrentItemType = 'requirements';
+  else if (currentItemType === 'mission') mappedCurrentItemType = 'mission';
+  else if (currentItemType === 'function') mappedCurrentItemType = 'functions';
+  else if (currentItemType === 'logical') mappedCurrentItemType = 'logical';
+  else if (currentItemType === 'parameter') mappedCurrentItemType = 'parameters';
+  else if (currentItemType === 'cad') mappedCurrentItemType = 'cad';
+  else if (currentItemType === 'bom') mappedCurrentItemType = 'ebom';
+  
+  // Create the current item in the format expected by RelatedItemsPanel
+  const currentItem = {
+    id: record.id,
+    title: record.title,
+    description: record.description,
+    status: record.status as 'Current' | 'Active' | 'Modified' | 'Released' | 'In Development' | 'Deprecated' | 'Archived' | 'Updated' | 'Completed',
+    date: record.date,
+    author: record.author
+  };
 
   return (
     <div className="expanded-row" style={{ padding: '0 20px 20px 20px' }}>
@@ -173,6 +195,8 @@ export const StandardExpandedRow = <T extends StandardExpandedChange>({
                 models={relatedItems.models}
                 automation={relatedItems.automation}
                 defaultActiveTab={Object.keys(relatedItems).find(key => relatedItems[key as keyof typeof relatedItems].length > 0)}
+                currentItem={currentItem}
+                currentItemType={mappedCurrentItemType}
               />
             ) : (
               <Alert

@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
 import { Card, Row, Col, Badge, Typography, Tooltip, Empty, Switch, Space, Tag, Table } from 'antd';
-import { ClockCircleOutlined, CheckCircleOutlined, ExclamationCircleOutlined } from '@ant-design/icons';
+import { ClockCircleOutlined, CheckCircleOutlined, ExclamationCircleOutlined, ExpandOutlined } from '@ant-design/icons';
 import dayjs from 'dayjs';
 import useColors from '../../hooks/useColors';
 
@@ -73,6 +73,8 @@ export interface RelatedItemsPanelProps {
   defaultActiveTab?: string;
   onItemClick?: (item: RelatedItem, type: string) => void;
   showFilter?: boolean;
+  currentItem?: RelatedItem;
+  currentItemType?: string;
 }
 
 interface CategoryConfig {
@@ -96,6 +98,8 @@ const RelatedItemsPanel: React.FC<RelatedItemsPanelProps> = ({
   defaultActiveTab,
   onItemClick,
   showFilter = true,
+  currentItem,
+  currentItemType,
 }) => {
   const colors = useColors();
   // Always show all items, keep the state for backward compatibility
@@ -236,6 +240,22 @@ const RelatedItemsPanel: React.FC<RelatedItemsPanelProps> = ({
     }
   ].filter(category => category.items.length > 0);
 
+  // Add current item to categories if it exists and is not already included
+  if (currentItem && currentItemType) {
+    const categoryKey = currentItemType.toLowerCase();
+    const categoryIndex = categories.findIndex(cat => cat.key === categoryKey);
+    
+    if (categoryIndex !== -1) {
+      // Check if current item already exists in the category
+      const exists = categories[categoryIndex].items.some(item => item.id === currentItem.id);
+      
+      if (!exists) {
+        // Add the current item to the beginning of the appropriate category
+        categories[categoryIndex].items = [currentItem, ...categories[categoryIndex].items];
+      }
+    }
+  }
+
   // No items to display
   if (categories.length === 0) {
     return renderEmpty();
@@ -286,42 +306,52 @@ const RelatedItemsPanel: React.FC<RelatedItemsPanelProps> = ({
                 bodyStyle={{ padding: '8px' }}
               >
                 <Space direction="vertical" style={{ width: '100%' }} size={8}>
-                  {category.items.map(item => (
-                    <Card
-                      key={item.id}
-                      size="small"
-                      style={{
-                        backgroundColor: '#ffffff',
-                        boxShadow: '0 1px 2px rgba(0,0,0,0.1)',
-                        cursor: onItemClick ? 'pointer' : 'default',
-                        width: '100%'
-                      }}
-                      onClick={() => onItemClick && onItemClick(item, category.key)}
-                      bodyStyle={{ padding: '8px' }}
-                    >
-                      <Space direction="vertical" size={4} style={{ width: '100%' }}>
-                        <div>
-                          <Text
-                            strong
-                            style={{ color: category.color, marginRight: '8px', display: 'block' }}
-                          >
-                            {item.id}
-                          </Text>
-                          <Text style={{ fontSize: '0.9rem' }}>{item.title}</Text>
-                        </div>
-                        
-                        <div>
-                          <Space>
-                            {renderStatusTag(item.status)}
-                            <Text type="secondary" style={{ fontSize: '12px' }}>
-                              <ClockCircleOutlined style={{ marginRight: '4px' }} />
-                              {formatDate(item.date)}
+                  {category.items.map(item => {
+                    // Check if this is the current item being expanded
+                    const isCurrentItem = currentItem && item.id === currentItem.id && category.key === currentItemType;
+                    
+                    return (
+                      <Card
+                        key={item.id}
+                        size="small"
+                        style={{
+                          backgroundColor: isCurrentItem ? `${category.color}15` : '#ffffff',
+                          boxShadow: isCurrentItem ? `0 0 8px ${category.color}80` : '0 1px 2px rgba(0,0,0,0.1)',
+                          cursor: onItemClick ? 'pointer' : 'default',
+                          width: '100%',
+                          border: isCurrentItem ? `1px solid ${category.color}` : undefined
+                        }}
+                        onClick={() => onItemClick && onItemClick(item, category.key)}
+                        bodyStyle={{ padding: '8px' }}
+                      >
+                        <Space direction="vertical" size={4} style={{ width: '100%' }}>
+                          <div>
+                            <Text
+                              strong
+                              style={{ color: category.color, marginRight: '8px', display: 'block' }}
+                            >
+                              {isCurrentItem && <ExpandOutlined style={{ marginRight: '5px' }} />}
+                              {item.id}
                             </Text>
-                          </Space>
-                        </div>
-                      </Space>
-                    </Card>
-                  ))}
+                            <Text style={{ fontSize: '0.9rem' }}>{item.title}</Text>
+                          </div>
+                          
+                          <div>
+                            <Space>
+                              {isCurrentItem && (
+                                <Tag color={category.color}>Current</Tag>
+                              )}
+                              {!isCurrentItem && renderStatusTag(item.status)}
+                              <Text type="secondary" style={{ fontSize: '12px' }}>
+                                <ClockCircleOutlined style={{ marginRight: '4px' }} />
+                                {formatDate(item.date)}
+                              </Text>
+                            </Space>
+                          </div>
+                        </Space>
+                      </Card>
+                    );
+                  })}
                 </Space>
               </Card>
             </Col>
