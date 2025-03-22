@@ -143,13 +143,13 @@ const ImprovedOverviewChanges: React.FC = () => {
   const [chartCollapsed, setChartCollapsed] = useState<boolean>(false);
   const colors = useColors();
 
-  // Custom colors for the pie chart segments
+  // Custom colors for the pie chart segments with distinct colors for Function and Logical
   const DOMAIN_COLORS = {
     mission: colors.category.mission,
     operationalScenario: colors.chart.series3,
     requirement: colors.category.requirements,
     function: colors.category.functions,
-    logical: colors.chart.series2,
+    logical: '#5470c6', // Use a distinct blue color for logical
     parameter: colors.chart.series5,
     cad: colors.category.cad,
     bom: colors.category.bom
@@ -234,61 +234,75 @@ const ImprovedOverviewChanges: React.FC = () => {
         position: relative;
         z-index: 2;
       }
-      /* Setup for angle sweep animations */
-      .recharts-sector {
-        transform-origin: center center;
-        transition: opacity 0.3s ease;
-      }
-      /* Control animations on specific sectors */
-      .recharts-layer .recharts-sector {
-        opacity: 0;
-      }
-      .chart-container-animate.open .recharts-layer .recharts-sector {
-        animation: sectorSweepIn 0.8s ease forwards;
-        opacity: 1;
-      }
-      .chart-container-animate:not(.open) .recharts-layer .recharts-sector {
-        animation: sectorSweepOut 0.6s ease forwards;
-      }
-      /* Individual sector delays for sequential animation */
-      .recharts-sector:nth-child(1) { animation-delay: 0ms; }
-      .recharts-sector:nth-child(2) { animation-delay: 50ms; }
-      .recharts-sector:nth-child(3) { animation-delay: 100ms; }
-      .recharts-sector:nth-child(4) { animation-delay: 150ms; }
-      .recharts-sector:nth-child(5) { animation-delay: 200ms; }
-      .recharts-sector:nth-child(6) { animation-delay: 250ms; }
-      .recharts-sector:nth-child(7) { animation-delay: 300ms; }
-      .recharts-sector:nth-child(8) { animation-delay: 350ms; }
-      
-      /* Angle sweep in animation */
-      @keyframes sectorSweepIn {
-        0% { 
-          opacity: 0;
-          transform: rotate(-90deg) scale(0.8);
-        }
-        100% { 
-          opacity: 1;
-          transform: rotate(0deg) scale(1);
-        }
-      }
-      /* Reverse angle sweep animation for exit */
-      @keyframes sectorSweepOut {
-        0% { 
-          opacity: 1;
-          transform: rotate(0deg) scale(1);
-        }
-        100% { 
-          opacity: 0;
-          transform: rotate(-90deg) scale(0.8);
-        }
-      }
-      /* Remove any potential ghosting effects */
+      /* Fix any artifacts or overflow issues */
       .recharts-wrapper {
         position: relative;
         z-index: 10;
+        overflow: visible;
       }
       .recharts-surface {
         overflow: visible;
+      }
+      
+      /* Setup for sequential reveal animations */
+      .recharts-sector {
+        opacity: 0;
+        transform-origin: center center;
+      }
+      
+      /* Animation for opening the chart */
+      .chart-container-animate.open .recharts-sector {
+        animation: sectorRevealIn 0.5s ease forwards;
+      }
+      
+      /* Animation for closing the chart */
+      .chart-container-animate:not(.open) .recharts-sector {
+        animation: sectorRevealOut 0.4s ease forwards;
+      }
+      
+      /* Each sector appears with a sequential delay */
+      .recharts-sector:nth-child(1) { animation-delay: 0ms; }
+      .recharts-sector:nth-child(2) { animation-delay: 80ms; }
+      .recharts-sector:nth-child(3) { animation-delay: 160ms; }
+      .recharts-sector:nth-child(4) { animation-delay: 240ms; }
+      .recharts-sector:nth-child(5) { animation-delay: 320ms; }
+      .recharts-sector:nth-child(6) { animation-delay: 400ms; }
+      .recharts-sector:nth-child(7) { animation-delay: 480ms; }
+      .recharts-sector:nth-child(8) { animation-delay: 560ms; }
+      
+      /* Sequential reveal in animation */
+      @keyframes sectorRevealIn {
+        0% {
+          opacity: 0;
+          transform: scale(0);
+        }
+        100% {
+          opacity: 1;
+          transform: scale(1);
+        }
+      }
+      
+      /* Sequential reveal out animation */
+      @keyframes sectorRevealOut {
+        0% {
+          opacity: 1;
+          transform: scale(1);
+        }
+        100% {
+          opacity: 0;
+          transform: scale(0);
+        }
+      }
+      
+      /* Hide any elements causing artifacts */
+      .recharts-legend-item-text {
+        position: relative;
+        z-index: 20;
+      }
+      
+      /* Fix the bottom artifact */
+      .recharts-pie-sector:last-child {
+        stroke: none;
       }
     `;
     document.head.appendChild(styleElement);
@@ -402,7 +416,7 @@ const ImprovedOverviewChanges: React.FC = () => {
               <span>Changes by Source</span>
               <Button 
                 type="text" 
-                icon={<LeftOutlined />}
+                icon={<RightOutlined />}
                 onClick={() => setChartCollapsed(true)}
                 style={{ marginLeft: 'auto', transition: 'transform 0.3s ease' }}
                 className="chart-toggle-button"
