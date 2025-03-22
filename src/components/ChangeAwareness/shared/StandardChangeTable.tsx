@@ -10,12 +10,15 @@ import {
   DatePicker,
   Select,
   Row,
-  Col
+  Col,
+  Tag
 } from 'antd';
 import type { ColumnsType, ColumnType } from 'antd/es/table';
 import { 
   ReloadOutlined, 
   SearchOutlined, 
+  FilterOutlined,
+  DownloadOutlined
 } from '@ant-design/icons';
 import { BaseChange, AnyChange } from '../../../types/changeAwareness';
 import { StandardExpandedRow } from './ExpandedRowComponents';
@@ -24,12 +27,11 @@ import {
   useChangesData, 
   usePagination, 
   useTableControls, 
-  useRowSelection, 
   useTableSearch 
 } from './hooks';
 import TimeRangeSelector from './TimeRangeSelector';
 
-const { Text } = Typography;
+const { Text, Title } = Typography;
 const { RangePicker } = DatePicker;
 const { Option } = Select;
 
@@ -93,12 +95,6 @@ export function StandardChangeTable<T extends StandardBaseChange>({
     resetTableControls 
   } = useTableControls();
   
-  const { 
-    rowSelection, 
-    selectedRowKeys, 
-    hasSelected 
-  } = useRowSelection<T>();
-  
   const searchableFields = tableOptions?.searchableFields || ['id', 'title', 'description', 'author'];
   const { 
     searchText, 
@@ -151,27 +147,16 @@ export function StandardChangeTable<T extends StandardBaseChange>({
 
   return (
     <Card>
-      <Space direction="vertical" style={{ width: '100%' }}>
-        <Row gutter={16} align="middle" style={{ marginBottom: 16 }}>
-          <Col span={16}>
-            <TimeRangeSelector weeks={weeks} setWeeks={setWeeks} />
+      <Space direction="vertical" size="large" style={{ width: '100%' }}>
+        <Row justify="space-between" align="middle">
+          <Col>
+            <Title level={4}>{title}</Title>
           </Col>
-          <Col span={8} style={{ display: 'flex', justifyContent: 'flex-end' }}>
+          <Col>
             <Space>
-              <Input
-                placeholder="Search..."
-                value={searchText}
-                onChange={e => setSearchText(e.target.value)}
-                style={{ width: 200 }}
-                prefix={<SearchOutlined />}
-              />
-              <Button 
-                onClick={refreshData} 
-                loading={loading}
-                icon={<ReloadOutlined />}
-              >
-                Refresh
-              </Button>
+              <Button icon={<ReloadOutlined />} onClick={refreshData}>Refresh</Button>
+              <Button icon={<FilterOutlined />} onClick={() => setIsFilterDrawerOpen(true)}>Filter</Button>
+              <Button icon={<DownloadOutlined />}>Export</Button>
             </Space>
           </Col>
         </Row>
@@ -183,18 +168,11 @@ export function StandardChangeTable<T extends StandardBaseChange>({
           pagination={paginationProps}
           onChange={handleTableChange}
           loading={loading}
-          rowSelection={rowSelection}
           expandable={{
             expandedRowRender
           }}
           size="middle"
         />
-
-        {hasSelected && (
-          <div style={{ marginTop: 16 }}>
-            <Text>Selected {selectedRowKeys.length} items</Text>
-          </div>
-        )}
       </Space>
     </Card>
   );
