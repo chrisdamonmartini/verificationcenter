@@ -237,8 +237,8 @@ const ImprovedOverviewChanges: React.FC = () => {
         animation: pieEnter 0.8s forwards;
       }
       @keyframes pieEnter {
-        0% { transform: scale(0.8); opacity: 0; }
-        100% { transform: scale(1); opacity: 1; }
+        0% { transform: scale(0.8) rotate(-180deg); opacity: 0; }
+        100% { transform: scale(1) rotate(0deg); opacity: 1; }
       }
     `;
     document.head.appendChild(styleElement);
@@ -334,7 +334,7 @@ const ImprovedOverviewChanges: React.FC = () => {
           transition: 'right 0.5s cubic-bezier(0.175, 0.885, 0.32, 1.275), opacity 0.4s ease, transform 0.5s ease',
           zIndex: 1000,
           opacity: chartCollapsed ? 0 : 1,
-          transform: chartCollapsed ? 'translateX(50px)' : 'translateX(0)',
+          transform: chartCollapsed ? 'translateX(50px) rotate(180deg)' : 'translateX(0) rotate(0deg)',
           transformOrigin: 'right center',
           boxShadow: chartCollapsed ? 'none' : '0 4px 20px rgba(0,0,0,0.25)',
         }}
@@ -343,8 +343,9 @@ const ImprovedOverviewChanges: React.FC = () => {
           style={{ 
             boxShadow: '0 4px 12px rgba(0,0,0,0.2)',
             borderRadius: '8px',
-            transition: 'transform 0.4s ease',
-            transform: chartCollapsed ? 'scale(0.9)' : 'scale(1)',
+            transition: 'all 0.5s cubic-bezier(0.175, 0.885, 0.32, 1.275)',
+            transform: chartCollapsed ? 'scale(0.9) rotate(180deg)' : 'scale(1) rotate(0deg)',
+            transformOrigin: 'center center',
           }}
           title={
             <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
@@ -408,19 +409,22 @@ const ImprovedOverviewChanges: React.FC = () => {
       {/* Show toggle button when chart is collapsed */}
       <Button 
         type="primary"
-        icon={<PieChartOutlined />}
+        icon={<PieChartOutlined style={{ 
+          transition: 'transform 0.5s ease',
+          transform: chartCollapsed ? 'rotate(0deg)' : 'rotate(-180deg)'
+        }} />}
         onClick={() => setChartCollapsed(false)}
         style={{ 
           position: 'absolute',
           top: '16px',
           right: chartCollapsed ? '0' : '-100px',
-          transition: 'right 0.5s cubic-bezier(0.175, 0.885, 0.32, 1.275), opacity 0.4s ease, transform 0.3s ease',
+          transition: 'right 0.5s cubic-bezier(0.175, 0.885, 0.32, 1.275), opacity 0.4s ease, transform 0.5s cubic-bezier(0.175, 0.885, 0.32, 1.275)',
           zIndex: 1000,
           borderRadius: '4px 0 0 4px',
           opacity: chartCollapsed ? 1 : 0,
           backgroundColor: colors.brand.primary,
           borderColor: colors.brand.primary,
-          transform: chartCollapsed ? 'translateX(0)' : 'translateX(50px)',
+          transform: chartCollapsed ? 'translateX(0) rotate(0deg)' : 'translateX(50px) rotate(-180deg)',
           boxShadow: '0 2px 8px rgba(0,0,0,0.2)',
         }}
       />
