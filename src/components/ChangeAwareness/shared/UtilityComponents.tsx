@@ -107,4 +107,6 @@ export const ChangeTypeTag: React.FC<{ type: string }> = ({ type }) => (
   <Tag color={getChangeTypeTagColor(type)} icon={getChangeTypeTagIcon(type)}>
     {type.toUpperCase()}
   </Tag>
-); 
+);
+
+// If file exists, add code to hide Current status labels 

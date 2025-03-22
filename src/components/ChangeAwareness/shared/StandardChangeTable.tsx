@@ -19,7 +19,7 @@ import {
 } from '@ant-design/icons';
 import { BaseChange, AnyChange } from '../../../types/changeAwareness';
 import { StandardExpandedRow } from './ExpandedRowComponents';
-import { getStandardColumns } from './TableConfigurations';
+import { getStandardColumns, StandardBaseChange } from './TableConfigurations';
 import { 
   useChangesData, 
   usePagination, 
@@ -57,7 +57,7 @@ export interface StandardChangeTableProps<T extends BaseChange> {
   };
 }
 
-export function StandardChangeTable<T extends AnyChange>({
+export function StandardChangeTable<T extends StandardBaseChange>({
   title,
   domain,
   weeks,

@@ -19,15 +19,25 @@ import {
   MinusOutlined,
   CalendarOutlined,
   ArrowUpOutlined,
-  ArrowDownOutlined
+  ArrowDownOutlined,
+  ControlOutlined,
+  ClusterOutlined
 } from '@ant-design/icons';
 // Import the components
 import MissionChanges from './MissionChanges';
+import ImprovedMissionChanges from './ImprovedMissionChanges';
 import OperationalScenarios from './OperationalScenarios';
+import ImprovedOperationalScenarios from './ImprovedOperationalScenarios';
 import RequirementsChanges from './RequirementsChanges';
+import ImprovedRequirementsChanges from './ImprovedRequirementsChanges';
 import FunctionsChanges from './FunctionsChanges';
+import ImprovedFunctionsChanges from './ImprovedFunctionsChanges';
 import CADDesignChanges from './CADDesignChanges';
+import ImprovedCADDesignChanges from './ImprovedCADDesignChanges';
 import EngineeringBOMChanges from './EngineeringBOMChanges';
+import ImprovedEngineeringBOMChanges from './ImprovedEngineeringBOMChanges';
+import ImprovedParametersChanges from './ImprovedParametersChanges';
+import ImprovedLogicalChanges from './ImprovedLogicalChanges';
 
 const { Title, Text, Paragraph } = Typography;
 const { TabPane } = Tabs;
@@ -79,6 +89,32 @@ const generateMockData = (weeksBack: number) => {
   };
 };
 
+// Custom tab styles to match the header/sidebar color
+const tabStyles = {
+  '.ant-tabs-tab': {
+    color: 'rgba(255, 255, 255, 0.85) !important',
+  },
+  '.ant-tabs-tab-active': {
+    color: '#00688C !important',
+  },
+  '.ant-tabs-ink-bar': {
+    backgroundColor: '#00688C !important',
+  }
+};
+
+// Custom slider styles to match the header/sidebar color
+const sliderStyles = {
+  '.ant-slider-track': {
+    backgroundColor: '#00688C !important',
+  },
+  '.ant-slider-handle': {
+    borderColor: '#00688C !important',
+  },
+  '.ant-slider-handle:focus': {
+    boxShadow: '0 0 0 5px rgba(0, 104, 140, 0.2) !important',
+  }
+};
+
 const ChangeAwareness: React.FC = () => {
   const [activeTab, setActiveTab] = useState('overview');
   const [weeksFilter, setWeeksFilter] = useState<number>(8);
@@ -91,6 +127,68 @@ const ChangeAwareness: React.FC = () => {
       const tab = path.split('/').pop() || 'overview';
       setActiveTab(tab);
     }
+  }, []);
+
+  // Add custom styles to the component
+  React.useEffect(() => {
+    // Add styles for tabs and slider
+    const styleElement = document.createElement('style');
+    styleElement.textContent = `
+      .ant-tabs-tab.ant-tabs-tab-active .ant-tabs-tab-btn {
+        color: #00688C !important;
+      }
+      .ant-tabs-ink-bar {
+        background-color: #00688C !important;
+      }
+      .ant-slider-track {
+        background-color: #00688C !important;
+      }
+      .ant-slider-handle {
+        border-color: #00688C !important;
+      }
+      .ant-slider-handle:focus {
+        box-shadow: 0 0 0 5px rgba(0, 104, 140, 0.2) !important;
+      }
+      /* Table header styles */
+      .ant-table-thead > tr > th {
+        background-color: #E6E6E6 !important;
+        color: rgba(0, 0, 0, 0.85) !important;
+        border: 0.5px solid #BFBFBF !important; /* Thinner border */
+        padding: 8px 12px !important; /* Reduced vertical padding for headers */
+      }
+      /* Table cell styles */
+      .ant-table-tbody > tr > td {
+        border: 0.5px solid #BFBFBF !important; /* Thinner border */
+        padding: 4px 12px !important; /* Reduced vertical padding */
+      }
+      /* Table row hover styles */
+      .ant-table-tbody > tr:hover > td {
+        background-color: #CDE6EB !important;
+      }
+      /* Make sure hover state is consistent */
+      .ant-table-tbody > tr.ant-table-row:hover > td {
+        background-color: #CDE6EB !important;
+      }
+      /* Make table header resize handles visible and functional */
+      .react-resizable {
+        position: relative;
+        background-clip: padding-box;
+      }
+      .react-resizable-handle {
+        position: absolute;
+        right: -5px;
+        bottom: 0;
+        z-index: 1;
+        width: 10px;
+        height: 100%;
+        cursor: col-resize;
+      }
+    `;
+    document.head.appendChild(styleElement);
+    
+    return () => {
+      document.head.removeChild(styleElement);
+    };
   }, []);
   
   // Update dashboard data when weeks filter changes
@@ -118,17 +216,14 @@ const ChangeAwareness: React.FC = () => {
 
   return (
     <div className="change-awareness-container">
-      <div className="header-section" style={{ marginBottom: 16 }}>
-        <Title level={2}>
-          <BellOutlined /> Change Awareness
-        </Title>
-      </div>
-
       <Tabs
         defaultActiveKey="overview"
         className="changes-tabs"
         activeKey={activeTab}
-        onChange={setActiveTab}
+        onChange={(key) => {
+          // Stop event propagation to prevent affecting sidebar
+          setActiveTab(key);
+        }}
       >
         <TabPane
           tab={<span><BranchesOutlined /> Overview</span>}
@@ -354,42 +449,56 @@ const ChangeAwareness: React.FC = () => {
           tab={<span><RocketOutlined /> Mission</span>}
           key="mission"
         >
-          <MissionChanges />
+          <ImprovedMissionChanges />
         </TabPane>
 
         <TabPane
           tab={<span><ClockCircleOutlined /> Operational Scenarios</span>}
           key="operational"
         >
-          <OperationalScenarios />
+          <ImprovedOperationalScenarios />
         </TabPane>
 
         <TabPane
           tab={<span><FileTextOutlined /> Requirements</span>}
           key="requirements"
         >
-          <RequirementsChanges />
+          <ImprovedRequirementsChanges />
+        </TabPane>
+
+        <TabPane
+          tab={<span><ControlOutlined /> Parameters</span>}
+          key="parameters"
+        >
+          <ImprovedParametersChanges />
         </TabPane>
 
         <TabPane
           tab={<span><FunctionOutlined /> Functions</span>}
           key="functions"
         >
-          <FunctionsChanges />
+          <ImprovedFunctionsChanges />
+        </TabPane>
+
+        <TabPane
+          tab={<span><ClusterOutlined /> Logical</span>}
+          key="logical"
+        >
+          <ImprovedLogicalChanges />
         </TabPane>
 
         <TabPane
           tab={<span><ApartmentOutlined /> CAD Design</span>}
           key="cad"
         >
-          <CADDesignChanges />
+          <ImprovedCADDesignChanges />
         </TabPane>
 
         <TabPane
           tab={<span><ToolOutlined /> Engineering BOM</span>}
           key="bom"
         >
-          <EngineeringBOMChanges />
+          <ImprovedEngineeringBOMChanges />
         </TabPane>
       </Tabs>
     </div>

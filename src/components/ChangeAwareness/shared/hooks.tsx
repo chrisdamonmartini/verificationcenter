@@ -1,7 +1,9 @@
 import { useState, useEffect, useCallback } from 'react';
 import { message, Input, Button } from 'antd';
-import { getFilteredChanges } from '../../../mockData/changeAwarenessData';
+import { getFilteredChanges, ChangesMap } from '../../../mockData/changeAwarenessData';
 import { BaseChange } from '../../../types/changeAwareness';
+
+type ProductType = 'missile' | 'fighter';
 
 // Hook for fetching and managing changes data
 export const useChangesData = <T extends BaseChange>(
@@ -18,28 +20,12 @@ export const useChangesData = <T extends BaseChange>(
     setLoading(true);
     try {
       // Get all changes from the service
-      const allChanges = getFilteredChanges(productType as 'missile' | 'fighter', weeks);
+      console.log(`Fetching data for domain: ${domain}, weeks: ${weeks}, productType: ${productType}`);
+      const allChanges = getFilteredChanges(domain as keyof ChangesMap, weeks, productType as ProductType);
+      console.log('Fetched changes:', allChanges);
       
-      // Map domain to the appropriate key in the changes object
-      const domainMap: Record<string, keyof typeof allChanges> = {
-        'mission': 'missionChanges',
-        'operationalScenario': 'operationalScenariosChanges',
-        'requirement': 'requirementsChanges',
-        'parameter': 'parameterChanges',
-        'function': 'functionsChanges',
-        'logical': 'logicalChanges',
-        'cad': 'cadDesignChanges',
-        'bom': 'engineeringBOMChanges'
-      };
-      
-      const key = domainMap[domain];
-      if (key && allChanges[key]) {
-        // Set the data with the appropriate domain changes
-        setData(allChanges[key] as unknown as T[]);
-      } else {
-        console.error(`Invalid domain: ${domain}`);
-        setData([]);
-      }
+      // Convert to the generic type T
+      setData(allChanges as unknown as T[]);
     } catch (error) {
       console.error(`Error fetching ${domain} changes:`, error);
       message.error(`Failed to load ${domain} changes. Please try again later.`);
@@ -49,16 +35,20 @@ export const useChangesData = <T extends BaseChange>(
     }
   }, [domain, weeks, productType]);
 
+  // Load data on initial render and when filters change
   useEffect(() => {
+    console.log('useEffect triggered, calling fetchData');
     fetchData();
   }, [fetchData]);
 
-  const handleViewDetails = useCallback((record: T) => {
-    setSelectedChange(record);
+  // Show details modal for a specific change
+  const showDetails = useCallback((change: T) => {
+    setSelectedChange(change);
     setIsDetailsVisible(true);
   }, []);
 
-  const handleCloseDetails = useCallback(() => {
+  // Hide details modal
+  const hideDetails = useCallback(() => {
     setIsDetailsVisible(false);
   }, []);
 
@@ -67,208 +57,267 @@ export const useChangesData = <T extends BaseChange>(
     loading,
     selectedChange,
     isDetailsVisible,
-    handleViewDetails,
-    handleCloseDetails,
+    handleViewDetails: showDetails,
+    handleCloseDetails: hideDetails,
     refreshData: fetchData
   };
 };
 
-// Hook for handling pagination
+// Hook for pagination state management
 export const usePagination = (defaultPageSize: number = 25) => {
-  const [currentPage, setCurrentPage] = useState<number>(1);
-  const [pageSize, setPageSize] = useState<number>(defaultPageSize);
+  const [current, setCurrent] = useState(1);
+  const [pageSize, setPageSize] = useState(defaultPageSize);
 
-  const handlePageChange = useCallback((page: number, size?: number) => {
-    setCurrentPage(page);
-    if (size) setPageSize(size);
+  const onChange = useCallback((page: number, size: number) => {
+    setCurrent(page);
+    setPageSize(size);
   }, []);
 
-  const resetPagination = useCallback(() => {
-    setCurrentPage(1);
+  const reset = useCallback(() => {
+    setCurrent(1);
   }, []);
 
   return {
-    currentPage,
+    current,
     pageSize,
-    handlePageChange,
-    resetPagination,
+    onChange,
+    reset,
     paginationProps: {
-      current: currentPage,
+      current,
       pageSize,
-      onChange: handlePageChange,
-      showSizeChanger: false,
+      onChange,
+      showSizeChanger: true,
       showTotal: (total: number) => `Total ${total} items`
     }
   };
 };
 
-// Hook for handling filtering and sorting
+// Hook for table controls (search, sort, filter)
 export const useTableControls = () => {
+  const [searchText, setSearchText] = useState('');
+  const [searchedColumn, setSearchedColumn] = useState('');
   const [sortedInfo, setSortedInfo] = useState<any>({});
   const [filteredInfo, setFilteredInfo] = useState<any>({});
 
-  const handleTableChange = useCallback((pagination: any, filters: any, sorter: any) => {
-    setSortedInfo(sorter);
-    setFilteredInfo(filters);
-  }, []);
-
-  const clearAllFilters = useCallback(() => {
-    setFilteredInfo({});
-  }, []);
-
-  const clearSorters = useCallback(() => {
-    setSortedInfo({});
-  }, []);
-
-  const resetTableControls = useCallback(() => {
-    setFilteredInfo({});
-    setSortedInfo({});
-  }, []);
-
-  return {
-    sortedInfo,
-    filteredInfo,
-    handleTableChange,
-    clearAllFilters,
-    clearSorters,
-    resetTableControls
-  };
-};
-
-// Hook for handling selected row state
-export const useRowSelection = <T extends { id: string }>(
-  onSelectionChange?: (selectedRowKeys: React.Key[], selectedRows: T[]) => void
-) => {
-  const [selectedRowKeys, setSelectedRowKeys] = useState<React.Key[]>([]);
-
-  const handleSelectionChange = useCallback((selectedKeys: React.Key[], selectedRows: T[]) => {
-    setSelectedRowKeys(selectedKeys);
-    if (onSelectionChange) {
-      onSelectionChange(selectedKeys, selectedRows);
-    }
-  }, [onSelectionChange]);
-
-  const clearSelection = useCallback(() => {
-    setSelectedRowKeys([]);
-  }, []);
-
-  const toggleSelection = useCallback((key: React.Key) => {
-    setSelectedRowKeys(prev => {
-      if (prev.includes(key)) {
-        return prev.filter(k => k !== key);
-      } else {
-        return [...prev, key];
-      }
-    });
-  }, []);
-
-  return {
-    selectedRowKeys,
-    rowSelection: {
-      selectedRowKeys,
-      onChange: handleSelectionChange,
-      selections: [
-        {
-          key: 'all-data',
-          text: 'Select All Data',
-          onSelect: (changableRowKeys: React.Key[]) => {
-            setSelectedRowKeys(changableRowKeys);
-          },
-        },
-        {
-          key: 'clear-all',
-          text: 'Clear All',
-          onSelect: () => {
-            setSelectedRowKeys([]);
-          },
-        },
-      ],
-    },
-    clearSelection,
-    toggleSelection,
-    hasSelected: selectedRowKeys.length > 0
-  };
-};
-
-// Hook for search functionality
-export const useTableSearch = <T extends Record<string, any>>(data: T[], searchableFields: string[]) => {
-  const [searchText, setSearchText] = useState<string>('');
-  const [searchedColumn, setSearchedColumn] = useState<string>('');
-
-  const handleSearch = useCallback((selectedKeys: React.Key[], confirm: () => void, dataIndex: string) => {
+  const handleSearch = useCallback((selectedKeys: string[], confirm: Function, dataIndex: string) => {
     confirm();
-    setSearchText(selectedKeys[0] as string);
+    setSearchText(selectedKeys[0]);
     setSearchedColumn(dataIndex);
   }, []);
 
-  const handleReset = useCallback((clearFilters: () => void) => {
+  const handleReset = useCallback((clearFilters: Function) => {
     clearFilters();
     setSearchText('');
   }, []);
 
-  const filteredData = useCallback((dataSource: T[]) => {
-    if (!searchText) {
-      return dataSource;
-    }
-    
-    return dataSource.filter(record => {
-      return searchableFields.some(field => {
-        const value = record[field];
-        if (value === undefined || value === null) return false;
-        
-        return String(value).toLowerCase().includes(searchText.toLowerCase());
-      });
-    });
-  }, [searchText, searchableFields]);
-
-  const getColumnSearchProps = useCallback((dataIndex: string) => ({
-    filterDropdown: ({ setSelectedKeys, selectedKeys, confirm, clearFilters }: any) => (
-      <div style={{ padding: 8 }}>
-        <Input
-          placeholder={`Search ${dataIndex}`}
-          value={selectedKeys[0]}
-          onChange={e => setSelectedKeys(e.target.value ? [e.target.value] : [])}
-          onPressEnter={() => handleSearch(selectedKeys, confirm, dataIndex)}
-          style={{ marginBottom: 8, display: 'block' }}
-        />
-        <div style={{ display: 'flex', justifyContent: 'space-between' }}>
-          <Button
-            onClick={() => handleReset(clearFilters)}
-            style={{ width: '45%' }}
-            size="small"
-          >
-            Reset
-          </Button>
-          <Button
-            type="primary"
-            onClick={() => handleSearch(selectedKeys, confirm, dataIndex)}
-            style={{ width: '45%' }}
-            size="small"
-          >
-            Search
-          </Button>
-        </div>
-      </div>
-    ),
-    onFilter: (value: string, record: T) => {
-      const data = record[dataIndex];
-      return data ? data.toString().toLowerCase().includes(value.toLowerCase()) : false;
-    },
-    onFilterDropdownVisibleChange: (visible: boolean) => {
-      if (visible) {
-        setTimeout(() => {
-          const input = document.querySelector('.ant-table-filter-dropdown input') as HTMLInputElement;
-          if (input) input.focus();
-        }, 0);
-      }
-    }
-  }), [handleSearch, handleReset]);
+  const clearAll = useCallback(() => {
+    setSearchText('');
+    setSearchedColumn('');
+    setSortedInfo({});
+    setFilteredInfo({});
+  }, []);
 
   return {
     searchText,
     searchedColumn,
-    filteredData,
-    getColumnSearchProps,
-    setSearchText
+    sortedInfo,
+    filteredInfo,
+    handleSearch,
+    handleReset,
+    setSortedInfo,
+    setFilteredInfo,
+    clearAll,
+    handleTableChange: (pagination: any, filters: any, sorter: any) => {
+      setSortedInfo(sorter);
+      setFilteredInfo(filters);
+    },
+    clearAllFilters: () => {
+      setFilteredInfo({});
+    },
+    resetTableControls: () => {
+      setSearchText('');
+      setSearchedColumn('');
+      setSortedInfo({});
+      setFilteredInfo({});
+    }
+  };
+};
+
+// Hook for row selection in table
+export const useRowSelection = <T extends { id: string }>(
+  onSelectionChange?: (selectedRowKeys: React.Key[], selectedRows: T[]) => void
+) => {
+  const [selectedRowKeys, setSelectedRowKeys] = useState<React.Key[]>([]);
+  const [selectedRows, setSelectedRows] = useState<T[]>([]);
+
+  const onSelectChange = useCallback((selectedKeys: React.Key[], rows: T[]) => {
+    setSelectedRowKeys(selectedKeys);
+    setSelectedRows(rows);
+    if (onSelectionChange) {
+      onSelectionChange(selectedKeys, rows);
+    }
+  }, [onSelectionChange]);
+
+  const selectAll = useCallback((data: T[]) => {
+    const keys = data.map(item => item.id);
+    setSelectedRowKeys(keys);
+    setSelectedRows(data);
+    if (onSelectionChange) {
+      onSelectionChange(keys, data);
+    }
+  }, [onSelectionChange]);
+
+  const deselectAll = useCallback(() => {
+    setSelectedRowKeys([]);
+    setSelectedRows([]);
+    if (onSelectionChange) {
+      onSelectionChange([], []);
+    }
+  }, [onSelectionChange]);
+
+  const isSelected = useCallback((id: string) => {
+    return selectedRowKeys.includes(id);
+  }, [selectedRowKeys]);
+
+  const toggleSelection = useCallback((item: T) => {
+    if (isSelected(item.id)) {
+      const newKeys = selectedRowKeys.filter(key => key !== item.id);
+      const newRows = selectedRows.filter(row => row.id !== item.id);
+      setSelectedRowKeys(newKeys);
+      setSelectedRows(newRows);
+      if (onSelectionChange) {
+        onSelectionChange(newKeys, newRows);
+      }
+    } else {
+      const newKeys = [...selectedRowKeys, item.id];
+      const newRows = [...selectedRows, item];
+      setSelectedRowKeys(newKeys);
+      setSelectedRows(newRows);
+      if (onSelectionChange) {
+        onSelectionChange(newKeys, newRows);
+      }
+    }
+  }, [selectedRowKeys, selectedRows, isSelected, onSelectionChange]);
+
+  return {
+    selectedRowKeys,
+    selectedRows,
+    onSelectChange,
+    selectAll,
+    deselectAll,
+    isSelected,
+    toggleSelection,
+    rowSelection: {
+      selectedRowKeys,
+      onChange: onSelectChange,
+    },
+    hasSelected: selectedRowKeys.length > 0
+  };
+};
+
+// Hook for search functionality in tables
+export const useTableSearch = <T extends Record<string, any>>(data: T[], searchableFields: string[]) => {
+  const [searchQuery, setSearchQuery] = useState('');
+  const [filteredData, setFilteredData] = useState<T[]>(data);
+
+  useEffect(() => {
+    if (!searchQuery) {
+      setFilteredData(data);
+      return;
+    }
+
+    const lowerCaseQuery = searchQuery.toLowerCase();
+    const filtered = data.filter(item => {
+      return searchableFields.some(field => {
+        const value = item[field];
+        if (value === null || value === undefined) return false;
+        return String(value).toLowerCase().includes(lowerCaseQuery);
+      });
+    });
+
+    setFilteredData(filtered);
+  }, [data, searchQuery, searchableFields]);
+
+  const renderSearchInput = useCallback(() => {
+    return (
+      <Input.Search
+        placeholder="Search..."
+        value={searchQuery}
+        onChange={e => setSearchQuery(e.target.value)}
+        onSearch={value => setSearchQuery(value)}
+        style={{ width: 200 }}
+        allowClear
+      />
+    );
+  }, [searchQuery]);
+
+  const resetSearch = useCallback(() => {
+    setSearchQuery('');
+  }, []);
+
+  return {
+    searchQuery,
+    setSearchQuery,
+    filteredData: (data: T[]) => {
+      if (!searchQuery) {
+        return data;
+      }
+
+      const lowerCaseQuery = searchQuery.toLowerCase();
+      return data.filter(item => {
+        return searchableFields.some(field => {
+          const value = item[field];
+          if (value === null || value === undefined) return false;
+          return String(value).toLowerCase().includes(lowerCaseQuery);
+        });
+      });
+    },
+    renderSearchInput,
+    resetSearch,
+    searchText: searchQuery,
+    setSearchText: setSearchQuery,
+    getColumnSearchProps: (dataIndex: string) => ({
+      filterDropdown: ({ setSelectedKeys, selectedKeys, confirm, clearFilters }: any) => (
+        <div style={{ padding: 8 }}>
+          <Input
+            placeholder={`Search ${dataIndex}`}
+            value={selectedKeys[0]}
+            onChange={e => setSelectedKeys(e.target.value ? [e.target.value] : [])}
+            onPressEnter={() => {
+              confirm();
+              setSearchQuery(selectedKeys[0]);
+            }}
+            style={{ marginBottom: 8, display: 'block' }}
+          />
+          <div style={{ display: 'flex', justifyContent: 'space-between' }}>
+            <Button
+              onClick={() => {
+                clearFilters && clearFilters();
+                setSearchQuery('');
+              }}
+              style={{ width: '45%' }}
+              size="small"
+            >
+              Reset
+            </Button>
+            <Button
+              type="primary"
+              onClick={() => {
+                confirm();
+                setSearchQuery(selectedKeys[0]);
+              }}
+              style={{ width: '45%' }}
+              size="small"
+            >
+              Search
+            </Button>
+          </div>
+        </div>
+      ),
+      onFilter: (value: string, record: T) => {
+        const data = record[dataIndex];
+        return data ? data.toString().toLowerCase().includes(value.toLowerCase()) : false;
+      }
+    })
   };
 }; 

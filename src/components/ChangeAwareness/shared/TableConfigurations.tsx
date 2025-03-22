@@ -28,7 +28,10 @@ import {
   CompassOutlined,
   FileTextOutlined,
   ClusterOutlined,
-  PartitionOutlined
+  PartitionOutlined,
+  CheckCircleOutlined,
+  EditOutlined,
+  DeleteOutlined
 } from '@ant-design/icons';
 import { 
   Code, 
@@ -45,22 +48,19 @@ import {
   ParameterChange,
   LogicalChange,
   BOMChange,
-  CADChange
+  CADChange,
+  ImpactedItem
 } from '../../../types/changeAwareness';
 
 const { Text } = Typography;
 
 // Extend BaseChange interface to include required fields
-interface StandardBaseChange extends BaseChange {
+export interface StandardBaseChange extends BaseChange {
   id: string;
   category: string;
-  changeType: "added" | "modified" | "removed";
-  severity: "critical" | "major" | "minor";
-  date: string;
-  status: "reviewed" | "pending" | "approved" | "rejected";
-  author: string;
-  title: string;
-  impactedItems: Record<string, number>;
+  changeType: "added" | "modified" | "removed" | string;
+  severity: string;
+  impactedItems?: ImpactedItem[];
 }
 
 // Type for category configuration
@@ -69,6 +69,12 @@ interface CategoryConfig {
   icon: React.ReactNode;
   name: string;
 }
+
+const defaultCategory: CategoryConfig = {
+  color: 'default',
+  icon: <FileTextOutlined />,
+  name: 'Other'
+};
 
 // Domain-specific category configurations
 export const missionCategories: Record<string, CategoryConfig> = {
@@ -165,14 +171,42 @@ export const renderCategory = (category: string, domainCategories: Record<string
 };
 
 // Domain-specific category renderers
-export const renderMissionCategory = (category: string) => renderCategory(category, missionCategories);
-export const renderScenarioCategory = (category: string) => renderCategory(category, scenarioCategories);
-export const renderRequirementCategory = (category: string) => renderCategory(category, requirementCategories);
-export const renderParameterCategory = (category: string) => renderCategory(category, parameterCategories);
-export const renderFunctionCategory = (category: string) => renderCategory(category, functionCategories);
-export const renderLogicalCategory = (category: string) => renderCategory(category, logicalCategories);
-export const renderCADCategory = (category: string) => renderCategory(category, cadCategories);
-export const renderBOMCategory = (category: string) => renderCategory(category, bomCategories);
+export const renderMissionCategory = (category: string) => {
+  const config = missionCategories[category?.toLowerCase()] || defaultCategory;
+  return <Tag color={config.color}>{config.icon} {config.name.toUpperCase()}</Tag>;
+};
+
+export const renderOperationalScenarioCategory = (category: string) => {
+  return <Tag color="green">{category.toUpperCase()}</Tag>;
+};
+
+export const renderRequirementCategory = (category: string) => {
+  const config = requirementCategories[category?.toLowerCase()] || defaultCategory;
+  return <Tag color={config.color}>{config.icon} {config.name.toUpperCase()}</Tag>;
+};
+
+export const renderParameterCategory = (category: string) => {
+  const config = parameterCategories[category?.toLowerCase()] || defaultCategory;
+  return <Tag color={config.color}>{config.icon} {config.name.toUpperCase()}</Tag>;
+};
+
+export const renderFunctionCategory = (category: string) => {
+  const config = functionCategories[category?.toLowerCase()] || defaultCategory;
+  return <Tag color={config.color}>{config.icon} {config.name.toUpperCase()}</Tag>;
+};
+
+export const renderLogicalCategory = (category: string) => {
+  const config = logicalCategories[category?.toLowerCase()] || defaultCategory;
+  return <Tag color={config.color}>{config.icon} {config.name.toUpperCase()}</Tag>;
+};
+
+export const renderCADCategory = (category: string) => {
+  return <Tag color="blue">{category.toUpperCase()}</Tag>;
+};
+
+export const renderBOMCategory = (category: string) => {
+  return <Tag color="orange">{category.toUpperCase()}</Tag>;
+};
 
 // Helper function to get the appropriate category renderer based on domain
 export const getCategoryRendererByDomain = (domain: string) => {
@@ -180,7 +214,7 @@ export const getCategoryRendererByDomain = (domain: string) => {
     case 'mission':
       return renderMissionCategory;
     case 'operationalScenario':
-      return renderScenarioCategory;
+      return renderOperationalScenarioCategory;
     case 'requirement':
       return renderRequirementCategory;
     case 'parameter':
@@ -203,7 +237,7 @@ export const renderAutoDetectedCategory = (record: any) => {
   if (record.missionId) {
     return renderMissionCategory(record.category);
   } else if (record.scenarioId) {
-    return renderScenarioCategory(record.category);
+    return renderOperationalScenarioCategory(record.category);
   } else if (record.requirementId) {
     return renderRequirementCategory(record.category);
   } else if (record.parameterId) {
@@ -265,18 +299,9 @@ export const getStandardColumns = <T extends StandardBaseChange>(
       title: 'ID',
       dataIndex: 'id',
       key: 'id',
-      render: (text) => <Text strong>{text}</Text>,
+      render: (text) => <Text>{text}</Text>,
       width: 100,
       sorter: (a, b) => a.id.localeCompare(b.id),
-      sortDirections: ['ascend', 'descend']
-    },
-    {
-      title: idLabel,
-      dataIndex: idField as string,
-      key: idField,
-      render: (text) => <Code>{text}</Code>,
-      width: 120,
-      sorter: (a, b) => (a[idField as keyof T] as string).localeCompare(b[idField as keyof T] as string),
       sortDirections: ['ascend', 'descend']
     },
     {
@@ -299,8 +324,7 @@ export const getStandardColumns = <T extends StandardBaseChange>(
           </Tooltip>
         </Space>
       ),
-      sorter: (a, b) => a.title.localeCompare(b.title),
-      sortDirections: ['ascend', 'descend']
+      ellipsis: true
     },
     {
       title: 'Category',
@@ -400,7 +424,7 @@ export const getStandardColumns = <T extends StandardBaseChange>(
       key: 'impact',
       render: (_, record) => {
         const impactedItems = record.impactedItems;
-        const total = Object.values(impactedItems).reduce((sum: number, val) => sum + (val || 0), 0);
+        const total = impactedItems?.length || 0;
         
         return (
           <Tooltip title="Click to see impact details">

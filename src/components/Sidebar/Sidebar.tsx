@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import * as FaIcons from 'react-icons/fa';
 import * as BsIcons from 'react-icons/bs';
 import {
@@ -18,6 +18,7 @@ import {
   PlayCircleOutlined,
   BranchesOutlined
 } from '@ant-design/icons';
+import vcLogo from '../../icons/vc.png';
 
 // Updated navigation items for Verification Management - Flattened structure
 export const SidebarData = [
@@ -32,7 +33,7 @@ export const SidebarData = [
     icon: <BellOutlined />
   },
   {
-    title: 'Requirements Mgmt.',
+    title: 'Req. Management',
     path: '/requirements',
     icon: <FileProtectOutlined />
   },
@@ -47,12 +48,7 @@ export const SidebarData = [
     icon: <FundOutlined />
   },
   {
-    title: 'Digital Thread',
-    path: '/digital-thread',
-    icon: <NodeIndexOutlined />
-  },
-  {
-    title: 'Test Management',
+    title: 'Test Mgmt.',
     path: '/test-management',
     icon: <CheckCircleOutlined />
   },
@@ -89,8 +85,6 @@ interface SidebarProps {
 }
 
 const Sidebar: React.FC<SidebarProps> = ({ currentView, onNavigate }) => {
-  const [collapsed, setCollapsed] = useState(false);
-  
   // Check if this is the current active view
   const isActiveView = (path: string) => {
     const pathWithoutSlash = path.replace('/', '');
@@ -99,26 +93,38 @@ const Sidebar: React.FC<SidebarProps> = ({ currentView, onNavigate }) => {
 
   return (
     <div 
-      className={`bg-[#1e3a8a] text-white min-h-screen transition-all duration-300 ${
-        collapsed ? 'w-16' : 'w-64'
-      } p-4`}
+      className="text-white min-h-screen"
+      style={{
+        position: 'fixed',
+        top: '0px', // Position from the top of the page
+        left: 0,
+        bottom: 0,
+        zIndex: 999,
+        width: '60px',
+        flexShrink: 0,
+        overflowY: 'auto',
+        height: '100vh', // Full height
+        backgroundColor: '#00688C', // Match header color
+        boxShadow: '2px 0 5px rgba(0,0,0,0.1)'
+      }}
     >
-      {/* Collapse Toggle Button */}
-      <div className="flex justify-end mb-6">
-        <button 
-          onClick={() => setCollapsed(!collapsed)}
-          className="text-white/70 hover:text-white"
-        >
-          {collapsed ? (
-            <FaIcons.FaAngleRight className="text-xl" />
-          ) : (
-            <FaIcons.FaAngleLeft className="text-xl" />
-          )}
-        </button>
+      {/* VC logo in a square matching sidebar color */}
+      <div style={{
+        width: '60px', 
+        height: '60px', 
+        backgroundColor: '#00688C', 
+        display: 'flex', 
+        justifyContent: 'center', 
+        alignItems: 'center'
+      }}>
+        <img src={vcLogo} alt="VC Logo" style={{ width: '40px', height: '40px' }} />
       </div>
-
+      
+      {/* Add spacer div to push content below header and subheader */}
+      <div style={{ height: '30px' }}></div>
+      
       <nav>
-        {/* Main Items - without submenu functionality */}
+        {/* Main Items with icons above text */}
         {SidebarData.map((item, index) => {
           const itemPath = item.path === '/' ? 'dashboard' : item.path.replace('/', '');
           const isActive = isActiveView(item.path);
@@ -126,14 +132,49 @@ const Sidebar: React.FC<SidebarProps> = ({ currentView, onNavigate }) => {
           return (
             <div 
               key={index}
-              className={`flex items-center p-3 mb-2 rounded cursor-pointer
-                ${isActive ? 'bg-blue-700' : 'hover:bg-blue-800'}`}
+              className="flex flex-col items-center justify-center cursor-pointer"
               onClick={() => onNavigate(item.path)}
-              title={collapsed ? item.title : undefined}
+              title={item.title} // Tooltip showing the full title on hover
+              style={{
+                height: '60px',
+                marginTop: '6px',
+                marginBottom: '6px',
+                padding: '4px 0',
+                backgroundColor: isActive ? '#004C6C' : 'transparent',
+                transition: 'background-color 0.2s ease-in-out',
+                position: 'relative'
+              }}
+              onMouseEnter={(e) => {
+                if (!isActive) {
+                  e.currentTarget.style.backgroundColor = '#004C6C';
+                }
+              }}
+              onMouseLeave={(e) => {
+                if (!isActive) {
+                  e.currentTarget.style.backgroundColor = 'transparent';
+                }
+              }}
             >
-              <div className="flex items-center">
-                <span className={`text-xl ${collapsed ? 'mx-auto' : 'mr-4'}`}>{item.icon}</span>
-                {!collapsed && <span>{item.title}</span>}
+              {/* Icon on top */}
+              <div className="flex items-center justify-center mb-1">
+                <span className="text-lg">{item.icon}</span>
+              </div>
+              
+              {/* Text label below */}
+              <div className="text-center">
+                <span style={{ 
+                  fontSize: '10px', 
+                  fontFamily: 'Arial, sans-serif',
+                  lineHeight: '1.1',
+                  display: 'block',
+                  width: '56px',
+                  height: '24px',
+                  overflow: 'hidden',
+                  textOverflow: 'ellipsis',
+                  whiteSpace: 'normal'
+                }}>
+                  {item.title}
+                </span>
               </div>
             </div>
           );

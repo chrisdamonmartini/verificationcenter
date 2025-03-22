@@ -7,6 +7,10 @@ import Sidebar from './components/Sidebar/Sidebar';
 import { motion } from 'framer-motion';
 import VerificationDashboard from './components/VerificationDashboard';
 import VerificationMatrixView from './components/VerificationMatrix/VerificationMatrixView';
+// Import Siemens logo
+import siemensLogo from './icons/siemens.png';
+// Import Tab icon
+import { ReactComponent as TabIcon } from './icons/TabIcon.svg';
 // Import our simulation components
 import ModelsManagementComponent from './components/Simulation/ModelsManagement';
 import SimulationRunsComponent from './components/Simulation/SimulationRuns';
@@ -49,6 +53,8 @@ import EngineeringBOMChanges from './components/ChangeAwareness/EngineeringBOMCh
 import { FlightTestManagement } from './components/FlightTest/FlightTestManagement';
 import { Aircraft } from './types';
 import DigitalThread from './components/DigitalThread/DigitalThread';
+// Import the SidebarData to get access to menu items
+import { SidebarData } from './components/Sidebar/Sidebar';
 
 // Define a type for requirements
 interface Requirement {
@@ -229,7 +235,7 @@ const DigitalThreadComponent = () => <DigitalThread />;
 // Main App function
 function App() {
   const [activeView, setActiveView] = useState<string>('dashboard');
-
+  
   // Function to pass to the Sidebar component
   const handleNavigation = (route: string) => {
     setActiveView(route.replace('/', '') || 'dashboard');
@@ -402,42 +408,110 @@ function App() {
     }
   };
 
+  // Function to get current page title based on activeView
+  const getCurrentPageTitle = () => {
+    // If we're on the dashboard (root path)
+    if (activeView === 'dashboard') return 'Dashboard';
+    
+    // Otherwise, find the matching route in SidebarData
+    const sidebarItem = SidebarData.find(item => 
+      item.path.replace('/', '') === activeView
+    );
+    
+    return sidebarItem ? sidebarItem.title : 'Verification Center';
+  };
+
   return (
     <ProductProvider>
       <TeamcenterProvider>
     <div className="flex flex-col h-screen bg-gray-100">
-      {/* Header */}
-      <header className="bg-blue-900 text-white py-2 px-4 flex items-center">
-        {/* VERIFICATIONCENTER Logo */}
-        <div className="flex items-center">
-          <FaIcons.FaCheckCircle className="text-xl mr-2" />
-          <span className="font-bold text-xl mr-2">VERIFICATIONCENTER</span>
+      {/* Header and Subheader container */}
+      <div className="relative">
+        {/* Header */}
+        <header className="text-white py-2 px-4 flex items-center justify-between" style={{ backgroundColor: '#00688C', height: '42px', zIndex: 1000 }}>
+          {/* Placeholder for tab space */}
+          <div style={{ marginLeft: '60px', visibility: 'hidden' }}>
+            <span className="text-transparent">Verificationcenter</span>
+          </div>
+          
+          {/* Siemens Logo on right side */}
+          <div className="mr-6" style={{ display: 'flex', alignItems: 'center' }}>
+            <img src={siemensLogo} alt="Siemens Logo" height="16" style={{ width: 'auto', maxHeight: '16px' }} />
+          </div>
+        </header>
+
+        {/* Subheader */}
+        <div style={{ backgroundColor: '#003750', height: '48px', zIndex: 990 }} className="flex items-center">
+          {/* Vertical bar and current page title - positioned just after the tab */}
+          <div className="flex" style={{ marginLeft: '300px', position: 'relative' }}>
+            {/* Vertical bar positioned clearly to the left of title */}
+            <div style={{ 
+              width: '6px', 
+              height: '28px', 
+              backgroundColor: '#ABE7F6',
+              position: 'absolute',
+              left: '-6px',
+              top: '0'
+            }}></div>
+            <div style={{ 
+              backgroundColor: '#ABE7F6', 
+              padding: '4px 14px',
+              height: '28px',
+              lineHeight: '20px',
+              color: '#003750',
+              fontWeight: 500,
+              fontSize: '14px'
+            }}>
+              {getCurrentPageTitle()}
+            </div>
+          </div>
         </div>
         
-        {/* Spacer to push right-side buttons to the end */}
-        <div className="flex-grow"></div>
-        
-        <div className="flex items-center space-x-4">
-          <button className="p-2 hover:bg-blue-800 rounded-full">
-            <FaIcons.FaSearch className="text-xl" />
-          </button>
-          <button className="p-2 hover:bg-blue-800 rounded-full relative">
-            <FaIcons.FaBell className="text-xl" />
-                <span className="absolute top-0 right-0 h-4 w-4 bg-red-500 rounded-full text-xs flex items-center justify-center">3</span>
-              </button>
-              <button className="p-2 hover:bg-blue-800 rounded-full">
-                <FaIcons.FaUserCircle className="text-xl" />
-          </button>
+        {/* Tab that overlays both header and subheader */}
+        <div 
+          className="absolute flex items-center" 
+          style={{ 
+            left: '60px',
+            top: '10px',
+            zIndex: 995,
+            height: '32px'
+          }}
+        >
+          {/* Create the tab shape with polygon clip-path */}
+          <div 
+            className="flex items-center pl-3 pr-6"
+            style={{
+              backgroundColor: '#003750',
+              height: '100%',
+              clipPath: 'polygon(0 0, 95% 0, 100% 100%, 0 100%)',
+              paddingRight: '30px'
+            }}
+          >
+            <TabIcon width="24" height="24" className="mr-2" />
+            <span className="text-white font-normal text-xl" style={{ textTransform: 'none' }}>Verificationcenter</span>
+          </div>
         </div>
-      </header>
+      </div>
 
       {/* Main Content */}
-          <div className="flex flex-grow overflow-hidden">
-            {/* Sidebar */}
-            <Sidebar currentView={activeView} onNavigate={handleNavigation} />
-        
-            {/* Main Content Area */}
-            <main className="flex-grow p-4 overflow-auto">
+      <div className="flex flex-grow overflow-hidden">
+        {/* Sidebar */}
+        <Sidebar currentView={activeView} onNavigate={handleNavigation} />
+    
+        {/* Main Content Area */}
+        <main 
+          className="flex-grow p-4 overflow-auto transition-all duration-300" 
+          style={{ 
+            marginLeft: '60px',
+            width: 'calc(100% - 60px)',
+            marginTop: '90px', /* This positions content below header and subheader */
+            position: 'fixed',
+            top: '0',
+            right: '0',
+            bottom: '0',
+            overflowY: 'auto'
+          }}
+        >
           {renderContent()}
         </main>
       </div>
