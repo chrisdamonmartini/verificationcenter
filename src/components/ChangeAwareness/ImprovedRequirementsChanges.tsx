@@ -15,7 +15,7 @@ const ImprovedRequirementsChanges: React.FC = () => {
 
   return (
     <div className="requirements-changes">
-      <ContentPanel title="Requirements Changes">
+      <ContentPanel>
         <StandardChangeTable<RequirementChange>
           domain="requirement"
           title="Requirements Changes"
