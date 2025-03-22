@@ -311,7 +311,7 @@ export const getStandardColumns = <T extends StandardBaseChange>(
       dataIndex: 'id',
       key: 'id',
       render: (text) => <Text>{text}</Text>,
-      width: 100,
+      width: 160,
       sorter: (a, b) => a.id.localeCompare(b.id),
       sortDirections: ['ascend', 'descend']
     },
@@ -383,15 +383,19 @@ export const getStandardColumns = <T extends StandardBaseChange>(
       title: 'Date',
       dataIndex: 'date',
       key: 'date',
-      render: (date) => (
-        <Space>
-          <CalendarOutlined />
-          <span>{date}</span>
-        </Space>
-      ),
+      render: (date) => {
+        // Format to show only date of last change
+        const formattedDate = new Date(date).toISOString().split('T')[0];
+        return (
+          <Space>
+            <CalendarOutlined />
+            <span>{formattedDate}</span>
+          </Space>
+        );
+      },
       sorter: (a, b) => new Date(b.date).getTime() - new Date(a.date).getTime(),
       defaultSortOrder: 'descend',
-      width: 130
+      width: 180
     },
     {
       title: 'Status',
