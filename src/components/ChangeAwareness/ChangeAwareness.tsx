@@ -231,28 +231,47 @@ const ImprovedOverviewChanges: React.FC = () => {
         transform: scale(1.05);
       }
       .recharts-pie {
-        transition: transform 0.5s ease;
-      }
-      .chart-container-animate.open .recharts-pie {
-        animation: pieEnter 0.8s ease forwards;
+        position: relative;
+        z-index: 2;
       }
       .recharts-sector {
-        transition: all 0.6s ease;
-        transform-origin: center center;
+        transform-origin: center 125%;  /* Origin at bottom center of chart */
+        transition: transform 0.6s ease;
       }
-      .chart-container-animate:not(.open) .recharts-sector {
-        transform: scale(0);
-      }
+      /* Fan unfold on entry */
       .chart-container-animate.open .recharts-sector {
-        animation: sectorFanOut 0.8s ease forwards;
+        animation: fanUnfold 0.8s ease forwards;
       }
-      @keyframes pieEnter {
-        0% { opacity: 0; }
-        100% { opacity: 1; }
+      /* Fold back on exit */
+      .chart-container-animate:not(.open) .recharts-sector {
+        animation: fanFold 0.6s ease forwards;
       }
-      @keyframes sectorFanOut {
-        0% { transform: scale(0); opacity: 0; }
-        100% { transform: scale(1); opacity: 1; }
+      /* Individual sector delays for sequential animation */
+      .recharts-sector:nth-child(1) { animation-delay: 0ms; }
+      .recharts-sector:nth-child(2) { animation-delay: 50ms; }
+      .recharts-sector:nth-child(3) { animation-delay: 100ms; }
+      .recharts-sector:nth-child(4) { animation-delay: 150ms; }
+      .recharts-sector:nth-child(5) { animation-delay: 200ms; }
+      .recharts-sector:nth-child(6) { animation-delay: 250ms; }
+      .recharts-sector:nth-child(7) { animation-delay: 300ms; }
+      .recharts-sector:nth-child(8) { animation-delay: 350ms; }
+      /* Fan out from bottom animation */
+      @keyframes fanUnfold {
+        0% { transform: scaleY(0.1) translateY(30px); opacity: 0; }
+        100% { transform: scaleY(1) translateY(0); opacity: 1; }
+      }
+      /* Fan fold to bottom animation */
+      @keyframes fanFold {
+        0% { transform: scaleY(1) translateY(0); opacity: 1; }
+        100% { transform: scaleY(0.1) translateY(30px); opacity: 0; }
+      }
+      /* Remove any potential ghosting effects */
+      .recharts-wrapper {
+        position: relative;
+        z-index: 10;
+      }
+      .recharts-surface {
+        overflow: visible;
       }
     `;
     document.head.appendChild(styleElement);
@@ -343,13 +362,14 @@ const ImprovedOverviewChanges: React.FC = () => {
         style={{ 
           position: 'absolute',
           top: '16px',
-          right: chartCollapsed ? '-750px' : '16px',
-          width: '500px',
+          right: chartCollapsed ? '-850px' : '16px',
+          width: '650px',
           transition: 'right 0.6s ease, opacity 0.4s ease',
           zIndex: 1000,
           opacity: chartCollapsed ? 0 : 1,
           transform: 'translateX(0)',
           boxShadow: chartCollapsed ? 'none' : '0 4px 20px rgba(0,0,0,0.25)',
+          overflow: 'visible',
         }}
       >
         <Card 
@@ -373,22 +393,23 @@ const ImprovedOverviewChanges: React.FC = () => {
             </div>
           }
         >
-          <div style={{ height: 300 }}>
+          <div style={{ height: 350 }}>
             <ResponsiveContainer width="100%" height="100%">
-              <PieChart>
+              <PieChart width={600} height={350}>
                 <Pie
                   data={pieChartData}
-                  cx="60%"
+                  cx="50%"
                   cy="50%"
                   labelLine={false}
                   label={renderCustomizedLabel}
-                  outerRadius={125}
+                  outerRadius={140}
                   fill="#8884d8"
                   dataKey="value"
                   startAngle={90}
                   endAngle={-270}
-                  animationBegin={300}
-                  animationDuration={800}
+                  animationBegin={0}
+                  animationDuration={0}
+                  isAnimationActive={false}
                 >
                   {pieChartData.map((entry, index) => (
                     <Cell 
@@ -405,11 +426,16 @@ const ImprovedOverviewChanges: React.FC = () => {
                   layout="vertical"
                   align="left"
                   verticalAlign="middle"
-                  iconSize={10}
+                  iconSize={12}
                   wrapperStyle={{
-                    paddingLeft: 20,
-                    paddingRight: 20,
-                    left: 10  // More space between legend and chart
+                    paddingLeft: 25,
+                    paddingRight: 25,
+                    left: 20,
+                    top: -20,
+                    backgroundColor: 'rgba(255, 255, 255, 0.9)',
+                    borderRadius: '4px',
+                    padding: '10px',
+                    boxShadow: '0 2px 6px rgba(0,0,0,0.1)'
                   }}
                 />
               </PieChart>
