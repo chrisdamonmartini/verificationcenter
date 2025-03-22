@@ -292,8 +292,8 @@ const ImprovedOverviewChanges: React.FC = () => {
       <div style={{ 
         position: 'absolute',
         top: '16px',
-        right: chartCollapsed ? '-340px' : '16px',
-        width: '320px',
+        right: chartCollapsed ? '-420px' : '16px',
+        width: '400px',
         transition: 'right 0.3s ease',
         zIndex: 1000,
         opacity: chartCollapsed ? 0 : 1,
@@ -305,7 +305,7 @@ const ImprovedOverviewChanges: React.FC = () => {
           }}
           title={
             <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
-              <PieChartOutlined style={{ marginRight: 8 }} />
+              <PieChartOutlined style={{ marginRight: 8, color: colors.brand.primary }} />
               <span>Changes by Source</span>
               <Button 
                 type="text" 
@@ -325,7 +325,7 @@ const ImprovedOverviewChanges: React.FC = () => {
                   cy="50%"
                   labelLine={false}
                   label={renderCustomizedLabel}
-                  outerRadius={100}
+                  outerRadius={120}
                   fill="#8884d8"
                   dataKey="value"
                 >
@@ -374,6 +374,8 @@ const ImprovedOverviewChanges: React.FC = () => {
           zIndex: 1000,
           borderRadius: '4px 0 0 4px',
           opacity: chartCollapsed ? 1 : 0,
+          backgroundColor: colors.brand.primary,
+          borderColor: colors.brand.primary
         }}
       />
     </div>
