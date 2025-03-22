@@ -157,22 +157,21 @@ export function StandardChangeTable<T extends StandardBaseChange>({
               style={{ 
                 background: colors.status.major,
                 borderRadius: '8px',
-                boxShadow: '0 1px 2px rgba(0, 0, 0, 0.05)',
-                textAlign: 'center',
-                padding: '0',
+                boxShadow: '0 2px 8px rgba(0, 0, 0, 0.15)',
+                padding: '8px 12px',
+                height: 'auto',
                 border: 'none'
               }}
-              bodyStyle={{ padding: '6px 12px', display: 'flex', alignItems: 'center', height: '32px' }}
+              bodyStyle={{ padding: '0' }}
             >
-              <Space>
-                <BarChartOutlined style={{ color: 'white' }} />
-                <Text strong style={{ color: 'white', margin: 0 }}>
-                  {data.length} {title} Changes
-                </Text>
-                <Text style={{ color: 'white', fontSize: '12px', opacity: 0.8, margin: 0 }}>
-                  (Last {weeks} {weeks === 1 ? 'week' : 'weeks'})
-                </Text>
-              </Space>
+              <div style={{ color: 'white' }}>
+                <div style={{ fontSize: '14px', fontWeight: 'normal' }}>
+                  {title} Changes
+                </div>
+                <div style={{ fontSize: '14px' }}>
+                  {data.length} in last {weeks} {weeks === 1 ? 'week' : 'weeks'}
+                </div>
+              </div>
             </Card>
           </Col>
           <Col span={12}>
