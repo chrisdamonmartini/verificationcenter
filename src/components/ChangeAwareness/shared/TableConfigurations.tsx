@@ -320,7 +320,7 @@ export const getStandardColumns = <T extends StandardBaseChange>(
       key: 'title',
       render: (text) => <Text>{text}</Text>,
       ellipsis: true,
-      width: '30%'
+      width: '40%'
     },
     {
       title: 'Category',

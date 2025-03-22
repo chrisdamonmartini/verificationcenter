@@ -172,12 +172,11 @@ const ChangeAwareness: React.FC = () => {
         padding: 4px 12px !important; /* Reduced vertical padding */
       }
       /* Table row hover styles - updated to match sidebar color */
-      .ant-table-tbody > tr:hover > td {
-        background-color: ${colors.brand.primary}1A !important;
-      }
-      /* Make sure hover state is consistent */
-      .ant-table-tbody > tr.ant-table-row:hover > td {
-        background-color: ${colors.brand.primary}1A !important;
+      .ant-table-tbody > tr:hover > td,
+      .ant-table-tbody > tr.ant-table-row-hover > td,
+      .ant-table-tbody > tr.ant-table-row:hover > td,
+      .related-items-table .ant-table-row:hover > td {
+        background-color: var(--background-color-secondary) !important;
       }
       /* Make table header resize handles visible and functional */
       .react-resizable {
