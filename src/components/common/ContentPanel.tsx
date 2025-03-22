@@ -61,4 +61,4 @@ const ContentPanel: React.FC<ContentPanelProps> = ({
   );
 };
 
-export default ContentPanel; 
+export default ContentPanel;
