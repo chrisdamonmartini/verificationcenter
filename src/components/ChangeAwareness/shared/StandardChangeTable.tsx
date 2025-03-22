@@ -57,6 +57,7 @@ export interface StandardChangeTableProps<T extends BaseChange> {
     showImpact?: boolean;
     additionalColumns?: ColumnsType<T>;
     searchableFields?: string[];
+    hideStatsCard?: boolean;
   };
 }
 
@@ -151,30 +152,32 @@ export function StandardChangeTable<T extends StandardBaseChange>({
     <Card>
       <Space direction="vertical" style={{ width: '100%' }}>
         <Row gutter={16} align="middle" style={{ marginBottom: 16 }}>
-          <Col span={4}>
-            <Card 
-              className="dashboard-stat-card" 
-              style={{ 
-                background: colors.status.major,
-                borderRadius: '8px',
-                boxShadow: '0 2px 8px rgba(0, 0, 0, 0.15)',
-                padding: '8px 12px',
-                height: 'auto',
-                border: 'none'
-              }}
-              bodyStyle={{ padding: '0' }}
-            >
-              <div style={{ color: 'white' }}>
-                <div style={{ fontSize: '14px', fontWeight: 'normal' }}>
-                  {title}
+          {!tableOptions?.hideStatsCard && (
+            <Col span={4}>
+              <Card 
+                className="dashboard-stat-card" 
+                style={{ 
+                  background: colors.status.major,
+                  borderRadius: '8px',
+                  boxShadow: '0 2px 8px rgba(0, 0, 0, 0.15)',
+                  padding: '8px 12px',
+                  height: 'auto',
+                  border: 'none'
+                }}
+                bodyStyle={{ padding: '0' }}
+              >
+                <div style={{ color: 'white' }}>
+                  <div style={{ fontSize: '14px', fontWeight: 'normal' }}>
+                    {title}
+                  </div>
+                  <div style={{ fontSize: '14px' }}>
+                    {data.length} in last {weeks} {weeks === 1 ? 'week' : 'weeks'}
+                  </div>
                 </div>
-                <div style={{ fontSize: '14px' }}>
-                  {data.length} in last {weeks} {weeks === 1 ? 'week' : 'weeks'}
-                </div>
-              </div>
-            </Card>
-          </Col>
-          <Col span={12}>
+              </Card>
+            </Col>
+          )}
+          <Col span={tableOptions?.hideStatsCard ? 16 : 12}>
             <TimeRangeSelector weeks={weeks} setWeeks={setWeeks} />
           </Col>
           <Col span={8} style={{ display: 'flex', justifyContent: 'flex-end' }}>

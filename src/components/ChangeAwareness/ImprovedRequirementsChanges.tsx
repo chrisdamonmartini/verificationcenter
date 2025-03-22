@@ -28,6 +28,9 @@ const ImprovedRequirementsChanges: React.FC = () => {
             showTechnicalDetails: true,
             showDependencies: true
           }}
+          tableOptions={{
+            hideStatsCard: true
+          }}
         />
       </ContentPanel>
     </div>
