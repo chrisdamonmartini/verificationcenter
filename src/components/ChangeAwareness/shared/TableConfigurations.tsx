@@ -31,7 +31,16 @@ import {
   PartitionOutlined,
   CheckCircleOutlined,
   EditOutlined,
-  DeleteOutlined
+  DeleteOutlined,
+  TaskOutlined,
+  ProfileOutlined,
+  SlidersFilled,
+  DashboardOutlined,
+  CodeOutlined,
+  AppstoreOutlined,
+  BranchesOutlined,
+  LayoutOutlined,
+  RobotOutlined
 } from '@ant-design/icons';
 import { 
   Code, 
@@ -51,6 +60,7 @@ import {
   CADChange,
   ImpactedItem
 } from '../../../types/changeAwareness';
+import useColors from '../../../hooks/useColors';
 
 const { Text } = Typography;
 
@@ -444,4 +454,148 @@ export const getStandardColumns = <T extends StandardBaseChange>(
 // Standard column configurations
 export const getChangeColumns = (domainType: string, showActions: boolean = true) => {
   // ... existing code ...
-}; 
+};
+
+/**
+ * Configuration for the different change categories used across the application
+ * This provides consistent styling and icons for each category
+ */
+export const useCategoryConfigurations = () => {
+  const colors = useColors();
+  
+  return {
+    // Mission domain
+    mission: {
+      key: 'mission',
+      name: 'Mission',
+      color: colors.category.mission,
+      bgColor: `${colors.category.mission}15`,
+      borderColor: `${colors.category.mission}40`,
+      icon: <RocketOutlined style={{ color: colors.category.mission }} />,
+      defaultColumns: ['id', 'title', 'status', 'changedBy', 'changedDate'],
+    },
+    
+    // Scenario domain
+    scenario: {
+      key: 'scenario',
+      name: 'Scenario',
+      color: colors.category.mission,
+      bgColor: `${colors.category.mission}15`,
+      borderColor: `${colors.category.mission}40`,
+      icon: <AreaChartOutlined style={{ color: colors.category.mission }} />,
+      defaultColumns: ['id', 'title', 'status', 'changedBy', 'changedDate'],
+    },
+    
+    // Requirement domain
+    requirement: {
+      key: 'requirement',
+      name: 'Requirement',
+      color: colors.category.requirements,
+      bgColor: `${colors.category.requirements}15`,
+      borderColor: `${colors.category.requirements}40`,
+      icon: <ProfileOutlined style={{ color: colors.category.requirements }} />,
+      defaultColumns: ['id', 'title', 'status', 'version', 'severity', 'changedBy', 'changedDate'],
+    },
+    
+    // Parameter domain
+    parameter: {
+      key: 'parameter',
+      name: 'Parameter',
+      color: colors.category.parameter,
+      bgColor: `${colors.category.parameter}15`,
+      borderColor: `${colors.category.parameter}40`,
+      icon: <SlidersFilled style={{ color: colors.category.parameter }} />,
+      defaultColumns: ['id', 'title', 'value', 'unit', 'changedBy', 'changedDate'],
+    },
+    
+    // Function domain
+    function: {
+      key: 'function',
+      name: 'Function',
+      color: colors.category.functions,
+      bgColor: `${colors.category.functions}15`,
+      borderColor: `${colors.category.functions}40`,
+      icon: <TaskOutlined style={{ color: colors.category.functions }} />,
+      defaultColumns: ['id', 'title', 'status', 'changedBy', 'changedDate'],
+    },
+    
+    // Logical domain
+    logical: {
+      key: 'logical',
+      name: 'Logical',
+      color: colors.chart.series4,
+      bgColor: `${colors.chart.series4}15`,
+      borderColor: `${colors.chart.series4}40`,
+      icon: <BranchesOutlined style={{ color: colors.chart.series4 }} />,
+      defaultColumns: ['id', 'title', 'status', 'type', 'changedBy', 'changedDate'],
+    },
+    
+    // CAD domain
+    cad: {
+      key: 'cad',
+      name: 'CAD',
+      color: colors.category.cad,
+      bgColor: `${colors.category.cad}15`,
+      borderColor: `${colors.category.cad}40`,
+      icon: <LayoutOutlined style={{ color: colors.category.cad }} />,
+      defaultColumns: ['id', 'title', 'version', 'type', 'changedBy', 'changedDate'],
+    },
+    
+    // BOM domain
+    bom: {
+      key: 'bom',
+      name: 'BOM',
+      color: colors.category.bom,
+      bgColor: `${colors.category.bom}15`,
+      borderColor: `${colors.category.bom}40`,
+      icon: <DatabaseOutlined style={{ color: colors.category.bom }} />,
+      defaultColumns: ['id', 'title', 'version', 'changedBy', 'changedDate'],
+    },
+    
+    // Software domain
+    software: {
+      key: 'software',
+      name: 'Software',
+      color: colors.chart.series6,
+      bgColor: `${colors.chart.series6}15`,
+      borderColor: `${colors.chart.series6}40`,
+      icon: <CodeOutlined style={{ color: colors.chart.series6 }} />,
+      defaultColumns: ['id', 'title', 'version', 'changedBy', 'changedDate'],
+    },
+    
+    // Simulation domain
+    simulation: {
+      key: 'simulation',
+      name: 'Simulation',
+      color: colors.chart.series7,
+      bgColor: `${colors.chart.series7}15`,
+      borderColor: `${colors.chart.series7}40`,
+      icon: <DashboardOutlined style={{ color: colors.chart.series7 }} />,
+      defaultColumns: ['id', 'title', 'version', 'changedBy', 'changedDate'],
+    },
+    
+    // Manufacturing domain
+    manufacturing: {
+      key: 'manufacturing',
+      name: 'Manufacturing',
+      color: colors.chart.series8,
+      bgColor: `${colors.chart.series8}15`,
+      borderColor: `${colors.chart.series8}40`,
+      icon: <BuildOutlined style={{ color: colors.chart.series8 }} />,
+      defaultColumns: ['id', 'title', 'status', 'changedBy', 'changedDate'],
+    },
+    
+    // Automation domain
+    automation: {
+      key: 'automation',
+      name: 'Automation',
+      color: colors.chart.series3,
+      bgColor: `${colors.chart.series3}15`,
+      borderColor: `${colors.chart.series3}40`,
+      icon: <RobotOutlined style={{ color: colors.chart.series3 }} />,
+      defaultColumns: ['id', 'title', 'status', 'changedBy', 'changedDate'],
+    },
+  };
+};
+
+export default useCategoryConfigurations; 

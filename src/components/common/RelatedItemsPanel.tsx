@@ -2,6 +2,7 @@ import React, { useState } from 'react';
 import { Card, Row, Col, Badge, Typography, Tooltip, Empty, Switch, Space, Tag } from 'antd';
 import { ClockCircleOutlined, CheckCircleOutlined, ExclamationCircleOutlined } from '@ant-design/icons';
 import dayjs from 'dayjs';
+import useColors from '../../hooks/useColors';
 
 const { Text } = Typography;
 
@@ -83,6 +84,49 @@ interface CategoryConfig {
   items: any[];
 }
 
+// Toggle visibility component
+const ToggleVisibility: React.FC<{
+  activeCategories: Record<string, boolean>;
+  setActiveCategories: (categories: Record<string, boolean>) => void;
+}> = ({ activeCategories, setActiveCategories }) => {
+  const colors = useColors();
+  
+  return (
+    <div className="filter-controls">
+      <Space align="center">
+        <span style={{ marginRight: '8px' }}>Toggle Visibility:</span>
+        {Object.entries(activeCategories).map(([key, isActive]) => {
+          let color;
+          switch(key) {
+            case 'requirements': color = colors.category.requirements; break;
+            case 'mission': color = colors.category.mission; break;
+            case 'functions': color = colors.category.functions; break;
+            case 'logical': color = colors.chart.series4; break;
+            case 'cad': color = colors.category.cad; break;
+            case 'ebom': color = colors.category.bom; break;
+            default: color = colors.chart.series8;
+          }
+          
+          return (
+            <Tag 
+              key={key} 
+              onClick={() => setActiveCategories({ ...activeCategories, [key]: !isActive })}
+              style={{ 
+                cursor: 'pointer', 
+                backgroundColor: isActive ? `${color}15` : '#f0f0f0',
+                color: isActive ? color : colors.chart.textSecondary,
+                borderColor: isActive ? color : '#d9d9d9'
+              }}
+            >
+              {key.charAt(0).toUpperCase() + key.slice(1)}
+            </Tag>
+          );
+        })}
+      </Space>
+    </div>
+  );
+};
+
 const RelatedItemsPanel: React.FC<RelatedItemsPanelProps> = ({
   mission = [],
   requirements = [],
@@ -96,6 +140,7 @@ const RelatedItemsPanel: React.FC<RelatedItemsPanelProps> = ({
   onItemClick,
   showFilter = true,
 }) => {
+  const colors = useColors();
   const [showAll, setShowAll] = useState(true);
   const [activeCategories, setActiveCategories] = useState<Record<string, boolean>>({
     mission: true,
@@ -126,26 +171,38 @@ const RelatedItemsPanel: React.FC<RelatedItemsPanelProps> = ({
       return null;
     }
     
+    let color;
+    
     switch (status) {
       case 'Active':
-        return <Tag color="#87d068">Active</Tag>;
       case 'Released':
-        return <Tag color="#87d068">Released</Tag>;
-      case 'Modified':
-        return <Tag color="#faad14">Modified</Tag>;
-      case 'In Development':
-        return <Tag color="#1890ff">In Development</Tag>;
-      case 'Deprecated':
-        return <Tag color="#999">Deprecated</Tag>;
-      case 'Archived':
-        return <Tag color="#999">Archived</Tag>;
-      case 'Updated':
-        return <Tag color="#1890ff">Updated</Tag>;
       case 'Completed':
-        return <Tag color="#87d068">Completed</Tag>;
+        color = colors.status.minor;
+        break;
+      case 'Modified':
+      case 'In Development':
+      case 'Updated':
+        color = colors.status.major;
+        break;
+      case 'Deprecated':
+      case 'Archived':
+        color = colors.chart.textSecondary;
+        break;
       default:
-        return <Tag color="#f50">{status}</Tag>;
+        color = colors.status.critical;
     }
+    
+    return (
+      <Tag 
+        style={{ 
+          backgroundColor: `${color}15`, 
+          color: color, 
+          borderColor: color 
+        }}
+      >
+        {status}
+      </Tag>
+    );
   };
 
   // Empty state
@@ -154,211 +211,191 @@ const RelatedItemsPanel: React.FC<RelatedItemsPanelProps> = ({
   );
 
   // Define category configs with styling
-  const categories: CategoryConfig[] = [
+  const categories = [
     {
       name: 'Mission',
       key: 'mission',
-      color: '#92b4d7',
-      bgcolor: '#f0f7ff',
+      color: colors.category.mission,
+      bgcolor: `${colors.category.mission}10`,
       active: activeCategories.mission && mission.length > 0,
       items: filterItems(mission)
     },
     {
       name: 'Requirements',
       key: 'requirements',
-      color: '#9badee',
-      bgcolor: '#f5f8ff',
+      color: colors.category.requirements,
+      bgcolor: `${colors.category.requirements}10`,
       active: activeCategories.requirements && requirements.length > 0,
       items: filterItems(requirements)
     },
     {
       name: 'Functions',
       key: 'functions',
-      color: '#a8dba8',
-      bgcolor: '#f0faf0',
+      color: colors.category.functions,
+      bgcolor: `${colors.category.functions}10`,
       active: activeCategories.functions && functions.length > 0,
       items: filterItems(functions)
     },
     {
       name: 'Logical',
       key: 'logical',
-      color: '#f3d5a0',
-      bgcolor: '#fffaf0',
+      color: colors.chart.series4,
+      bgcolor: `${colors.chart.series4}10`,
       active: activeCategories.logical && logical.length > 0,
       items: filterItems(logical)
     },
     {
       name: 'CAD',
       key: 'cad',
-      color: '#c8b5e0',
-      bgcolor: '#f9f5ff',
+      color: colors.category.cad,
+      bgcolor: `${colors.category.cad}10`,
       active: activeCategories.cad && cad.length > 0,
       items: filterItems(cad)
     },
     {
       name: 'EBOM',
       key: 'ebom',
-      color: '#f3b5cd',
-      bgcolor: '#fff5f8',
+      color: colors.category.bom,
+      bgcolor: `${colors.category.bom}10`,
       active: activeCategories.ebom && ebom.length > 0,
       items: filterItems(ebom)
     },
     {
       name: 'Models',
       key: 'models',
-      color: '#ffd5a0',
-      bgcolor: '#fff9f0',
+      color: colors.chart.series7,
+      bgcolor: `${colors.chart.series7}10`,
       active: activeCategories.models && models.length > 0,
       items: filterItems(models)
     },
     {
       name: 'Automation',
       key: 'automation',
-      color: '#ffb5b5',
-      bgcolor: '#fff5f5',
+      color: colors.chart.series8,
+      bgcolor: `${colors.chart.series8}10`,
       active: activeCategories.automation && automation.length > 0,
       items: filterItems(automation)
     }
-  ];
+  ].filter(category => category.items.length > 0);
 
-  // Filter to only include categories with items
-  const visibleCategories = categories.filter(cat => cat.items.length > 0);
-  
-  // Check if there are any items
-  const hasItems = visibleCategories.length > 0;
+  // No items to display
+  if (categories.length === 0) {
+    return renderEmpty();
+  }
 
-  // Toggle a category
+  // Toggle category visibility
   const toggleCategory = (key: string) => {
-    setActiveCategories(prev => ({
-      ...prev,
-      [key]: !prev[key]
-    }));
+    setActiveCategories({
+      ...activeCategories,
+      [key]: !activeCategories[key]
+    });
   };
 
-  // Render a related item in the standard format
+  // Render an individual item
   const renderItem = (item: RelatedItem, category: CategoryConfig) => {
     return (
-      <div 
+      <div
         key={item.id}
-        style={{ 
+        style={{
           padding: '8px 12px',
-          marginBottom: '6px',
-          backgroundColor: 'white',
-          borderRadius: '2px',
-          cursor: 'pointer',
-          display: 'flex',
-          flexDirection: 'column',
-          gap: '2px'
+          borderBottom: '1px solid #f0f0f0',
+          cursor: onItemClick ? 'pointer' : 'default',
         }}
         onClick={() => onItemClick && onItemClick(item, category.key)}
       >
-        <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
-          <Text strong style={{ fontSize: '12px' }}>{item.id}</Text>
-          {renderStatusTag(item.status)}
-        </div>
-        
-        <Text style={{ fontSize: '12px' }}>{item.title}</Text>
-        
-        <div style={{ 
-          display: 'flex', 
-          fontSize: '10px', 
-          color: '#999', 
-          marginTop: '2px',
-          alignItems: 'center'
-        }}>
-          <ClockCircleOutlined style={{ marginRight: '2px', fontSize: '10px' }} />
-          <Text type="secondary" style={{ fontSize: '10px' }}>
-            {formatDate(item.date)} by {item.author}
-          </Text>
+        <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start' }}>
+          <Space direction="vertical" size={0} style={{ flex: 1 }}>
+            <div>
+              <Text
+                strong
+                style={{ color: category.color, marginRight: '8px' }}
+              >
+                {item.id}
+              </Text>
+              <Text>{item.title}</Text>
+            </div>
+            
+            <div style={{ marginTop: '4px' }}>
+              <Space>
+                {renderStatusTag(item.status)}
+                <Text type="secondary" style={{ fontSize: '12px' }}>
+                  <ClockCircleOutlined style={{ marginRight: '4px' }} />
+                  {formatDate(item.date)}
+                </Text>
+              </Space>
+            </div>
+          </Space>
         </div>
       </div>
     );
   };
 
-  return (
-    <div>
-      <div style={{ 
-        display: 'flex', 
-        justifyContent: 'space-between', 
-        alignItems: 'center', 
-        marginBottom: '12px'
-      }}>
-        <div style={{ 
-          fontSize: '14px', 
-          display: 'flex',
-          alignItems: 'center'
-        }}>
-          <span style={{ marginRight: '8px' }}>Toggle Visibility:</span>
-          {visibleCategories.map(category => (
-            <Tag
-              key={category.key}
-              color={category.active ? category.color : undefined}
-              style={{ 
-                cursor: 'pointer',
-                margin: '0 4px',
-                userSelect: 'none',
-                color: category.active ? 'white' : undefined,
-                borderColor: category.active ? category.color : undefined
-              }}
-              onClick={() => toggleCategory(category.key)}
-            >
-              {category.name}
-            </Tag>
-          ))}
-          {hasItems && (
-            <Tag 
-              color={showAll ? undefined : "gold"}
-              style={{ cursor: 'pointer', marginLeft: '8px' }}
-              onClick={() => setShowAll(!showAll)}
-            >
-              <ClockCircleOutlined /> Changed in last 8 weeks
-            </Tag>
-          )}
-        </div>
-      </div>
+  // Calculate active categories for filter
+  const activeCategoryKeys = Object.entries(activeCategories)
+    .filter(([_, active]) => active)
+    .map(([key]) => key);
 
-      {hasItems && (
-        <Row gutter={[8, 8]} style={{ display: 'flex', overflowX: 'auto', flexWrap: 'nowrap' }}>
-          {visibleCategories.map(category => {
-            return category.active && (
-              <Col key={category.key} style={{ 
-                width: '200px', 
-                flex: '0 0 200px',
-                marginBottom: '12px'
-              }}>
-                <div style={{ 
-                  backgroundColor: category.bgcolor, 
-                  borderRadius: '4px',
-                  height: '100%',
-                  overflow: 'hidden'
-                }}>
-                  <div style={{ 
-                    padding: '6px 12px',
-                    backgroundColor: category.color,
-                    color: 'white',
-                    fontWeight: 'bold',
-                    fontSize: '12px'
-                  }}>
-                    {category.name}
-                  </div>
-                  <div style={{ 
-                    padding: '8px',
-                    maxHeight: '300px',
-                    overflowY: 'auto'
-                  }}>
-                    {category.items.length > 0 
-                      ? category.items.map(item => renderItem(item, category)) 
-                      : <div style={{ padding: '8px 16px', color: '#999' }}>No items</div>
-                    }
-                  </div>
-                </div>
-              </Col>
-            );
-          })}
+  return (
+    <div className="related-items-panel">
+      {/* Filter controls */}
+      {showFilter && categories.length > 1 && (
+        <Row 
+          justify="space-between" 
+          align="middle"
+          style={{ 
+            padding: '8px 16px', 
+            marginBottom: '12px', 
+            backgroundColor: colors.chart.backgroundLight,
+            borderRadius: '4px'
+          }}
+        >
+          <Col>
+            <ToggleVisibility 
+              activeCategories={activeCategories} 
+              setActiveCategories={setActiveCategories} 
+            />
+          </Col>
+          <Col>
+            <Space>
+              <Text type="secondary" style={{ fontSize: '12px' }}>Show only current</Text>
+              <Switch 
+                size="small" 
+                checked={!showAll} 
+                onChange={checked => setShowAll(!checked)} 
+              />
+            </Space>
+          </Col>
         </Row>
       )}
 
-      {!hasItems && renderEmpty()}
+      {/* Related items grid */}
+      <Row gutter={[16, 16]}>
+        {categories
+          .filter(category => category.active && category.items.length > 0)
+          .map(category => (
+            <Col xs={24} sm={12} md={8} lg={8} xl={6} key={category.key}>
+              <Card
+                title={
+                  <div style={{ color: category.color }}>
+                    {category.name}
+                    <span style={{ marginLeft: '8px', fontSize: '14px', fontWeight: 'normal' }}>
+                      ({category.items.length})
+                    </span>
+                  </div>
+                }
+                size="small"
+                bordered
+                style={{ 
+                  backgroundColor: category.bgcolor,
+                  border: `1px solid ${category.color}40`
+                }}
+                bodyStyle={{ padding: 0 }}
+              >
+                {category.items.map(item => renderItem(item, category))}
+              </Card>
+            </Col>
+          ))}
+      </Row>
     </div>
   );
 };
