@@ -11,7 +11,8 @@ import {
   Select,
   Row,
   Col,
-  Statistic
+  Statistic,
+  Tag
 } from 'antd';
 import type { ColumnsType, ColumnType } from 'antd/es/table';
 import { 

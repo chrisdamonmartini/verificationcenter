@@ -210,6 +210,13 @@ const ImprovedOverviewChanges: React.FC = () => {
     return DOMAIN_COLORS[domain as keyof typeof DOMAIN_COLORS] || colors.chart.textSecondary;
   };
 
+  // Get appropriate color for impact based on count
+  const getImpactColor = (count: number): string => {
+    if (count > 6) return colors.brand.primary; // High impact - use sidebar color
+    if (count > 3) return colors.brand.primary; // Medium impact - use sidebar color 
+    return colors.brand.primary; // Low impact - use sidebar color
+  };
+
   // Prepare pie chart data
   const pieChartData = preparePieChartData();
 
@@ -292,7 +299,7 @@ const ImprovedOverviewChanges: React.FC = () => {
       <div style={{ 
         position: 'absolute',
         top: '16px',
-        right: chartCollapsed ? '-420px' : '16px',
+        right: chartCollapsed ? '-550px' : '16px',
         width: '400px',
         transition: 'right 0.3s ease',
         zIndex: 1000,
@@ -428,6 +435,16 @@ const ChangeAwareness: React.FC = () => {
         border: 0.5px solid #BFBFBF !important; /* Thinner border */
         padding: 8px 12px !important; /* Reduced vertical padding for headers */
       }
+      /* Table sort highlight - match to sidebar color */
+      .ant-table-column-sort {
+        background-color: ${colors.brand.primary}10 !important;
+      }
+      .ant-table-thead th.ant-table-column-has-sorters:hover {
+        background-color: ${colors.brand.primary}20 !important;
+      }
+      .ant-table-column-sorter-up.active, .ant-table-column-sorter-down.active {
+        color: ${colors.brand.primary} !important;
+      }
       /* Table cell styles */
       .ant-table-tbody > tr > td {
         border: 0.5px solid #BFBFBF !important; /* Thinner border */
@@ -453,6 +470,32 @@ const ChangeAwareness: React.FC = () => {
         width: 10px;
         height: 100%;
         cursor: col-resize;
+      }
+      /* Style affected items tags to match color scheme */
+      .ant-tag {
+        border-color: ${colors.brand.primary}40 !important;
+      }
+      /* Style pagination to match sidebar color */
+      .ant-pagination-item-active {
+        border-color: ${colors.brand.primary} !important;
+      }
+      .ant-pagination-item-active a {
+        color: ${colors.brand.primary} !important;
+      }
+      .ant-pagination-item:hover {
+        border-color: ${colors.brand.primary} !important;
+      }
+      .ant-pagination-item:hover a {
+        color: ${colors.brand.primary} !important;
+      }
+      .ant-pagination-prev:hover .ant-pagination-item-link,
+      .ant-pagination-next:hover .ant-pagination-item-link {
+        color: ${colors.brand.primary} !important;
+        border-color: ${colors.brand.primary} !important;
+      }
+      .ant-select-focused:not(.ant-select-disabled).ant-select:not(.ant-select-customize-input) .ant-select-selector {
+        border-color: ${colors.brand.primary} !important;
+        box-shadow: 0 0 0 2px ${colors.brand.primary}33 !important;
       }
     `;
     document.head.appendChild(styleElement);
