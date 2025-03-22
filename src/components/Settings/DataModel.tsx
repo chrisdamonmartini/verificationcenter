@@ -194,7 +194,7 @@ const DataModel: React.FC = () => {
             nodeCanvasObject={(node: any, ctx: CanvasRenderingContext2D, globalScale: number) => {
               const label = node.name;
               const fontSize = 40/globalScale;
-              ctx.font = `bold ${fontSize}px Arial`;
+              ctx.font = `bold ${fontSize}px Segoe UI`;
               const textWidth = ctx.measureText(label).width;
               const bckgDimensions = [textWidth, fontSize].map(n => n + fontSize * 0.8);
 
@@ -222,7 +222,7 @@ const DataModel: React.FC = () => {
 
               if (node.desc && node.desc !== 'Main Section') {
                 const descFontSize = 30/globalScale;
-                ctx.font = `${descFontSize}px Arial`;
+                ctx.font = `${descFontSize}px Segoe UI`;
                 ctx.fillStyle = 'rgba(75, 85, 99, 0.9)';
                 ctx.fillText(node.desc, node.x, node.y + fontSize);
               }

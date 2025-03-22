@@ -164,7 +164,7 @@ const Sidebar: React.FC<SidebarProps> = ({ currentView, onNavigate }) => {
               <div className="text-center">
                 <span style={{ 
                   fontSize: '10px', 
-                  fontFamily: 'Arial, sans-serif',
+                  fontFamily: 'Segoe UI, sans-serif',
                   lineHeight: '1.1',
                   display: 'block',
                   width: '56px',

@@ -1,4 +1,9 @@
-/* App.css */ 
+/* App.css */
+/* Global font setting */
+* {
+  font-family: 'Segoe UI', sans-serif;
+}
+
 .App {
   text-align: center;
 }
