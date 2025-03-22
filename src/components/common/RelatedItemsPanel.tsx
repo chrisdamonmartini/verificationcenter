@@ -212,6 +212,14 @@ const RelatedItemsPanel: React.FC<RelatedItemsPanelProps> = ({
       items: filterItems(requirements)
     },
     {
+      name: 'Parameters',
+      key: 'parameters',
+      color: colors.category.parameter || colors.chart.series5,
+      bgcolor: `${colors.category.parameter || colors.chart.series5}10`,
+      active: activeCategories.parameters,
+      items: filterItems(parameters)
+    },
+    {
       name: 'Functions',
       key: 'functions',
       color: colors.category.functions,
@@ -242,14 +250,6 @@ const RelatedItemsPanel: React.FC<RelatedItemsPanelProps> = ({
       bgcolor: `${colors.category.bom}10`,
       active: activeCategories.ebom,
       items: filterItems(ebom)
-    },
-    {
-      name: 'Parameters',
-      key: 'parameters',
-      color: colors.category.parameter || colors.chart.series5,
-      bgcolor: `${colors.category.parameter || colors.chart.series5}10`,
-      active: activeCategories.parameters,
-      items: filterItems(parameters)
     },
     {
       name: 'Models',
@@ -331,93 +331,109 @@ const RelatedItemsPanel: React.FC<RelatedItemsPanelProps> = ({
         </Row>
       )}
 
-      {/* Related items grid */}
-      <Row gutter={[16, 16]} wrap={true}>
-        {categories
-          .filter(category => category.active)
-          .map(category => (
-            <Col xs={24} sm={12} md={6} lg={4} xl={3} key={category.key}>
-              <Card
-                title={
-                  <div style={{ color: category.color }}>
-                    {category.name}
-                    <span style={{ marginLeft: '8px', fontSize: '14px', fontWeight: 'normal' }}>
-                      ({category.items.length})
-                    </span>
-                  </div>
-                }
-                size="small"
-                bordered
-                style={{ 
-                  backgroundColor: category.bgcolor,
-                  border: `1px solid ${category.color}40`,
-                  height: '100%'
-                }}
-                bodyStyle={{ padding: '8px' }}
-              >
-                {category.items.length > 0 ? (
-                  <Space direction="vertical" style={{ width: '100%' }} size={8}>
-                    {category.items.map(item => {
-                      // Check if this is the current item being expanded
-                      const isCurrentItem = currentItem && item.id === currentItem.id && category.key === currentItemType;
-                      
-                      return (
-                        <Card
-                          key={item.id}
-                          size="small"
-                          style={{
-                            backgroundColor: isCurrentItem ? `${category.color}15` : '#ffffff',
-                            boxShadow: isCurrentItem ? `0 0 8px ${category.color}80` : '0 1px 2px rgba(0,0,0,0.1)',
-                            cursor: onItemClick ? 'pointer' : 'default',
-                            width: '100%',
-                            border: isCurrentItem ? `1px solid ${category.color}` : undefined
-                          }}
-                          onClick={() => onItemClick && onItemClick(item, category.key)}
-                          bodyStyle={{ padding: '8px' }}
-                        >
-                          <Space direction="vertical" size={4} style={{ width: '100%' }}>
-                            <div>
-                              <Text
-                                strong
-                                style={{ color: category.color, marginRight: '8px', display: 'block' }}
-                              >
-                                {isCurrentItem && <ExpandOutlined style={{ marginRight: '5px' }} />}
-                                {item.id}
-                              </Text>
-                              <Text style={{ fontSize: '0.9rem' }}>{item.title}</Text>
-                            </div>
-                            
-                            <div>
-                              <Space>
-                                {isCurrentItem && (
-                                  <Tag color={category.color}>Current</Tag>
-                                )}
-                                {!isCurrentItem && renderStatusTag(item.status)}
-                                <Text type="secondary" style={{ fontSize: '12px' }}>
-                                  <ClockCircleOutlined style={{ marginRight: '4px' }} />
-                                  {formatDate(item.date)}
+      {/* Related items grid with horizontal scrolling */}
+      <div style={{ 
+        width: '100%', 
+        overflowX: 'auto', 
+        whiteSpace: 'nowrap',
+        paddingBottom: '12px' // Extra padding for scrollbar
+      }}>
+        <div style={{ 
+          display: 'flex', 
+          flexDirection: 'row', 
+          gap: '16px'
+        }}>
+          {categories
+            .filter(category => category.active)
+            .map(category => (
+              <div key={category.key} style={{ 
+                minWidth: '280px',
+                display: 'inline-block',
+                verticalAlign: 'top'
+              }}>
+                <Card
+                  title={
+                    <div style={{ color: category.color }}>
+                      {category.name}
+                      <span style={{ marginLeft: '8px', fontSize: '14px', fontWeight: 'normal' }}>
+                        ({category.items.length})
+                      </span>
+                    </div>
+                  }
+                  size="small"
+                  bordered
+                  style={{ 
+                    backgroundColor: category.bgcolor,
+                    border: `1px solid ${category.color}40`,
+                    height: '100%',
+                    width: '100%'
+                  }}
+                  bodyStyle={{ padding: '8px' }}
+                >
+                  {category.items.length > 0 ? (
+                    <Space direction="vertical" style={{ width: '100%' }} size={8}>
+                      {category.items.map(item => {
+                        // Check if this is the current item being expanded
+                        const isCurrentItem = currentItem && item.id === currentItem.id && category.key === currentItemType;
+                        
+                        return (
+                          <Card
+                            key={item.id}
+                            size="small"
+                            style={{
+                              backgroundColor: isCurrentItem ? `${category.color}15` : '#ffffff',
+                              boxShadow: isCurrentItem ? `0 0 8px ${category.color}80` : '0 1px 2px rgba(0,0,0,0.1)',
+                              cursor: onItemClick ? 'pointer' : 'default',
+                              width: '100%',
+                              border: isCurrentItem ? `1px solid ${category.color}` : undefined
+                            }}
+                            onClick={() => onItemClick && onItemClick(item, category.key)}
+                            bodyStyle={{ padding: '8px' }}
+                          >
+                            <Space direction="vertical" size={4} style={{ width: '100%' }}>
+                              <div>
+                                <Text
+                                  strong
+                                  style={{ color: category.color, marginRight: '8px', display: 'block' }}
+                                >
+                                  {isCurrentItem && <ExpandOutlined style={{ marginRight: '5px' }} />}
+                                  {item.id}
                                 </Text>
-                              </Space>
-                            </div>
-                          </Space>
-                        </Card>
-                      );
-                    })}
-                  </Space>
-                ) : (
-                  <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', padding: '16px 8px' }}>
-                    <Empty 
-                      image={Empty.PRESENTED_IMAGE_SIMPLE} 
-                      description="No related items" 
-                      style={{ margin: '0 0 16px' }}
-                    />
-                    {onCreateRelationship && renderCreateRelationshipButton(category.key)}
-                  </div>
-                )}
-              </Card>
-            </Col>
-          ))}
-      </Row>
+                                <Text style={{ fontSize: '0.9rem', whiteSpace: 'normal' }}>{item.title}</Text>
+                              </div>
+                              
+                              <div>
+                                <Space>
+                                  {isCurrentItem && (
+                                    <Tag color={category.color}>Current</Tag>
+                                  )}
+                                  {!isCurrentItem && renderStatusTag(item.status)}
+                                  <Text type="secondary" style={{ fontSize: '12px' }}>
+                                    <ClockCircleOutlined style={{ marginRight: '4px' }} />
+                                    {formatDate(item.date)}
+                                  </Text>
+                                </Space>
+                              </div>
+                            </Space>
+                          </Card>
+                        );
+                      })}
+                    </Space>
+                  ) : (
+                    <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', padding: '16px 8px' }}>
+                      <Empty 
+                        image={Empty.PRESENTED_IMAGE_SIMPLE} 
+                        description="No related items" 
+                        style={{ margin: '0 0 16px' }}
+                      />
+                      {onCreateRelationship && renderCreateRelationshipButton(category.key)}
+                    </div>
+                  )}
+                </Card>
+              </div>
+            ))}
+        </div>
+      </div>
     </div>
   );
 };
