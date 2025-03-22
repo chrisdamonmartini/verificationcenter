@@ -319,7 +319,8 @@ export const getStandardColumns = <T extends StandardBaseChange>(
       dataIndex: 'title',
       key: 'title',
       render: (text) => <Text>{text}</Text>,
-      ellipsis: true
+      ellipsis: true,
+      width: '30%'
     },
     {
       title: 'Category',
@@ -341,23 +342,6 @@ export const getStandardColumns = <T extends StandardBaseChange>(
       ],
       onFilter: (value, record) => record.changeType === value,
       sorter: (a, b) => a.changeType.localeCompare(b.changeType),
-      sortDirections: ['ascend', 'descend']
-    },
-    {
-      title: 'Severity',
-      dataIndex: 'severity',
-      key: 'severity',
-      render: (severity) => <SeverityTag severity={severity} />,
-      filters: [
-        { text: 'Critical', value: 'critical' },
-        { text: 'Major', value: 'major' },
-        { text: 'Minor', value: 'minor' }
-      ],
-      onFilter: (value, record) => record.severity === value,
-      sorter: (a, b) => {
-        const severityOrder: Record<string, number> = { critical: 1, major: 2, minor: 3 };
-        return severityOrder[a.severity] - severityOrder[b.severity];
-      },
       sortDirections: ['ascend', 'descend']
     },
     {
