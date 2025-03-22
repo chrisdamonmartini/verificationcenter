@@ -3,7 +3,7 @@ import { Typography, Row, Col, Space, Descriptions, Table, Card, Tabs, Tag, Divi
 import type { TableProps } from 'antd';
 import { NodeIndexOutlined, InfoCircleOutlined } from '@ant-design/icons';
 import { BaseChange, ImpactedItem } from '../../../types/changeAwareness';
-import { Code, SeverityTag, ChangeTypeTag } from './UtilityComponents';
+import { CodeDisplay, SeverityTag, ChangeTypeTag } from './UtilityComponents';
 import RelatedItemsPanel from '../../common/RelatedItemsPanel';
 
 const { Text, Title, Paragraph } = Typography;
@@ -100,7 +100,7 @@ export const StandardExpandedRow = <T extends StandardExpandedChange>({
       title: 'ID',
       dataIndex: 'id',
       key: 'id',
-      render: (text) => <Code>{text}</Code>,
+      render: (text) => <CodeDisplay value={text} monospace />,
     }
   ];
 
@@ -217,4 +217,16 @@ interface DocumentsSectionProps<T extends StandardExpandedChange> {
 
 function DocumentsSection<T extends StandardExpandedChange>({ record }: DocumentsSectionProps<T>) {
   return null;
-} 
+}
+
+// For impacted items table
+export const getImpactedItemsColumns = (): TableProps<ImpactedItem>['columns'] => {
+  return [
+    {
+      title: 'ID',
+      dataIndex: 'id',
+      key: 'id',
+      render: (text) => <CodeDisplay value={text} monospace />,
+    }
+  ];
+}; 

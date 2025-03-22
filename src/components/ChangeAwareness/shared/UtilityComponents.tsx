@@ -16,8 +16,16 @@ import useColors from '../../../hooks/useColors';
 const { Text } = Typography;
 
 // Code display component for IDs
-export const CodeDisplay: React.FC<{ value: string; type?: string; monospace?: boolean; bold?: boolean }> = ({ value, type, monospace = false, bold = false }) => {
+export const CodeDisplay: React.FC<{ 
+  value?: string; 
+  type?: string; 
+  monospace?: boolean; 
+  bold?: boolean;
+  children?: React.ReactNode;
+}> = ({ value, type, monospace = false, bold = false, children }) => {
   const colors = useColors();
+  const displayValue = value || (children ? String(children) : '');
+  
   const style: React.CSSProperties = {
     fontFamily: monospace ? 'monospace' : 'inherit',
     fontWeight: bold ? 'bold' : 'normal',
@@ -28,7 +36,7 @@ export const CodeDisplay: React.FC<{ value: string; type?: string; monospace?: b
 
   return (
     <span style={style}>
-      {value}
+      {displayValue}
     </span>
   );
 };
