@@ -225,20 +225,34 @@ const ImprovedOverviewChanges: React.FC = () => {
     const styleElement = document.createElement('style');
     styleElement.textContent = `
       .chart-container-animate {
-        transition: all 0.5s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+        transition: all 0.5s ease;
       }
       .chart-toggle-button:hover {
-        transform: scale(1.1);
+        transform: scale(1.05);
       }
       .recharts-pie {
         transition: transform 0.5s ease;
       }
       .chart-container-animate.open .recharts-pie {
-        animation: pieEnter 0.8s forwards;
+        animation: pieEnter 0.8s ease forwards;
+      }
+      .recharts-sector {
+        transition: all 0.6s ease;
+        transform-origin: center center;
+      }
+      .chart-container-animate:not(.open) .recharts-sector {
+        transform: scale(0);
+      }
+      .chart-container-animate.open .recharts-sector {
+        animation: sectorFanOut 0.8s ease forwards;
       }
       @keyframes pieEnter {
-        0% { transform: scale(0.8) rotate(-180deg); opacity: 0; }
-        100% { transform: scale(1) rotate(0deg); opacity: 1; }
+        0% { opacity: 0; }
+        100% { opacity: 1; }
+      }
+      @keyframes sectorFanOut {
+        0% { transform: scale(0); opacity: 0; }
+        100% { transform: scale(1); opacity: 1; }
       }
     `;
     document.head.appendChild(styleElement);
@@ -329,13 +343,12 @@ const ImprovedOverviewChanges: React.FC = () => {
         style={{ 
           position: 'absolute',
           top: '16px',
-          right: chartCollapsed ? '-650px' : '16px',
-          width: '400px',
-          transition: 'right 0.5s cubic-bezier(0.175, 0.885, 0.32, 1.275), opacity 0.4s ease, transform 0.5s ease',
+          right: chartCollapsed ? '-750px' : '16px',
+          width: '500px',
+          transition: 'right 0.6s ease, opacity 0.4s ease',
           zIndex: 1000,
           opacity: chartCollapsed ? 0 : 1,
-          transform: chartCollapsed ? 'translateX(50px) rotate(180deg)' : 'translateX(0) rotate(0deg)',
-          transformOrigin: 'right center',
+          transform: 'translateX(0)',
           boxShadow: chartCollapsed ? 'none' : '0 4px 20px rgba(0,0,0,0.25)',
         }}
       >
@@ -343,9 +356,8 @@ const ImprovedOverviewChanges: React.FC = () => {
           style={{ 
             boxShadow: '0 4px 12px rgba(0,0,0,0.2)',
             borderRadius: '8px',
-            transition: 'all 0.5s cubic-bezier(0.175, 0.885, 0.32, 1.275)',
-            transform: chartCollapsed ? 'scale(0.9) rotate(180deg)' : 'scale(1) rotate(0deg)',
-            transformOrigin: 'center center',
+            transition: 'all 0.5s ease',
+            transform: chartCollapsed ? 'scale(0.95)' : 'scale(1)',
           }}
           title={
             <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
@@ -366,13 +378,17 @@ const ImprovedOverviewChanges: React.FC = () => {
               <PieChart>
                 <Pie
                   data={pieChartData}
-                  cx="50%"
+                  cx="60%"
                   cy="50%"
                   labelLine={false}
                   label={renderCustomizedLabel}
-                  outerRadius={120}
+                  outerRadius={125}
                   fill="#8884d8"
                   dataKey="value"
+                  startAngle={90}
+                  endAngle={-270}
+                  animationBegin={300}
+                  animationDuration={800}
                 >
                   {pieChartData.map((entry, index) => (
                     <Cell 
@@ -391,8 +407,9 @@ const ImprovedOverviewChanges: React.FC = () => {
                   verticalAlign="middle"
                   iconSize={10}
                   wrapperStyle={{
-                    paddingLeft: 10,
-                    paddingRight: 10
+                    paddingLeft: 20,
+                    paddingRight: 20,
+                    left: 10  // More space between legend and chart
                   }}
                 />
               </PieChart>
@@ -409,22 +426,19 @@ const ImprovedOverviewChanges: React.FC = () => {
       {/* Show toggle button when chart is collapsed */}
       <Button 
         type="primary"
-        icon={<PieChartOutlined style={{ 
-          transition: 'transform 0.5s ease',
-          transform: chartCollapsed ? 'rotate(0deg)' : 'rotate(-180deg)'
-        }} />}
+        icon={<PieChartOutlined />}
         onClick={() => setChartCollapsed(false)}
         style={{ 
           position: 'absolute',
           top: '16px',
           right: chartCollapsed ? '0' : '-100px',
-          transition: 'right 0.5s cubic-bezier(0.175, 0.885, 0.32, 1.275), opacity 0.4s ease, transform 0.5s cubic-bezier(0.175, 0.885, 0.32, 1.275)',
+          transition: 'right 0.5s ease, opacity 0.4s ease',
           zIndex: 1000,
           borderRadius: '4px 0 0 4px',
           opacity: chartCollapsed ? 1 : 0,
           backgroundColor: colors.brand.primary,
           borderColor: colors.brand.primary,
-          transform: chartCollapsed ? 'translateX(0) rotate(0deg)' : 'translateX(50px) rotate(-180deg)',
+          transform: 'translateX(0)',
           boxShadow: '0 2px 8px rgba(0,0,0,0.2)',
         }}
       />
