@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
-import { Card, Row, Col, Badge, Typography, Tooltip, Empty, Switch, Space, Tag, Table } from 'antd';
-import { ClockCircleOutlined, CheckCircleOutlined, ExclamationCircleOutlined, ExpandOutlined } from '@ant-design/icons';
+import { Card, Row, Col, Badge, Typography, Tooltip, Empty, Switch, Space, Tag, Table, Button } from 'antd';
+import { ClockCircleOutlined, CheckCircleOutlined, ExclamationCircleOutlined, ExpandOutlined, PlusOutlined, LinkOutlined } from '@ant-design/icons';
 import dayjs from 'dayjs';
 import useColors from '../../hooks/useColors';
 
@@ -77,12 +77,13 @@ export interface RelatedItemsPanelProps {
   ebom?: EBOMItem[];
   models?: ModelItem[];
   automation?: AutomationItem[];
-  parameters?: ParameterItem[]; // Add new parameters prop
+  parameters?: ParameterItem[];
   defaultActiveTab?: string;
   onItemClick?: (item: RelatedItem, type: string) => void;
   showFilter?: boolean;
   currentItem?: RelatedItem;
   currentItemType?: string;
+  onCreateRelationship?: (categoryKey: string) => void;
 }
 
 interface CategoryConfig {
@@ -103,12 +104,13 @@ const RelatedItemsPanel: React.FC<RelatedItemsPanelProps> = ({
   ebom = [],
   models = [],
   automation = [],
-  parameters = [], // Add default empty array for parameters
+  parameters = [],
   defaultActiveTab,
   onItemClick,
   showFilter = true,
   currentItem,
   currentItemType,
+  onCreateRelationship,
 }) => {
   const colors = useColors();
   // Always show all items, keep the state for backward compatibility
@@ -122,7 +124,8 @@ const RelatedItemsPanel: React.FC<RelatedItemsPanelProps> = ({
     ebom: true,
     models: true,
     automation: true,
-    parameters: true, // Add parameters to active categories
+    parameters: true,
+    operationalScenario: true,
   });
 
   // Filter items if showAll is false (only show Current items)
@@ -182,22 +185,30 @@ const RelatedItemsPanel: React.FC<RelatedItemsPanelProps> = ({
     <Empty image={Empty.PRESENTED_IMAGE_SIMPLE} description="No related items" style={{ margin: '20px 0' }} />
   );
 
-  // Define category configs with styling
-  const categories = [
+  // Define category configs with styling - now ordered as required
+  const categoryConfigs = [
     {
       name: 'Mission',
       key: 'mission',
       color: colors.category.mission,
       bgcolor: `${colors.category.mission}10`,
-      active: activeCategories.mission && mission.length > 0,
+      active: activeCategories.mission,
       items: filterItems(mission)
+    },
+    {
+      name: 'Operational Scenario',
+      key: 'operationalScenario',
+      color: colors.category.mission || colors.chart.series3,
+      bgcolor: `${colors.category.mission || colors.chart.series3}10`,
+      active: activeCategories.operationalScenario,
+      items: []
     },
     {
       name: 'Requirements',
       key: 'requirements',
       color: colors.category.requirements,
       bgcolor: `${colors.category.requirements}10`,
-      active: activeCategories.requirements && requirements.length > 0,
+      active: activeCategories.requirements,
       items: filterItems(requirements)
     },
     {
@@ -205,7 +216,7 @@ const RelatedItemsPanel: React.FC<RelatedItemsPanelProps> = ({
       key: 'functions',
       color: colors.category.functions,
       bgcolor: `${colors.category.functions}10`,
-      active: activeCategories.functions && functions.length > 0,
+      active: activeCategories.functions,
       items: filterItems(functions)
     },
     {
@@ -213,23 +224,15 @@ const RelatedItemsPanel: React.FC<RelatedItemsPanelProps> = ({
       key: 'logical',
       color: colors.chart.series4,
       bgcolor: `${colors.chart.series4}10`,
-      active: activeCategories.logical && logical.length > 0,
+      active: activeCategories.logical,
       items: filterItems(logical)
-    },
-    {
-      name: 'Parameters',
-      key: 'parameters',
-      color: colors.category.parameter || colors.chart.series5,
-      bgcolor: `${colors.category.parameter || colors.chart.series5}10`,
-      active: activeCategories.parameters && (parameters.length > 0 || (currentItem && currentItemType === 'parameters')),
-      items: filterItems(parameters)
     },
     {
       name: 'CAD',
       key: 'cad',
       color: colors.category.cad,
       bgcolor: `${colors.category.cad}10`,
-      active: activeCategories.cad && cad.length > 0,
+      active: activeCategories.cad,
       items: filterItems(cad)
     },
     {
@@ -237,15 +240,23 @@ const RelatedItemsPanel: React.FC<RelatedItemsPanelProps> = ({
       key: 'ebom',
       color: colors.category.bom,
       bgcolor: `${colors.category.bom}10`,
-      active: activeCategories.ebom && ebom.length > 0,
+      active: activeCategories.ebom,
       items: filterItems(ebom)
+    },
+    {
+      name: 'Parameters',
+      key: 'parameters',
+      color: colors.category.parameter || colors.chart.series5,
+      bgcolor: `${colors.category.parameter || colors.chart.series5}10`,
+      active: activeCategories.parameters,
+      items: filterItems(parameters)
     },
     {
       name: 'Models',
       key: 'models',
       color: colors.chart.series7,
       bgcolor: `${colors.chart.series7}10`,
-      active: activeCategories.models && models.length > 0,
+      active: activeCategories.models,
       items: filterItems(models)
     },
     {
@@ -253,13 +264,13 @@ const RelatedItemsPanel: React.FC<RelatedItemsPanelProps> = ({
       key: 'automation',
       color: colors.chart.series8,
       bgcolor: `${colors.chart.series8}10`,
-      active: activeCategories.automation && automation.length > 0,
+      active: activeCategories.automation,
       items: filterItems(automation)
     }
-  ].filter(category => {
-    // Show the category if it has items OR if it's the current item's category
-    return (category.items.length > 0) || (currentItem && currentItemType === category.key);
-  });
+  ];
+  
+  // Always show all categories - no longer filter by items.length
+  const categories = categoryConfigs;
 
   // Add current item to categories if it exists and is not already included
   if (currentItem && currentItemType) {
@@ -277,7 +288,25 @@ const RelatedItemsPanel: React.FC<RelatedItemsPanelProps> = ({
     }
   }
 
-  // No items to display
+  // Render the "Create Relationship" button for empty categories
+  const renderCreateRelationshipButton = (categoryKey: string) => {
+    return (
+      <Button 
+        type="dashed" 
+        icon={<LinkOutlined />} 
+        style={{ 
+          width: '100%', 
+          marginTop: '8px',
+          borderColor: colors.ui.borderDark
+        }}
+        onClick={() => onCreateRelationship && onCreateRelationship(categoryKey)}
+      >
+        Create Relationship
+      </Button>
+    );
+  };
+
+  // No items to display - since we're now showing all categories, this should no longer happen
   if (categories.length === 0) {
     return renderEmpty();
   }
@@ -305,7 +334,7 @@ const RelatedItemsPanel: React.FC<RelatedItemsPanelProps> = ({
       {/* Related items grid */}
       <Row gutter={[16, 16]} wrap={true}>
         {categories
-          .filter(category => category.active && category.items.length > 0)
+          .filter(category => category.active)
           .map(category => (
             <Col xs={24} sm={12} md={6} lg={4} xl={3} key={category.key}>
               <Card
@@ -326,54 +355,65 @@ const RelatedItemsPanel: React.FC<RelatedItemsPanelProps> = ({
                 }}
                 bodyStyle={{ padding: '8px' }}
               >
-                <Space direction="vertical" style={{ width: '100%' }} size={8}>
-                  {category.items.map(item => {
-                    // Check if this is the current item being expanded
-                    const isCurrentItem = currentItem && item.id === currentItem.id && category.key === currentItemType;
-                    
-                    return (
-                      <Card
-                        key={item.id}
-                        size="small"
-                        style={{
-                          backgroundColor: isCurrentItem ? `${category.color}15` : '#ffffff',
-                          boxShadow: isCurrentItem ? `0 0 8px ${category.color}80` : '0 1px 2px rgba(0,0,0,0.1)',
-                          cursor: onItemClick ? 'pointer' : 'default',
-                          width: '100%',
-                          border: isCurrentItem ? `1px solid ${category.color}` : undefined
-                        }}
-                        onClick={() => onItemClick && onItemClick(item, category.key)}
-                        bodyStyle={{ padding: '8px' }}
-                      >
-                        <Space direction="vertical" size={4} style={{ width: '100%' }}>
-                          <div>
-                            <Text
-                              strong
-                              style={{ color: category.color, marginRight: '8px', display: 'block' }}
-                            >
-                              {isCurrentItem && <ExpandOutlined style={{ marginRight: '5px' }} />}
-                              {item.id}
-                            </Text>
-                            <Text style={{ fontSize: '0.9rem' }}>{item.title}</Text>
-                          </div>
-                          
-                          <div>
-                            <Space>
-                              {isCurrentItem && (
-                                <Tag color={category.color}>Current</Tag>
-                              )}
-                              {!isCurrentItem && renderStatusTag(item.status)}
-                              <Text type="secondary" style={{ fontSize: '12px' }}>
-                                <ClockCircleOutlined style={{ marginRight: '4px' }} />
-                                {formatDate(item.date)}
+                {category.items.length > 0 ? (
+                  <Space direction="vertical" style={{ width: '100%' }} size={8}>
+                    {category.items.map(item => {
+                      // Check if this is the current item being expanded
+                      const isCurrentItem = currentItem && item.id === currentItem.id && category.key === currentItemType;
+                      
+                      return (
+                        <Card
+                          key={item.id}
+                          size="small"
+                          style={{
+                            backgroundColor: isCurrentItem ? `${category.color}15` : '#ffffff',
+                            boxShadow: isCurrentItem ? `0 0 8px ${category.color}80` : '0 1px 2px rgba(0,0,0,0.1)',
+                            cursor: onItemClick ? 'pointer' : 'default',
+                            width: '100%',
+                            border: isCurrentItem ? `1px solid ${category.color}` : undefined
+                          }}
+                          onClick={() => onItemClick && onItemClick(item, category.key)}
+                          bodyStyle={{ padding: '8px' }}
+                        >
+                          <Space direction="vertical" size={4} style={{ width: '100%' }}>
+                            <div>
+                              <Text
+                                strong
+                                style={{ color: category.color, marginRight: '8px', display: 'block' }}
+                              >
+                                {isCurrentItem && <ExpandOutlined style={{ marginRight: '5px' }} />}
+                                {item.id}
                               </Text>
-                            </Space>
-                          </div>
-                        </Space>
-                      </Card>
-                    );
-                  })}
-                </Space>
+                              <Text style={{ fontSize: '0.9rem' }}>{item.title}</Text>
+                            </div>
+                            
+                            <div>
+                              <Space>
+                                {isCurrentItem && (
+                                  <Tag color={category.color}>Current</Tag>
+                                )}
+                                {!isCurrentItem && renderStatusTag(item.status)}
+                                <Text type="secondary" style={{ fontSize: '12px' }}>
+                                  <ClockCircleOutlined style={{ marginRight: '4px' }} />
+                                  {formatDate(item.date)}
+                                </Text>
+                              </Space>
+                            </div>
+                          </Space>
+                        </Card>
+                      );
+                    })}
+                  </Space>
+                ) : (
+                  <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', padding: '16px 8px' }}>
+                    <Empty 
+                      image={Empty.PRESENTED_IMAGE_SIMPLE} 
+                      description="No related items" 
+                      style={{ margin: '0 0 16px' }}
+                    />
+                    {onCreateRelationship && renderCreateRelationshipButton(category.key)}
+                  </div>
+                )}
               </Card>
             </Col>
           ))}

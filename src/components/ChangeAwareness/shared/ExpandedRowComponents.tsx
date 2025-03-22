@@ -117,6 +117,17 @@ export const StandardExpandedRow = <T extends StandardExpandedChange>({
       }))
     : [];
 
+  // Map for operational scenario items
+  const operationalScenarioItems = impactedItemsData
+    .filter(item => item.type.toLowerCase() === 'operationalscenario')
+    .map(item => ({
+      title: item.name,
+      status: 'Current',
+      date: new Date().toISOString(),
+      author: 'System',
+      ...item
+    }));
+
   // Transform impacted items into the RelatedItemsPanel format
   const mapImpactedItemsToRelatedItems = () => {
     // Group items by type
@@ -147,7 +158,8 @@ export const StandardExpandedRow = <T extends StandardExpandedChange>({
       ebom: groupedItems.bom || [],
       models: groupedItems.model || [],
       automation: groupedItems.automation || [],
-      parameters: groupedItems.parameter || [] // Add parameters mapping
+      parameters: groupedItems.parameter || [],
+      operationalScenario: operationalScenarioItems, // Add operational scenario items
     };
   };
 
@@ -168,6 +180,7 @@ export const StandardExpandedRow = <T extends StandardExpandedChange>({
   else if (currentItemType === 'parameter') mappedCurrentItemType = 'parameters';
   else if (currentItemType === 'cad') mappedCurrentItemType = 'cad';
   else if (currentItemType === 'bom') mappedCurrentItemType = 'ebom';
+  else if (currentItemType === 'operationalscenario') mappedCurrentItemType = 'operationalScenario';
   
   // Create the current item in the format expected by RelatedItemsPanel
   const currentItem = {
@@ -179,35 +192,34 @@ export const StandardExpandedRow = <T extends StandardExpandedChange>({
     author: record.author
   };
 
+  // Handle creating a relationship
+  const handleCreateRelationship = (categoryKey: string) => {
+    console.log(`Creating relationship with ${categoryKey} for item ${record.id}`);
+    // In a real implementation, this would open a modal or navigate to create a relationship
+    alert(`Creating relationship with ${categoryKey} for item ${record.id}`);
+  };
+
   return (
     <div className="expanded-row" style={{ padding: '0 20px 20px 20px' }}>
       <Row gutter={[24, 16]}>
         {/* Impact Analysis Section - Full Width */}
         {showImpact && (
           <Col xs={24}>
-            {hasRelatedItems ? (
-              <RelatedItemsPanel
-                mission={relatedItems.mission}
-                requirements={relatedItems.requirements}
-                functions={relatedItems.functions}
-                logical={relatedItems.logical}
-                cad={relatedItems.cad}
-                ebom={relatedItems.ebom}
-                models={relatedItems.models}
-                automation={relatedItems.automation}
-                parameters={relatedItems.parameters} // Add parameters to RelatedItemsPanel
-                defaultActiveTab={Object.keys(relatedItems).find(key => relatedItems[key as keyof typeof relatedItems].length > 0)}
-                currentItem={currentItem}
-                currentItemType={mappedCurrentItemType}
-              />
-            ) : (
-              <Alert
-                message="No impact analysis available"
-                description="There are no traced impacts for this change."
-                type="info"
-                showIcon
-              />
-            )}
+            <RelatedItemsPanel
+              mission={relatedItems.mission}
+              requirements={relatedItems.requirements}
+              functions={relatedItems.functions}
+              logical={relatedItems.logical}
+              cad={relatedItems.cad}
+              ebom={relatedItems.ebom}
+              models={relatedItems.models}
+              automation={relatedItems.automation}
+              parameters={relatedItems.parameters}
+              defaultActiveTab={Object.keys(relatedItems).find(key => relatedItems[key as keyof typeof relatedItems].length > 0)}
+              currentItem={currentItem}
+              currentItemType={mappedCurrentItemType}
+              onCreateRelationship={handleCreateRelationship}
+            />
           </Col>
         )}
       </Row>
