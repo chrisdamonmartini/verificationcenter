@@ -464,7 +464,98 @@ const ImprovedOverviewChanges: React.FC = () => {
         </Card>
       </div>
       
-      {/* Toggle button - simplified implementation */}
+      {/* Simplified Pie Chart - Single container */}
+      <div 
+        className={`pie-chart-container ${!chartCollapsed ? 'visible' : 'hidden'}`}
+        style={{ 
+          position: 'absolute',
+          top: '16px',
+          right: chartCollapsed ? '-850px' : '16px',
+          width: '650px',
+          transition: 'right 0.6s ease, opacity 0.4s ease',
+          zIndex: 1000,
+          opacity: chartCollapsed ? 0 : 1,
+          boxShadow: chartCollapsed ? 'none' : '0 4px 20px rgba(0,0,0,0.25)',
+          backgroundColor: 'white',
+          borderRadius: '8px',
+          overflow: 'hidden',
+          padding: '16px'
+        }}
+      >
+        {/* Header */}
+        <div style={{ 
+          display: 'flex', 
+          alignItems: 'center', 
+          justifyContent: 'space-between',
+          borderBottom: '1px solid #f0f0f0',
+          paddingBottom: '12px',
+          marginBottom: '12px'
+        }}>
+          <div style={{ display: 'flex', alignItems: 'center' }}>
+            <PieChartOutlined style={{ marginRight: 8, color: colors.brand.primary }} />
+            <span style={{ fontSize: '16px', fontWeight: 500 }}>Changes by Source</span>
+          </div>
+          <Button 
+            type="text" 
+            icon={<RightOutlined />}
+            onClick={() => setChartCollapsed(true)}
+          />
+        </div>
+        
+        {/* Chart */}
+        <div style={{ height: 350, position: 'relative' }}>
+          <ResponsiveContainer width="100%" height="100%">
+            <PieChart>
+              <Pie
+                data={pieChartData}
+                cx="50%"
+                cy="50%"
+                labelLine={false}
+                label={renderCustomizedLabel}
+                outerRadius={140}
+                fill="#8884d8"
+                dataKey="value"
+                startAngle={90}
+                endAngle={-270}
+                isAnimationActive={false}
+                className="pie-chart-sectors"
+              >
+                {pieChartData.map((entry, index) => (
+                  <Cell 
+                    key={`cell-${index}`} 
+                    fill={getDomainColor(entry.domain)} 
+                    className={`sector-${index}`}
+                  />
+                ))}
+              </Pie>
+              <RechartsTooltip 
+                formatter={(value, name) => [`${value} Changes`, name]}
+                labelFormatter={() => 'Source Distribution'}
+              />
+              <Legend 
+                layout="vertical"
+                align="left"
+                verticalAlign="middle"
+                iconSize={12}
+                wrapperStyle={{
+                  paddingLeft: 30,
+                  paddingRight: 25,
+                  left: 20
+                }}
+              />
+            </PieChart>
+          </ResponsiveContainer>
+        </div>
+        
+        {/* Footer */}
+        <div style={{ marginTop: 4, textAlign: 'center' }}>
+          <Text type="secondary">
+            Total: {data.length} changes in last {weeks} weeks
+          </Text>
+        </div>
+      </div>
+      
+      {/* Toggle button */}
       <Button 
         type="primary"
         icon={<PieChartOutlined />}
