@@ -234,17 +234,21 @@ const ImprovedOverviewChanges: React.FC = () => {
         position: relative;
         z-index: 2;
       }
+      /* Setup for angle sweep animations */
       .recharts-sector {
-        transform-origin: center 125%;  /* Origin at bottom center of chart */
-        transition: transform 0.6s ease;
+        transform-origin: center center;
+        transition: opacity 0.3s ease;
       }
-      /* Fan unfold on entry */
-      .chart-container-animate.open .recharts-sector {
-        animation: fanUnfold 0.8s ease forwards;
+      /* Control animations on specific sectors */
+      .recharts-layer .recharts-sector {
+        opacity: 0;
       }
-      /* Fold back on exit */
-      .chart-container-animate:not(.open) .recharts-sector {
-        animation: fanFold 0.6s ease forwards;
+      .chart-container-animate.open .recharts-layer .recharts-sector {
+        animation: sectorSweepIn 0.8s ease forwards;
+        opacity: 1;
+      }
+      .chart-container-animate:not(.open) .recharts-layer .recharts-sector {
+        animation: sectorSweepOut 0.6s ease forwards;
       }
       /* Individual sector delays for sequential animation */
       .recharts-sector:nth-child(1) { animation-delay: 0ms; }
@@ -255,15 +259,28 @@ const ImprovedOverviewChanges: React.FC = () => {
       .recharts-sector:nth-child(6) { animation-delay: 250ms; }
       .recharts-sector:nth-child(7) { animation-delay: 300ms; }
       .recharts-sector:nth-child(8) { animation-delay: 350ms; }
-      /* Fan out from bottom animation */
-      @keyframes fanUnfold {
-        0% { transform: scaleY(0.1) translateY(30px); opacity: 0; }
-        100% { transform: scaleY(1) translateY(0); opacity: 1; }
+      
+      /* Angle sweep in animation */
+      @keyframes sectorSweepIn {
+        0% { 
+          opacity: 0;
+          transform: rotate(-90deg) scale(0.8);
+        }
+        100% { 
+          opacity: 1;
+          transform: rotate(0deg) scale(1);
+        }
       }
-      /* Fan fold to bottom animation */
-      @keyframes fanFold {
-        0% { transform: scaleY(1) translateY(0); opacity: 1; }
-        100% { transform: scaleY(0.1) translateY(30px); opacity: 0; }
+      /* Reverse angle sweep animation for exit */
+      @keyframes sectorSweepOut {
+        0% { 
+          opacity: 1;
+          transform: rotate(0deg) scale(1);
+        }
+        100% { 
+          opacity: 0;
+          transform: rotate(-90deg) scale(0.8);
+        }
       }
       /* Remove any potential ghosting effects */
       .recharts-wrapper {
@@ -428,14 +445,9 @@ const ImprovedOverviewChanges: React.FC = () => {
                   verticalAlign="middle"
                   iconSize={12}
                   wrapperStyle={{
-                    paddingLeft: 25,
+                    paddingLeft: 30,
                     paddingRight: 25,
-                    left: 20,
-                    top: -20,
-                    backgroundColor: 'rgba(255, 255, 255, 0.9)',
-                    borderRadius: '4px',
-                    padding: '10px',
-                    boxShadow: '0 2px 6px rgba(0,0,0,0.1)'
+                    left: 20
                   }}
                 />
               </PieChart>
