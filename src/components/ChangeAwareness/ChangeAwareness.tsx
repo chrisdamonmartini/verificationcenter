@@ -218,291 +218,293 @@ const ChangeAwareness: React.FC = () => {
 
   return (
     <div className="change-awareness-container">
-      <Tabs
-        defaultActiveKey="overview"
-        className="changes-tabs"
-        activeKey={activeTab}
-        onChange={(key) => {
-          // Stop event propagation to prevent affecting sidebar
-          setActiveTab(key);
-        }}
-      >
-        <TabPane
-          tab={<span><BranchesOutlined /> Overview</span>}
-          key="overview"
+      <ContentPanel>
+        <Tabs
+          defaultActiveKey="overview"
+          className="changes-tabs"
+          activeKey={activeTab}
+          onChange={(key) => {
+            // Stop event propagation to prevent affecting sidebar
+            setActiveTab(key);
+          }}
         >
-          {/* Weeks filter control */}
-          <ContentPanel style={{ marginBottom: 16 }}>
-            <Row gutter={16} align="middle">
-              <Col xs={24} md={4}>
-                <Text strong>Time Period:</Text>
-              </Col>
-              <Col xs={24} md={12}>
-                <Slider
-                  min={1}
-                  max={52}
-                  value={weeksFilter}
-                  onChange={value => setWeeksFilter(value)}
-                  tooltip={{ formatter: (value) => `${value} weeks` }}
-                />
-              </Col>
-              <Col xs={24} md={8}>
-                <InputNumber
-                  min={1}
-                  max={52}
-                  value={weeksFilter}
-                  onChange={value => setWeeksFilter(value as number)}
-                  addonBefore="Last"
-                  addonAfter="Weeks"
-                  style={{ width: '100%' }}
-                />
-              </Col>
-            </Row>
-            <Row style={{ marginTop: 8 }}>
-              <Col span={24}>
-                <Text type="secondary">
-                  Showing changes from {dashboardData.startDate.format('MMM D, YYYY')} to {dashboardData.endDate.format('MMM D, YYYY')}
-                </Text>
-              </Col>
-            </Row>
-          </ContentPanel>
+          <TabPane
+            tab={<span><BranchesOutlined /> Overview</span>}
+            key="overview"
+          >
+            {/* Weeks filter control */}
+            <ContentPanel style={{ marginBottom: 16 }}>
+              <Row gutter={16} align="middle">
+                <Col xs={24} md={4}>
+                  <Text strong>Time Period:</Text>
+                </Col>
+                <Col xs={24} md={12}>
+                  <Slider
+                    min={1}
+                    max={52}
+                    value={weeksFilter}
+                    onChange={value => setWeeksFilter(value)}
+                    tooltip={{ formatter: (value) => `${value} weeks` }}
+                  />
+                </Col>
+                <Col xs={24} md={8}>
+                  <InputNumber
+                    min={1}
+                    max={52}
+                    value={weeksFilter}
+                    onChange={value => setWeeksFilter(value as number)}
+                    addonBefore="Last"
+                    addonAfter="Weeks"
+                    style={{ width: '100%' }}
+                  />
+                </Col>
+              </Row>
+              <Row style={{ marginTop: 8 }}>
+                <Col span={24}>
+                  <Text type="secondary">
+                    Showing changes from {dashboardData.startDate.format('MMM D, YYYY')} to {dashboardData.endDate.format('MMM D, YYYY')}
+                  </Text>
+                </Col>
+              </Row>
+            </ContentPanel>
 
-          {/* Main statistics cards */}
-          <Row gutter={[16, 16]} style={{ marginBottom: 24 }}>
-            <Col xs={24} sm={12} md={6}>
-              <Card bordered={false} style={{ background: 'linear-gradient(135deg, #1890ff, #096dd9)', borderRadius: '8px', boxShadow: '0 2px 12px rgba(24, 144, 255, 0.3)' }}>
-                <Statistic
-                  title={<Text style={{ color: 'white', fontSize: '16px' }}>Total Changes</Text>}
-                  value={dashboardData.totalChanges}
-                  valueStyle={{ color: 'white', fontSize: '28px' }}
-                  prefix={<BellOutlined />}
-                  suffix={renderTrend(dashboardData.trends.total)}
-                />
-                <div style={{ marginTop: 8, color: 'rgba(255, 255, 255, 0.8)' }}>
-                  <CalendarOutlined /> Last {weeksFilter} weeks
-                </div>
-              </Card>
-            </Col>
-            <Col xs={24} sm={12} md={6}>
-              <Card bordered={false} style={{ background: 'linear-gradient(135deg, #ff4d4f, #cf1322)', borderRadius: '8px', boxShadow: '0 2px 12px rgba(255, 77, 79, 0.3)' }}>
-                <Statistic
-                  title={<Text style={{ color: 'white', fontSize: '16px' }}>Critical Changes</Text>}
-                  value={dashboardData.criticalChanges}
-                  valueStyle={{ color: 'white', fontSize: '28px' }}
-                  prefix={<WarningOutlined />}
-                  suffix={renderTrend(dashboardData.trends.critical)}
-                />
-                <div style={{ marginTop: 8, color: 'rgba(255, 255, 255, 0.8)' }}>
-                  <WarningOutlined /> {Math.round(dashboardData.criticalChanges / dashboardData.totalChanges * 100)}% of total
-                </div>
-              </Card>
-            </Col>
-            <Col xs={24} sm={12} md={6}>
-              <Card bordered={false} style={{ background: 'linear-gradient(135deg, #faad14, #d48806)', borderRadius: '8px', boxShadow: '0 2px 12px rgba(250, 173, 20, 0.3)' }}>
-                <Statistic
-                  title={<Text style={{ color: 'white', fontSize: '16px' }}>Major Changes</Text>}
-                  value={dashboardData.majorChanges}
-                  valueStyle={{ color: 'white', fontSize: '28px' }}
-                  prefix={<InfoCircleOutlined />}
-                  suffix={renderTrend(dashboardData.trends.major)}
-                />
-                <div style={{ marginTop: 8, color: 'rgba(255, 255, 255, 0.8)' }}>
-                  <InfoCircleOutlined /> {Math.round(dashboardData.majorChanges / dashboardData.totalChanges * 100)}% of total
-                </div>
-              </Card>
-            </Col>
-            <Col xs={24} sm={12} md={6}>
-              <Card bordered={false} style={{ background: 'linear-gradient(135deg, #52c41a, #389e0d)', borderRadius: '8px', boxShadow: '0 2px 12px rgba(82, 196, 26, 0.3)' }}>
-                <Statistic
-                  title={<Text style={{ color: 'white', fontSize: '16px' }}>Minor Changes</Text>}
-                  value={dashboardData.minorChanges}
-                  valueStyle={{ color: 'white', fontSize: '28px' }}
-                  prefix={<InfoCircleOutlined />}
-                  suffix={renderTrend(dashboardData.trends.minor)}
-                />
-                <div style={{ marginTop: 8, color: 'rgba(255, 255, 255, 0.8)' }}>
-                  <InfoCircleOutlined /> {Math.round(dashboardData.minorChanges / dashboardData.totalChanges * 100)}% of total
-                </div>
-              </Card>
-            </Col>
-          </Row>
-
-          {/* Changes by domain */}
-          <ContentPanel title="Changes by Domain" style={{ marginBottom: 16 }}>
-            <Row gutter={[16, 16]}>
-              <Col xs={24} sm={12} md={8} lg={4}>
-                <Card bordered={false} style={{ background: '#f0f5ff', borderRadius: '6px' }}>
+            {/* Main statistics cards */}
+            <Row gutter={[16, 16]} style={{ marginBottom: 24 }}>
+              <Col xs={24} sm={12} md={6}>
+                <Card bordered={false} style={{ background: 'linear-gradient(135deg, #1890ff, #096dd9)', borderRadius: '8px', boxShadow: '0 2px 12px rgba(24, 144, 255, 0.3)' }}>
                   <Statistic
-                    title={<Text strong>Mission</Text>}
-                    value={dashboardData.domains.mission}
-                    valueStyle={{ color: '#1890ff' }}
-                    prefix={<RocketOutlined />}
+                    title={<Text style={{ color: 'white', fontSize: '16px' }}>Total Changes</Text>}
+                    value={dashboardData.totalChanges}
+                    valueStyle={{ color: 'white', fontSize: '28px' }}
+                    prefix={<BellOutlined />}
+                    suffix={renderTrend(dashboardData.trends.total)}
                   />
+                  <div style={{ marginTop: 8, color: 'rgba(255, 255, 255, 0.8)' }}>
+                    <CalendarOutlined /> Last {weeksFilter} weeks
+                  </div>
                 </Card>
               </Col>
-              <Col xs={24} sm={12} md={8} lg={4}>
-                <Card bordered={false} style={{ background: '#f6ffed', borderRadius: '6px' }}>
+              <Col xs={24} sm={12} md={6}>
+                <Card bordered={false} style={{ background: 'linear-gradient(135deg, #ff4d4f, #cf1322)', borderRadius: '8px', boxShadow: '0 2px 12px rgba(255, 77, 79, 0.3)' }}>
                   <Statistic
-                    title={<Text strong>Op. Scenarios</Text>}
-                    value={dashboardData.domains.operational}
-                    valueStyle={{ color: '#52c41a' }}
-                    prefix={<ClockCircleOutlined />}
+                    title={<Text style={{ color: 'white', fontSize: '16px' }}>Critical Changes</Text>}
+                    value={dashboardData.criticalChanges}
+                    valueStyle={{ color: 'white', fontSize: '28px' }}
+                    prefix={<WarningOutlined />}
+                    suffix={renderTrend(dashboardData.trends.critical)}
                   />
+                  <div style={{ marginTop: 8, color: 'rgba(255, 255, 255, 0.8)' }}>
+                    <WarningOutlined /> {Math.round(dashboardData.criticalChanges / dashboardData.totalChanges * 100)}% of total
+                  </div>
                 </Card>
               </Col>
-              <Col xs={24} sm={12} md={8} lg={4}>
-                <Card bordered={false} style={{ background: '#fffbe6', borderRadius: '6px' }}>
+              <Col xs={24} sm={12} md={6}>
+                <Card bordered={false} style={{ background: 'linear-gradient(135deg, #faad14, #d48806)', borderRadius: '8px', boxShadow: '0 2px 12px rgba(250, 173, 20, 0.3)' }}>
                   <Statistic
-                    title={<Text strong>Requirements</Text>}
-                    value={dashboardData.domains.requirements}
-                    valueStyle={{ color: '#faad14' }}
-                    prefix={<FileTextOutlined />}
+                    title={<Text style={{ color: 'white', fontSize: '16px' }}>Major Changes</Text>}
+                    value={dashboardData.majorChanges}
+                    valueStyle={{ color: 'white', fontSize: '28px' }}
+                    prefix={<InfoCircleOutlined />}
+                    suffix={renderTrend(dashboardData.trends.major)}
                   />
+                  <div style={{ marginTop: 8, color: 'rgba(255, 255, 255, 0.8)' }}>
+                    <InfoCircleOutlined /> {Math.round(dashboardData.majorChanges / dashboardData.totalChanges * 100)}% of total
+                  </div>
                 </Card>
               </Col>
-              <Col xs={24} sm={12} md={8} lg={4}>
-                <Card bordered={false} style={{ background: '#f9f0ff', borderRadius: '6px' }}>
+              <Col xs={24} sm={12} md={6}>
+                <Card bordered={false} style={{ background: 'linear-gradient(135deg, #52c41a, #389e0d)', borderRadius: '8px', boxShadow: '0 2px 12px rgba(82, 196, 26, 0.3)' }}>
                   <Statistic
-                    title={<Text strong>Functions</Text>}
-                    value={dashboardData.domains.functions}
-                    valueStyle={{ color: '#722ed1' }}
-                    prefix={<FunctionOutlined />}
+                    title={<Text style={{ color: 'white', fontSize: '16px' }}>Minor Changes</Text>}
+                    value={dashboardData.minorChanges}
+                    valueStyle={{ color: 'white', fontSize: '28px' }}
+                    prefix={<InfoCircleOutlined />}
+                    suffix={renderTrend(dashboardData.trends.minor)}
                   />
-                </Card>
-              </Col>
-              <Col xs={24} sm={12} md={8} lg={4}>
-                <Card bordered={false} style={{ background: '#e6f7ff', borderRadius: '6px' }}>
-                  <Statistic
-                    title={<Text strong>CAD Design</Text>}
-                    value={dashboardData.domains.cad}
-                    valueStyle={{ color: '#1890ff' }}
-                    prefix={<ApartmentOutlined />}
-                  />
-                </Card>
-              </Col>
-              <Col xs={24} sm={12} md={8} lg={4}>
-                <Card bordered={false} style={{ background: '#fff2e8', borderRadius: '6px' }}>
-                  <Statistic
-                    title={<Text strong>Eng. BOM</Text>}
-                    value={dashboardData.domains.bom}
-                    valueStyle={{ color: '#fa541c' }}
-                    prefix={<ToolOutlined />}
-                  />
+                  <div style={{ marginTop: 8, color: 'rgba(255, 255, 255, 0.8)' }}>
+                    <InfoCircleOutlined /> {Math.round(dashboardData.minorChanges / dashboardData.totalChanges * 100)}% of total
+                  </div>
                 </Card>
               </Col>
             </Row>
-          </ContentPanel>
 
-          <Alert
-            message="Recent Critical Changes"
-            description="There are 5 critical changes in the last 7 days that require your attention."
-            type="error"
-            showIcon
-            style={{ marginBottom: 16 }}
-          />
+            {/* Changes by domain */}
+            <ContentPanel title="Changes by Domain" style={{ marginBottom: 16 }}>
+              <Row gutter={[16, 16]}>
+                <Col xs={24} sm={12} md={8} lg={4}>
+                  <Card bordered={false} style={{ background: '#f0f5ff', borderRadius: '6px' }}>
+                    <Statistic
+                      title={<Text strong>Mission</Text>}
+                      value={dashboardData.domains.mission}
+                      valueStyle={{ color: '#1890ff' }}
+                      prefix={<RocketOutlined />}
+                    />
+                  </Card>
+                </Col>
+                <Col xs={24} sm={12} md={8} lg={4}>
+                  <Card bordered={false} style={{ background: '#f6ffed', borderRadius: '6px' }}>
+                    <Statistic
+                      title={<Text strong>Op. Scenarios</Text>}
+                      value={dashboardData.domains.operational}
+                      valueStyle={{ color: '#52c41a' }}
+                      prefix={<ClockCircleOutlined />}
+                    />
+                  </Card>
+                </Col>
+                <Col xs={24} sm={12} md={8} lg={4}>
+                  <Card bordered={false} style={{ background: '#fffbe6', borderRadius: '6px' }}>
+                    <Statistic
+                      title={<Text strong>Requirements</Text>}
+                      value={dashboardData.domains.requirements}
+                      valueStyle={{ color: '#faad14' }}
+                      prefix={<FileTextOutlined />}
+                    />
+                  </Card>
+                </Col>
+                <Col xs={24} sm={12} md={8} lg={4}>
+                  <Card bordered={false} style={{ background: '#f9f0ff', borderRadius: '6px' }}>
+                    <Statistic
+                      title={<Text strong>Functions</Text>}
+                      value={dashboardData.domains.functions}
+                      valueStyle={{ color: '#722ed1' }}
+                      prefix={<FunctionOutlined />}
+                    />
+                  </Card>
+                </Col>
+                <Col xs={24} sm={12} md={8} lg={4}>
+                  <Card bordered={false} style={{ background: '#e6f7ff', borderRadius: '6px' }}>
+                    <Statistic
+                      title={<Text strong>CAD Design</Text>}
+                      value={dashboardData.domains.cad}
+                      valueStyle={{ color: '#1890ff' }}
+                      prefix={<ApartmentOutlined />}
+                    />
+                  </Card>
+                </Col>
+                <Col xs={24} sm={12} md={8} lg={4}>
+                  <Card bordered={false} style={{ background: '#fff2e8', borderRadius: '6px' }}>
+                    <Statistic
+                      title={<Text strong>Eng. BOM</Text>}
+                      value={dashboardData.domains.bom}
+                      valueStyle={{ color: '#fa541c' }}
+                      prefix={<ToolOutlined />}
+                    />
+                  </Card>
+                </Col>
+              </Row>
+            </ContentPanel>
 
-          <ContentPanel title="Change Impact Summary">
-            <Timeline mode="left">
-              <Timeline.Item
-                color="red"
-                label="2 days ago"
-                dot={<WarningOutlined style={{ fontSize: '16px' }} />}
-              >
-                <Text strong>Mission Objective Modified</Text>
-                <Paragraph>Mission objective "M-002" was modified, affecting 3 operational scenarios and 12 requirements.</Paragraph>
-              </Timeline.Item>
-              <Timeline.Item
-                color="orange"
-                label="3 days ago"
-                dot={<InfoCircleOutlined style={{ fontSize: '16px' }} />}
-              >
-                <Text strong>Operational Scenario Updated</Text>
-                <Paragraph>Scenario "OS-105" updated with new environmental conditions, impacting 5 requirements.</Paragraph>
-              </Timeline.Item>
-              <Timeline.Item
-                color="red"
-                label="4 days ago"
-                dot={<WarningOutlined style={{ fontSize: '16px' }} />}
-              >
-                <Text strong>Critical Requirement Changed</Text>
-                <Paragraph>Requirement "REQ-F-123" performance threshold increased from 2.5s to 1.8s, affecting 4 functions and 2 components.</Paragraph>
-              </Timeline.Item>
-              <Timeline.Item
-                color="green"
-                label="5 days ago"
-                dot={<CheckCircleOutlined style={{ fontSize: '16px' }} />}
-              >
-                <Text strong>CAD Model Updated</Text>
-                <Paragraph>Minor dimension update to component "C-234" within acceptable tolerances, no downstream impact.</Paragraph>
-              </Timeline.Item>
-              <Timeline.Item
-                color="orange"
-                label="7 days ago"
-                dot={<InfoCircleOutlined style={{ fontSize: '16px' }} />}
-              >
-                <Text strong>BOM Entry Modified</Text>
-                <Paragraph>Supplier changed for part "P-567", requires verification of compatibility with existing components.</Paragraph>
-              </Timeline.Item>
-            </Timeline>
-          </ContentPanel>
-        </TabPane>
+            <Alert
+              message="Recent Critical Changes"
+              description="There are 5 critical changes in the last 7 days that require your attention."
+              type="error"
+              showIcon
+              style={{ marginBottom: 16 }}
+            />
 
-        <TabPane
-          tab={<span><RocketOutlined /> Mission</span>}
-          key="mission"
-        >
-          <ImprovedMissionChanges />
-        </TabPane>
+            <ContentPanel title="Change Impact Summary">
+              <Timeline mode="left">
+                <Timeline.Item
+                  color="red"
+                  label="2 days ago"
+                  dot={<WarningOutlined style={{ fontSize: '16px' }} />}
+                >
+                  <Text strong>Mission Objective Modified</Text>
+                  <Paragraph>Mission objective "M-002" was modified, affecting 3 operational scenarios and 12 requirements.</Paragraph>
+                </Timeline.Item>
+                <Timeline.Item
+                  color="orange"
+                  label="3 days ago"
+                  dot={<InfoCircleOutlined style={{ fontSize: '16px' }} />}
+                >
+                  <Text strong>Operational Scenario Updated</Text>
+                  <Paragraph>Scenario "OS-105" updated with new environmental conditions, impacting 5 requirements.</Paragraph>
+                </Timeline.Item>
+                <Timeline.Item
+                  color="red"
+                  label="4 days ago"
+                  dot={<WarningOutlined style={{ fontSize: '16px' }} />}
+                >
+                  <Text strong>Critical Requirement Changed</Text>
+                  <Paragraph>Requirement "REQ-F-123" performance threshold increased from 2.5s to 1.8s, affecting 4 functions and 2 components.</Paragraph>
+                </Timeline.Item>
+                <Timeline.Item
+                  color="green"
+                  label="5 days ago"
+                  dot={<CheckCircleOutlined style={{ fontSize: '16px' }} />}
+                >
+                  <Text strong>CAD Model Updated</Text>
+                  <Paragraph>Minor dimension update to component "C-234" within acceptable tolerances, no downstream impact.</Paragraph>
+                </Timeline.Item>
+                <Timeline.Item
+                  color="orange"
+                  label="7 days ago"
+                  dot={<InfoCircleOutlined style={{ fontSize: '16px' }} />}
+                >
+                  <Text strong>BOM Entry Modified</Text>
+                  <Paragraph>Supplier changed for part "P-567", requires verification of compatibility with existing components.</Paragraph>
+                </Timeline.Item>
+              </Timeline>
+            </ContentPanel>
+          </TabPane>
 
-        <TabPane
-          tab={<span><ClockCircleOutlined /> Operational Scenarios</span>}
-          key="operational"
-        >
-          <ImprovedOperationalScenarios />
-        </TabPane>
+          <TabPane
+            tab={<span><RocketOutlined /> Mission</span>}
+            key="mission"
+          >
+            <ImprovedMissionChanges />
+          </TabPane>
 
-        <TabPane
-          tab={<span><FileTextOutlined /> Requirements</span>}
-          key="requirements"
-        >
-          <ImprovedRequirementsChanges />
-        </TabPane>
+          <TabPane
+            tab={<span><ClockCircleOutlined /> Operational Scenarios</span>}
+            key="operational"
+          >
+            <ImprovedOperationalScenarios />
+          </TabPane>
 
-        <TabPane
-          tab={<span><ControlOutlined /> Parameters</span>}
-          key="parameters"
-        >
-          <ImprovedParametersChanges />
-        </TabPane>
+          <TabPane
+            tab={<span><FileTextOutlined /> Requirements</span>}
+            key="requirements"
+          >
+            <ImprovedRequirementsChanges />
+          </TabPane>
 
-        <TabPane
-          tab={<span><FunctionOutlined /> Functions</span>}
-          key="functions"
-        >
-          <ImprovedFunctionsChanges />
-        </TabPane>
+          <TabPane
+            tab={<span><ControlOutlined /> Parameters</span>}
+            key="parameters"
+          >
+            <ImprovedParametersChanges />
+          </TabPane>
 
-        <TabPane
-          tab={<span><ClusterOutlined /> Logical</span>}
-          key="logical"
-        >
-          <ImprovedLogicalChanges />
-        </TabPane>
+          <TabPane
+            tab={<span><FunctionOutlined /> Functions</span>}
+            key="functions"
+          >
+            <ImprovedFunctionsChanges />
+          </TabPane>
 
-        <TabPane
-          tab={<span><ApartmentOutlined /> CAD Design</span>}
-          key="cad"
-        >
-          <ImprovedCADDesignChanges />
-        </TabPane>
+          <TabPane
+            tab={<span><ClusterOutlined /> Logical</span>}
+            key="logical"
+          >
+            <ImprovedLogicalChanges />
+          </TabPane>
 
-        <TabPane
-          tab={<span><ToolOutlined /> Engineering BOM</span>}
-          key="bom"
-        >
-          <ImprovedEngineeringBOMChanges />
-        </TabPane>
-      </Tabs>
+          <TabPane
+            tab={<span><ApartmentOutlined /> CAD Design</span>}
+            key="cad"
+          >
+            <ImprovedCADDesignChanges />
+          </TabPane>
+
+          <TabPane
+            tab={<span><ToolOutlined /> Engineering BOM</span>}
+            key="bom"
+          >
+            <ImprovedEngineeringBOMChanges />
+          </TabPane>
+        </Tabs>
+      </ContentPanel>
     </div>
   );
 };
