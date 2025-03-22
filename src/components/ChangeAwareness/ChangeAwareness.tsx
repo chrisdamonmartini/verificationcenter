@@ -139,6 +139,10 @@ const ChangeAwareness: React.FC = () => {
       .ant-tabs-tab.ant-tabs-tab-active .ant-tabs-tab-btn {
         color: #00688C !important;
       }
+      /* Add hover state styling for tab buttons */
+      .ant-tabs-tab:hover .ant-tabs-tab-btn {
+        color: #00688C !important;
+      }
       .ant-tabs-ink-bar {
         background-color: #00688C !important;
       }
