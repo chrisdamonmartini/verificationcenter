@@ -146,7 +146,8 @@ export const StandardExpandedRow = <T extends StandardExpandedChange>({
       cad: groupedItems.cad || [],
       ebom: groupedItems.bom || [],
       models: groupedItems.model || [],
-      automation: groupedItems.automation || []
+      automation: groupedItems.automation || [],
+      parameters: groupedItems.parameter || [] // Add parameters mapping
     };
   };
 
@@ -194,6 +195,7 @@ export const StandardExpandedRow = <T extends StandardExpandedChange>({
                 ebom={relatedItems.ebom}
                 models={relatedItems.models}
                 automation={relatedItems.automation}
+                parameters={relatedItems.parameters} // Add parameters to RelatedItemsPanel
                 defaultActiveTab={Object.keys(relatedItems).find(key => relatedItems[key as keyof typeof relatedItems].length > 0)}
                 currentItem={currentItem}
                 currentItemType={mappedCurrentItemType}

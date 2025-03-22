@@ -61,6 +61,13 @@ export interface AutomationItem extends RelatedItem {
   lastRun?: string;
 }
 
+// Add new ParameterItem interface
+export interface ParameterItem extends RelatedItem {
+  value?: string;
+  unit?: string;
+  range?: string;
+}
+
 export interface RelatedItemsPanelProps {
   mission?: MissionItem[];
   requirements?: RequirementItem[];
@@ -70,6 +77,7 @@ export interface RelatedItemsPanelProps {
   ebom?: EBOMItem[];
   models?: ModelItem[];
   automation?: AutomationItem[];
+  parameters?: ParameterItem[]; // Add new parameters prop
   defaultActiveTab?: string;
   onItemClick?: (item: RelatedItem, type: string) => void;
   showFilter?: boolean;
@@ -95,6 +103,7 @@ const RelatedItemsPanel: React.FC<RelatedItemsPanelProps> = ({
   ebom = [],
   models = [],
   automation = [],
+  parameters = [], // Add default empty array for parameters
   defaultActiveTab,
   onItemClick,
   showFilter = true,
@@ -113,6 +122,7 @@ const RelatedItemsPanel: React.FC<RelatedItemsPanelProps> = ({
     ebom: true,
     models: true,
     automation: true,
+    parameters: true, // Add parameters to active categories
   });
 
   // Filter items if showAll is false (only show Current items)
@@ -207,6 +217,14 @@ const RelatedItemsPanel: React.FC<RelatedItemsPanelProps> = ({
       items: filterItems(logical)
     },
     {
+      name: 'Parameters',
+      key: 'parameters',
+      color: colors.category.parameter || colors.chart.series5,
+      bgcolor: `${colors.category.parameter || colors.chart.series5}10`,
+      active: activeCategories.parameters && (parameters.length > 0 || (currentItem && currentItemType === 'parameters')),
+      items: filterItems(parameters)
+    },
+    {
       name: 'CAD',
       key: 'cad',
       color: colors.category.cad,
@@ -238,7 +256,10 @@ const RelatedItemsPanel: React.FC<RelatedItemsPanelProps> = ({
       active: activeCategories.automation && automation.length > 0,
       items: filterItems(automation)
     }
-  ].filter(category => category.items.length > 0);
+  ].filter(category => {
+    // Show the category if it has items OR if it's the current item's category
+    return (category.items.length > 0) || (currentItem && currentItemType === category.key);
+  });
 
   // Add current item to categories if it exists and is not already included
   if (currentItem && currentItemType) {
