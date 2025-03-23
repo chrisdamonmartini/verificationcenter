@@ -6,6 +6,7 @@ import useColors from '../../hooks/useColors';
 import OpenIcon from '../../icons/cmdOpen24.svg';
 import ShowIcon from '../../icons/cmdShow24.svg';
 import HideIcon from '../../icons/cmdHide16.svg';
+import ShowImpactOfChangeIcon from '../../icons/cmdShowImpactOfChange24.svg';
 
 const { Text } = Typography;
 
@@ -595,14 +596,20 @@ const RelatedItemsPanel: React.FC<RelatedItemsPanelProps> = ({
               type="default"
               size="small"
               onClick={() => setHighlightChanges(!highlightChanges)}
-              style={highlightChanges ? { 
-                color: 'white', 
-                backgroundColor: '#00688C',
-                borderColor: '#00688C' 
-              } : {}}
-            >
-              Highlight Additional Change
-            </Button>
+              icon={<img src={ShowImpactOfChangeIcon} alt="Highlight Changes" style={{ width: '24px', height: '24px' }} />}
+              style={{ 
+                display: 'flex',
+                alignItems: 'center',
+                justifyContent: 'center',
+                width: '40px',
+                height: '32px',
+                ...(highlightChanges ? { 
+                  borderColor: colors.category.parameter,
+                  borderWidth: '2px'
+                } : {})
+              }}
+              title="Highlight Additional Change"
+            />
             
             <Button
               type="default"
