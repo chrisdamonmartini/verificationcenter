@@ -3,6 +3,7 @@ import { Card, Row, Col, Badge, Typography, Tooltip, Empty, Switch, Space, Tag, 
 import { ClockCircleOutlined, CheckCircleOutlined, ExclamationCircleOutlined, ExpandOutlined, PlusOutlined, LinkOutlined } from '@ant-design/icons';
 import dayjs from 'dayjs';
 import useColors from '../../hooks/useColors';
+import OpenIcon from '../../icons/cmdOpen16.svg';
 
 const { Text } = Typography;
 
@@ -378,16 +379,25 @@ const RelatedItemsPanel: React.FC<RelatedItemsPanelProps> = ({
           bodyStyle={{ padding: '8px' }}
         >
           <Space direction="vertical" size={4} style={{ width: '100%' }}>
-            <div>
+            <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
               <Text
                 strong
-                style={{ color: categoryColor, marginRight: '8px', display: 'block' }}
+                style={{ color: categoryColor, marginRight: '8px' }}
               >
                 <ExpandOutlined style={{ marginRight: '5px' }} />
                 {item.id}
               </Text>
-              <Text style={{ fontSize: '0.9rem', whiteSpace: 'normal' }}>{item.title}</Text>
+              <a 
+                href="#" 
+                onClick={(e) => {
+                  e.stopPropagation();
+                  window.open('about:blank', '_blank');
+                }}
+              >
+                <img src={OpenIcon} alt="Open" style={{ width: '16px', height: '16px' }} />
+              </a>
             </div>
+            <Text style={{ fontSize: '0.9rem', whiteSpace: 'normal' }}>{item.title}</Text>
             
             <div>
               <Text type="secondary" style={{ fontSize: '12px' }}>
@@ -508,15 +518,23 @@ const RelatedItemsPanel: React.FC<RelatedItemsPanelProps> = ({
         bodyStyle={{ padding: '8px' }}
       >
         <div style={{ display: 'flex', flexDirection: 'column' }}>
-          <div style={{ marginBottom: '4px' }}>
+          <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '4px' }}>
             <Text style={{ 
-              color: highlightChanges && isChanged ? colors.category.parameter : categoryColor,
-              display: 'block'
+              color: highlightChanges && isChanged ? colors.category.parameter : categoryColor
             }}>
               {item.id}
             </Text>
-            <Text style={{ fontSize: '0.9rem', whiteSpace: 'normal' }}>{item.title}</Text>
+            <a 
+              href="#" 
+              onClick={(e) => {
+                e.stopPropagation();
+                window.open('about:blank', '_blank');
+              }}
+            >
+              <img src={OpenIcon} alt="Open" style={{ width: '16px', height: '16px' }} />
+            </a>
           </div>
+          <Text style={{ fontSize: '0.9rem', whiteSpace: 'normal' }}>{item.title}</Text>
           
           <div style={{ fontSize: '0.8rem', color: colors.text.secondary }}>
             <ClockCircleOutlined style={{ marginRight: '4px' }} /> 
