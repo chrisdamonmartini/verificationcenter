@@ -376,7 +376,7 @@ const RelatedItemsPanel: React.FC<RelatedItemsPanelProps> = ({
             boxShadow: `0 0 8px ${categoryColor}80`,
             width: '100%',
             border: `2px solid ${categoryColor}`,
-            marginBottom: '8px'
+            marginBottom: '0' // Remove bottom margin to attach arrows directly
           }}
           bodyStyle={{ padding: '8px' }}
         >
@@ -401,8 +401,8 @@ const RelatedItemsPanel: React.FC<RelatedItemsPanelProps> = ({
           </Space>
         </Card>
         
-        {/* Navigation arrows for expanded items */}
-        <div style={{ display: 'flex', justifyContent: 'space-between', marginTop: '8px' }}>
+        {/* Navigation arrows for expanded items - attached directly to card */}
+        <div style={{ display: 'flex', justifyContent: 'space-between' }}>
           <div
             style={{
               backgroundColor: colors.category.parameter,
@@ -423,12 +423,12 @@ const RelatedItemsPanel: React.FC<RelatedItemsPanelProps> = ({
             {/* Left arrow shape - point outward */}
             <div style={{
               position: 'absolute',
-              left: '-15px',
+              left: '-10px', // Bring in the arrow point
               width: 0,
               height: 0,
               borderTop: '16px solid transparent',
               borderBottom: '16px solid transparent',
-              borderRight: `15px solid ${colors.category.parameter}`,
+              borderRight: `10px solid ${colors.category.parameter}`, // Reduce arrow size
             }} />
             <span>Upstream</span>
           </div>
@@ -454,12 +454,12 @@ const RelatedItemsPanel: React.FC<RelatedItemsPanelProps> = ({
             {/* Right arrow shape - point outward */}
             <div style={{
               position: 'absolute',
-              right: '-15px',
+              right: '-10px', // Bring in the arrow point
               width: 0,
               height: 0,
               borderTop: '16px solid transparent',
               borderBottom: '16px solid transparent',
-              borderLeft: `15px solid ${colors.category.parameter}`,
+              borderLeft: `10px solid ${colors.category.parameter}`, // Reduce arrow size
             }} />
           </div>
         </div>
