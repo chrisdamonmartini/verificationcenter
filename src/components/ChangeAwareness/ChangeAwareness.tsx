@@ -322,53 +322,51 @@ const ImprovedOverviewChanges: React.FC = () => {
   return (
     <div className="overview-changes" style={{ position: 'relative' }}>
       {/* Table - Full width */}
-      <ContentPanel>
-        <StandardChangeTable<AnyChange>
-          domain="all"
-          title="All Changes"
-          weeks={weeks}
-          setWeeks={setWeeks}
-          productType={productType}
-          categoryRenderer={renderAutoDetectedCategory}
-          expandedRowOptions={{
-            showImpact: true,
-            showTechnicalDetails: true,
-            showDependencies: true,
-          }}
-          tableOptions={{
-            showImpact: true,
-            hiddenColumns: ['category', 'changeType', 'status'],
-            additionalColumns: [{
-              title: 'Source',
-              dataIndex: 'source',
-              key: 'source',
-              render: (_, record) => {
-                // Use the domain property which exists on all change types
-                switch (record.domain) {
-                  case 'mission':
-                    return 'Mission';
-                  case 'operationalScenario':
-                    return 'Operational Scenario';
-                  case 'requirement':
-                    return 'Requirement';
-                  case 'parameter':
-                    return 'Parameter';
-                  case 'function':
-                    return 'Function';
-                  case 'logical':
-                    return 'Logical';
-                  case 'cad':
-                    return 'CAD Design';
-                  case 'bom':
-                    return 'Engineering BOM';
-                  default:
-                    return record.domain || 'Unknown';
-                }
+      <StandardChangeTable<AnyChange>
+        domain="all"
+        title="All Changes"
+        weeks={weeks}
+        setWeeks={setWeeks}
+        productType={productType}
+        categoryRenderer={renderAutoDetectedCategory}
+        expandedRowOptions={{
+          showImpact: true,
+          showTechnicalDetails: true,
+          showDependencies: true,
+        }}
+        tableOptions={{
+          showImpact: true,
+          hiddenColumns: ['category', 'changeType', 'status'],
+          additionalColumns: [{
+            title: 'Source',
+            dataIndex: 'source',
+            key: 'source',
+            render: (_, record) => {
+              // Use the domain property which exists on all change types
+              switch (record.domain) {
+                case 'mission':
+                  return 'Mission';
+                case 'operationalScenario':
+                  return 'Operational Scenario';
+                case 'requirement':
+                  return 'Requirement';
+                case 'parameter':
+                  return 'Parameter';
+                case 'function':
+                  return 'Function';
+                case 'logical':
+                  return 'Logical';
+                case 'cad':
+                  return 'CAD Design';
+                case 'bom':
+                  return 'Engineering BOM';
+                default:
+                  return record.domain || 'Unknown';
               }
-            }]
-          }}
-        />
-      </ContentPanel>
+            }
+          }]
+        }}
+      />
       
       {/* Simplified Pie Chart - Single container */}
       <div 
