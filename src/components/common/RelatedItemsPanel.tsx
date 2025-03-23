@@ -280,10 +280,6 @@ const RelatedItemsPanel: React.FC<RelatedItemsPanelProps> = ({
     if (!currentItemType) return null;
     
     // The currentItemType should already be normalized by the ExpandedRowComponents
-    // Just log it and return it directly
-    console.log("RelatedItemsPanel - Using category key:", currentItemType);
-    console.log("RelatedItemsPanel - Available category keys:", categoryConfigs.map(c => c.key).join(', '));
-    
     return currentItemType;
   };
   
@@ -293,11 +289,9 @@ const RelatedItemsPanel: React.FC<RelatedItemsPanelProps> = ({
   const categories = categoryConfigs.map(category => {
     // Is this the category of the current expanded item?
     const isCurrentCategory = normalizedCurrentKey === category.key;
-    console.log(`Category ${category.key} - is current? ${isCurrentCategory}`);
     
     // Rule 1: If it is the category of the item that we are expanded on
     if (isCurrentCategory) {
-      console.log(`Highlighting category ${category.key} in orange`);
       return {
         ...category,
         color: colors.category.parameter, // Orange theme for the category of expanded item
@@ -366,8 +360,7 @@ const RelatedItemsPanel: React.FC<RelatedItemsPanelProps> = ({
 
   // Render expanded item summary - for the category we're expanded on
   const renderExpandedItemSummary = (item: RelatedItem, categoryColor: string) => {
-    // Determine if this is a Mission item by checking the categoryKey and/or color
-    // Get the current category key from normalizedCurrentKey
+    // Determine if this is a Mission item
     const isMission = normalizedCurrentKey === 'mission';
 
     return (
@@ -424,7 +417,10 @@ const RelatedItemsPanel: React.FC<RelatedItemsPanelProps> = ({
                 justifyContent: 'center',
                 borderRadius: '4px'
               }}
-              onClick={() => console.log('Navigate upstream')}
+              onClick={() => {
+                // This will be implemented in the future with actual navigation
+                // For now, keep it empty to avoid console logs
+              }}
             >
               {/* Left arrow shape - smaller and contained */}
               <div style={{
@@ -457,7 +453,10 @@ const RelatedItemsPanel: React.FC<RelatedItemsPanelProps> = ({
               justifyContent: 'center',
               borderRadius: '4px'
             }}
-            onClick={() => console.log('Navigate downstream')}
+            onClick={() => {
+              // This will be implemented in the future with actual navigation
+              // For now, keep it empty to avoid console logs
+            }}
           >
             <span style={{ fontSize: '12px' }}>DOWNSTREAM</span>
             {/* Right arrow shape - smaller and contained */}
