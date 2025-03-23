@@ -63,6 +63,14 @@ import {
 } from '../../../types/changeAwareness';
 import useColors from '../../../hooks/useColors';
 import OpenIcon from '../../../icons/cmdOpen16.svg';
+import RequirementsIcon from '../../../icons/Requirements.svg';
+import MissionIcon from '../../../icons/typeTarget48.svg';
+import FunctionsIcon from '../../../icons/Functions.svg';
+import LogicalIcon from '../../../icons/Logical.svg';
+import ParametersIcon from '../../../icons/Parameters.svg';
+import EBOMIcon from '../../../icons/typeClass48.svg';
+import CADIcon from '../../../icons/typePartComponent48.svg';
+import OperationalScenariosIcon from '../../../icons/typeBranchRevision48.svg';
 
 const { Text } = Typography;
 
@@ -319,21 +327,57 @@ export const getStandardColumns = <T extends StandardBaseChange>(
       title: 'Title',
       dataIndex: 'title',
       key: 'title',
-      render: (text) => (
-        <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', width: '100%' }}>
-          <Text>{text}</Text>
-          <a 
-            href="#" 
-            onClick={(e) => {
-              e.stopPropagation();
-              window.open('about:blank', '_blank');
-            }}
-            style={{ marginLeft: '10px' }}
-          >
-            <img src={OpenIcon} alt="Open" style={{ width: '16px', height: '16px' }} />
-          </a>
-        </div>
-      ),
+      render: (text, record) => {
+        // Determine which icon to use based on the domain
+        let DomainIcon;
+        switch (record.domain) {
+          case 'mission':
+            DomainIcon = MissionIcon;
+            break;
+          case 'operationalScenario':
+            DomainIcon = OperationalScenariosIcon;
+            break;
+          case 'requirement':
+            DomainIcon = RequirementsIcon;
+            break;
+          case 'parameter':
+            DomainIcon = ParametersIcon;
+            break;
+          case 'function':
+            DomainIcon = FunctionsIcon;
+            break;
+          case 'logical':
+            DomainIcon = LogicalIcon;
+            break;
+          case 'cad':
+            DomainIcon = CADIcon;
+            break;
+          case 'bom':
+            DomainIcon = EBOMIcon;
+            break;
+          default:
+            DomainIcon = null;
+        }
+
+        return (
+          <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', width: '100%' }}>
+            <div style={{ display: 'flex', alignItems: 'center' }}>
+              {DomainIcon && <img src={DomainIcon} alt={record.domain} style={{ width: '24px', height: '24px', marginRight: '8px' }} />}
+              <Text>{text}</Text>
+            </div>
+            <a 
+              href="#" 
+              onClick={(e) => {
+                e.stopPropagation();
+                window.open('about:blank', '_blank');
+              }}
+              style={{ marginLeft: '10px' }}
+            >
+              <img src={OpenIcon} alt="Open" style={{ width: '16px', height: '16px' }} />
+            </a>
+          </div>
+        );
+      },
       ellipsis: true,
       width: '40%',
       className: 'title-column'
