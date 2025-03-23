@@ -557,196 +557,318 @@ const RelatedItemsPanel: React.FC<RelatedItemsPanelProps> = ({
   }
 
   return (
-    <div className={`related-items-panel ${isFullScreen ? 'fullscreen-mode' : ''}`} style={isFullScreen ? {
-      position: 'fixed',
-      top: 0,
-      left: 0,
-      right: 0,
-      bottom: 0,
-      backgroundColor: 'white',
-      zIndex: 9999,
-      padding: '20px',
-      overflow: 'auto',
-      width: '100vw',
-      height: '100vh',
-      boxSizing: 'border-box',
-    } : {}}>
-      {isFullScreen && (
-        <style>
-          {`
-            body {
-              overflow: hidden !important;
-            }
-            .fullscreen-mode {
-              position: fixed !important;
-              top: 0 !important;
-              left: 0 !important;
-              right: 0 !important;
-              bottom: 0 !important;
-              z-index: 9999 !important;
-            }
-            .navigation-container, .ant-tabs-nav, .ant-layout-header, .ant-layout-sider {
-              display: none !important;
-            }
-            #root > *:not(.related-items-panel) {
-              visibility: hidden !important;
-            }
-          `}
-        </style>
-      )}
-      {/* Header with buttons on the same line */}
-      {showFilter && (
-        <Row 
-          align="middle"
-          style={{ 
-            padding: '8px 16px', 
-            marginBottom: '12px', 
-            backgroundColor: colors.chart.backgroundLight,
-            borderRadius: '4px',
-            position: isFullScreen ? 'sticky' : 'relative',
-            top: isFullScreen ? 0 : 'auto',
-            zIndex: isFullScreen ? 1 : 'auto'
+    <>
+      {isFullScreen ? (
+        <div 
+          className="related-items-fullscreen-overlay"
+          style={{
+            position: 'fixed',
+            top: 0,
+            left: 0,
+            right: 0,
+            bottom: 0,
+            backgroundColor: 'white',
+            zIndex: 9999,
+            padding: '20px',
+            overflow: 'auto',
+            width: '100vw',
+            height: '100vh',
+            boxSizing: 'border-box',
           }}
         >
-          <Space size={16}>
-            <Typography.Title level={5} style={{ margin: 0 }}>Related Items</Typography.Title>
-            
-            <Button 
-              type="default" 
-              size="small"
-              onClick={() => setShowAllCategories(!showAllCategories)}
-              icon={showAllCategories ? 
-                <img src={HideIcon} alt="Hide Empty" style={{ width: '24px', height: '24px' }} /> : 
-                <img src={ShowIcon} alt="Show All" style={{ width: '24px', height: '24px' }} />
-              }
-              style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', width: '40px', height: '32px' }}
-              title={showAllCategories ? "Hide Empty" : "Show All"}
-            />
-            
-            <Button
-              type="default"
-              size="small"
-              onClick={() => setHighlightChanges(!highlightChanges)}
-              icon={<img src={ShowImpactOfChangeIcon} alt="Highlight Changes" style={{ width: '24px', height: '24px' }} />}
-              style={{ 
-                display: 'flex',
-                alignItems: 'center',
-                justifyContent: 'center',
-                width: '40px',
-                height: '32px',
-                ...(highlightChanges ? { 
+          {/* Header with buttons for full screen mode */}
+          <Row 
+            align="middle"
+            style={{ 
+              padding: '8px 16px', 
+              marginBottom: '12px', 
+              backgroundColor: colors.chart.backgroundLight,
+              borderRadius: '4px',
+              position: 'sticky',
+              top: 0,
+              zIndex: 1
+            }}
+          >
+            <Space size={16}>
+              <Typography.Title level={5} style={{ margin: 0 }}>Related Items</Typography.Title>
+              
+              <Button 
+                type="default" 
+                size="small"
+                onClick={() => setShowAllCategories(!showAllCategories)}
+                icon={showAllCategories ? 
+                  <img src={HideIcon} alt="Hide Empty" style={{ width: '24px', height: '24px' }} /> : 
+                  <img src={ShowIcon} alt="Show All" style={{ width: '24px', height: '24px' }} />
+                }
+                style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', width: '40px', height: '32px' }}
+                title={showAllCategories ? "Hide Empty" : "Show All"}
+              />
+              
+              <Button
+                type="default"
+                size="small"
+                onClick={() => setHighlightChanges(!highlightChanges)}
+                icon={<img src={ShowImpactOfChangeIcon} alt="Highlight Changes" style={{ width: '24px', height: '24px' }} />}
+                style={{ 
+                  display: 'flex',
+                  alignItems: 'center',
+                  justifyContent: 'center',
+                  width: '40px',
+                  height: '32px',
+                  ...(highlightChanges ? { 
+                    borderColor: colors.category.parameter,
+                    borderWidth: '2px'
+                  } : {})
+                }}
+                title="Highlight Additional Change"
+              />
+              
+              <Button
+                type="default"
+                size="small"
+                onClick={() => setIsFullScreen(!isFullScreen)}
+                icon={<img src={ExitFullScreenIcon} alt="Exit Full Screen" style={{ width: '24px', height: '24px' }} />}
+                style={{ 
+                  display: 'flex',
+                  alignItems: 'center',
+                  justifyContent: 'center',
+                  width: '40px',
+                  height: '32px',
                   borderColor: colors.category.parameter,
                   borderWidth: '2px'
-                } : {})
-              }}
-              title="Highlight Additional Change"
-            />
-            
-            <Button
-              type="default"
-              size="small"
-              onClick={() => setIsFullScreen(!isFullScreen)}
-              icon={isFullScreen ? 
-                <img src={ExitFullScreenIcon} alt="Exit Full Screen" style={{ width: '24px', height: '24px' }} /> : 
-                <img src={FullScreenIcon} alt="Full Screen" style={{ width: '24px', height: '24px' }} />
-              }
-              style={{ 
-                display: 'flex',
-                alignItems: 'center',
-                justifyContent: 'center',
-                width: '40px',
-                height: '32px',
-                ...(isFullScreen ? { 
-                  borderColor: colors.category.parameter,
-                  borderWidth: '2px'
-                } : {})
-              }}
-              title={isFullScreen ? "Exit Full Screen" : "Full Screen"}
-            />
-          </Space>
-        </Row>
-      )}
+                }}
+                title="Exit Full Screen"
+              />
+            </Space>
+          </Row>
 
-      {/* Related items grid with horizontal scrolling */}
-      <div style={{ 
-        width: '100%', 
-        overflowX: 'auto', 
-        whiteSpace: 'nowrap',
-        paddingBottom: '12px' // Extra padding for scrollbar
-      }}>
-        <div style={{ 
-          display: 'flex', 
-          flexDirection: 'row', 
-          gap: '16px'
-        }}>
-          {filteredCategories
-            .filter(category => category.active)
-            .map(category => (
-              <div key={category.key} style={{ 
-                minWidth: '280px',
-                display: 'inline-block',
-                verticalAlign: 'top'
-              }}>
-                <Card
-                  title={
-                    <div style={{ color: category.color }}>
-                      {category.name}
-                      <span style={{ marginLeft: '8px', fontSize: '14px', fontWeight: 'normal' }}>
-                        ({category.items.length})
-                      </span>
-                    </div>
-                  }
-                  size="small"
-                  bordered
-                  style={{ 
-                    backgroundColor: category.bgcolor,
-                    border: `1px solid ${category.color}40`,
-                    height: '100%',
-                    width: '100%',
-                  }}
-                  bodyStyle={{ padding: '8px' }}
-                >
-                  {/* Special case: This is the category of the current expanded item, but has no items yet */}
-                  {category.items.length === 0 && currentItemType && category.key === currentItemType && currentItem ? (
-                    <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', padding: '8px 0' }}>
-                      {renderExpandedItemSummary(currentItem, category.color)}
-                    </div>
-                  ) : category.items.length > 0 ? (
-                    <Space direction="vertical" style={{ width: '100%' }} size={8}>
-                      {category.items.map(item => {
-                        // Check if this is the current item being expanded
-                        const isCurrentItem = currentItem && item.id === currentItem.id && category.key === currentItemType;
-                        
-                        // If it's the current item, use the special rendering
-                        if (isCurrentItem) {
-                          return renderExpandedItemSummary(item, category.color);
-                        }
-                        
-                        // Otherwise use the standard item card rendering with highlight support
-                        return (
-                          <div key={item.id} onClick={() => onItemClick && onItemClick(item, category.key)}>
-                            {renderItemCard(item, category.key, category.color)}
-                          </div>
-                        );
-                      })}
-                    </Space>
-                  ) : (
-                    <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', padding: '16px 8px' }}>
-                      {/* Flip the order: Create Relationship button first, then "No related items" message */}
-                      {onCreateRelationship && renderCreateRelationshipButton(category.key, category.color)}
-                      <Empty 
-                        image={Empty.PRESENTED_IMAGE_SIMPLE} 
-                        description="No related items" 
-                        style={{ margin: '16px 0 0' }}
-                      />
-                    </div>
-                  )}
-                </Card>
-              </div>
-            ))}
+          {/* Related items grid with horizontal scrolling */}
+          <div style={{ 
+            width: '100%', 
+            overflowX: 'auto', 
+            whiteSpace: 'nowrap',
+            paddingBottom: '12px' // Extra padding for scrollbar
+          }}>
+            <div style={{ 
+              display: 'flex', 
+              flexDirection: 'row', 
+              gap: '16px'
+            }}>
+              {filteredCategories
+                .filter(category => category.active)
+                .map(category => (
+                  <div key={category.key} style={{ 
+                    minWidth: '280px',
+                    display: 'inline-block',
+                    verticalAlign: 'top'
+                  }}>
+                    <Card
+                      title={
+                        <div style={{ color: category.color }}>
+                          {category.name}
+                          <span style={{ marginLeft: '8px', fontSize: '14px', fontWeight: 'normal' }}>
+                            ({category.items.length})
+                          </span>
+                        </div>
+                      }
+                      size="small"
+                      bordered
+                      style={{ 
+                        backgroundColor: category.bgcolor,
+                        border: `1px solid ${category.color}40`,
+                        height: '100%',
+                        width: '100%',
+                      }}
+                      bodyStyle={{ padding: '8px' }}
+                    >
+                      {/* Special case: This is the category of the current expanded item, but has no items yet */}
+                      {category.items.length === 0 && currentItemType && category.key === currentItemType && currentItem ? (
+                        <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', padding: '8px 0' }}>
+                          {renderExpandedItemSummary(currentItem, category.color)}
+                        </div>
+                      ) : category.items.length > 0 ? (
+                        <Space direction="vertical" style={{ width: '100%' }} size={8}>
+                          {category.items.map(item => {
+                            // Check if this is the current item being expanded
+                            const isCurrentItem = currentItem && item.id === currentItem.id && category.key === currentItemType;
+                            
+                            // If it's the current item, use the special rendering
+                            if (isCurrentItem) {
+                              return renderExpandedItemSummary(item, category.color);
+                            }
+                            
+                            // Otherwise use the standard item card rendering with highlight support
+                            return (
+                              <div key={item.id} onClick={() => onItemClick && onItemClick(item, category.key)}>
+                                {renderItemCard(item, category.key, category.color)}
+                              </div>
+                            );
+                          })}
+                        </Space>
+                      ) : (
+                        <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', padding: '16px 8px' }}>
+                          {/* Flip the order: Create Relationship button first, then "No related items" message */}
+                          {onCreateRelationship && renderCreateRelationshipButton(category.key, category.color)}
+                          <Empty 
+                            image={Empty.PRESENTED_IMAGE_SIMPLE} 
+                            description="No related items" 
+                            style={{ margin: '16px 0 0' }}
+                          />
+                        </div>
+                      )}
+                    </Card>
+                  </div>
+                ))}
+            </div>
+          </div>
         </div>
-      </div>
-    </div>
+      ) : (
+        <div className="related-items-panel">
+          {/* Header with buttons for regular mode */}
+          {showFilter && (
+            <Row 
+              align="middle"
+              style={{ 
+                padding: '8px 16px', 
+                marginBottom: '12px', 
+                backgroundColor: colors.chart.backgroundLight,
+                borderRadius: '4px'
+              }}
+            >
+              <Space size={16}>
+                <Typography.Title level={5} style={{ margin: 0 }}>Related Items</Typography.Title>
+                
+                <Button 
+                  type="default" 
+                  size="small"
+                  onClick={() => setShowAllCategories(!showAllCategories)}
+                  icon={showAllCategories ? 
+                    <img src={HideIcon} alt="Hide Empty" style={{ width: '24px', height: '24px' }} /> : 
+                    <img src={ShowIcon} alt="Show All" style={{ width: '24px', height: '24px' }} />
+                  }
+                  style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', width: '40px', height: '32px' }}
+                  title={showAllCategories ? "Hide Empty" : "Show All"}
+                />
+                
+                <Button
+                  type="default"
+                  size="small"
+                  onClick={() => setHighlightChanges(!highlightChanges)}
+                  icon={<img src={ShowImpactOfChangeIcon} alt="Highlight Changes" style={{ width: '24px', height: '24px' }} />}
+                  style={{ 
+                    display: 'flex',
+                    alignItems: 'center',
+                    justifyContent: 'center',
+                    width: '40px',
+                    height: '32px',
+                    ...(highlightChanges ? { 
+                      borderColor: colors.category.parameter,
+                      borderWidth: '2px'
+                    } : {})
+                  }}
+                  title="Highlight Additional Change"
+                />
+                
+                <Button
+                  type="default"
+                  size="small"
+                  onClick={() => setIsFullScreen(!isFullScreen)}
+                  icon={<img src={FullScreenIcon} alt="Full Screen" style={{ width: '24px', height: '24px' }} />}
+                  style={{ 
+                    display: 'flex',
+                    alignItems: 'center',
+                    justifyContent: 'center',
+                    width: '40px',
+                    height: '32px'
+                  }}
+                  title="Full Screen"
+                />
+              </Space>
+            </Row>
+          )}
+
+          {/* Related items grid with horizontal scrolling */}
+          <div style={{ 
+            width: '100%', 
+            overflowX: 'auto', 
+            whiteSpace: 'nowrap',
+            paddingBottom: '12px' // Extra padding for scrollbar
+          }}>
+            <div style={{ 
+              display: 'flex', 
+              flexDirection: 'row', 
+              gap: '16px'
+            }}>
+              {filteredCategories
+                .filter(category => category.active)
+                .map(category => (
+                  <div key={category.key} style={{ 
+                    minWidth: '280px',
+                    display: 'inline-block',
+                    verticalAlign: 'top'
+                  }}>
+                    <Card
+                      title={
+                        <div style={{ color: category.color }}>
+                          {category.name}
+                          <span style={{ marginLeft: '8px', fontSize: '14px', fontWeight: 'normal' }}>
+                            ({category.items.length})
+                          </span>
+                        </div>
+                      }
+                      size="small"
+                      bordered
+                      style={{ 
+                        backgroundColor: category.bgcolor,
+                        border: `1px solid ${category.color}40`,
+                        height: '100%',
+                        width: '100%',
+                      }}
+                      bodyStyle={{ padding: '8px' }}
+                    >
+                      {/* Special case: This is the category of the current expanded item, but has no items yet */}
+                      {category.items.length === 0 && currentItemType && category.key === currentItemType && currentItem ? (
+                        <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', padding: '8px 0' }}>
+                          {renderExpandedItemSummary(currentItem, category.color)}
+                        </div>
+                      ) : category.items.length > 0 ? (
+                        <Space direction="vertical" style={{ width: '100%' }} size={8}>
+                          {category.items.map(item => {
+                            // Check if this is the current item being expanded
+                            const isCurrentItem = currentItem && item.id === currentItem.id && category.key === currentItemType;
+                            
+                            // If it's the current item, use the special rendering
+                            if (isCurrentItem) {
+                              return renderExpandedItemSummary(item, category.color);
+                            }
+                            
+                            // Otherwise use the standard item card rendering with highlight support
+                            return (
+                              <div key={item.id} onClick={() => onItemClick && onItemClick(item, category.key)}>
+                                {renderItemCard(item, category.key, category.color)}
+                              </div>
+                            );
+                          })}
+                        </Space>
+                      ) : (
+                        <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', padding: '16px 8px' }}>
+                          {/* Flip the order: Create Relationship button first, then "No related items" message */}
+                          {onCreateRelationship && renderCreateRelationshipButton(category.key, category.color)}
+                          <Empty 
+                            image={Empty.PRESENTED_IMAGE_SIMPLE} 
+                            description="No related items" 
+                            style={{ margin: '16px 0 0' }}
+                          />
+                        </div>
+                      )}
+                    </Card>
+                  </div>
+                ))}
+            </div>
+          </div>
+        </div>
+      )}
+    </>
   );
 };
 
