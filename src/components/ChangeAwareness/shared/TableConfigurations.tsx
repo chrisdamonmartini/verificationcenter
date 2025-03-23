@@ -460,17 +460,15 @@ export const getStandardColumns = <T extends StandardBaseChange>(
   // Add impact column if specified
   if (options?.showImpact) {
     columns.push({
-      title: 'Impact',
+      title: 'Pot. Impact',
       key: 'impact',
       render: (_, record) => {
         const impactedItems = record.impactedItems;
         const total = impactedItems?.length || 0;
         
         return (
-          <Tooltip title="Click to see impact details">
-            <Tag color={total > 10 ? 'red' : total > 5 ? 'orange' : 'green'}>
-              {total} affected items
-            </Tag>
+          <Tooltip title="Items potentially impacted by this change">
+            <span>{total} items</span>
           </Tooltip>
         );
       },
