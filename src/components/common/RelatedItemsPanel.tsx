@@ -10,6 +10,14 @@ import ShowImpactOfChangeIcon from '../../icons/cmdShowImpactOfChange24.svg';
 import FullScreenIcon from '../../icons/cmdFullScreen24.svg';
 import ExitFullScreenIcon from '../../icons/cmdExitFullScreen16.svg';
 import ReactDOM from 'react-dom';
+import RequirementsIcon from '../../icons/Requirements.svg';
+import MissionIcon from '../../icons/typeTarget48.svg';
+import FunctionsIcon from '../../icons/Functions.svg';
+import LogicalIcon from '../../icons/Logical.svg';
+import ParametersIcon from '../../icons/Parameters.svg';
+import EBOMIcon from '../../icons/typeClass48.svg';
+import CADIcon from '../../icons/typePartComponent48.svg';
+import OperationalScenariosIcon from '../../icons/typeBranchRevision48.svg';
 
 const { Text } = Typography;
 
@@ -552,6 +560,30 @@ const RelatedItemsPanel: React.FC<RelatedItemsPanelProps> = ({
     );
   };
 
+  // Helper function to get the icon for a specific category
+  const getCategoryIcon = (categoryKey: string) => {
+    switch (categoryKey) {
+      case 'mission':
+        return MissionIcon;
+      case 'operationalScenario':
+        return OperationalScenariosIcon;  
+      case 'requirements':
+        return RequirementsIcon;
+      case 'parameters':
+        return ParametersIcon;
+      case 'functions':
+        return FunctionsIcon;
+      case 'logical':
+        return LogicalIcon;
+      case 'cad':
+        return CADIcon;
+      case 'ebom':
+        return EBOMIcon;
+      default:
+        return null;
+    }
+  };
+
   // Effect to handle body overflow when fullscreen is active
   useEffect(() => {
     if (isFullScreen) {
@@ -709,7 +741,14 @@ const RelatedItemsPanel: React.FC<RelatedItemsPanelProps> = ({
                   }}>
                     <Card
                       title={
-                        <div style={{ color: category.color }}>
+                        <div style={{ color: category.color, display: 'flex', alignItems: 'center' }}>
+                          {getCategoryIcon(category.key) && (
+                            <img 
+                              src={getCategoryIcon(category.key)} 
+                              alt={category.name} 
+                              style={{ width: '24px', height: '24px', marginRight: '8px' }} 
+                            />
+                          )}
                           {category.name}
                           <span style={{ marginLeft: '8px', fontSize: '14px', fontWeight: 'normal' }}>
                             ({category.items.length})
@@ -855,7 +894,14 @@ const RelatedItemsPanel: React.FC<RelatedItemsPanelProps> = ({
                   }}>
                     <Card
                       title={
-                        <div style={{ color: category.color }}>
+                        <div style={{ color: category.color, display: 'flex', alignItems: 'center' }}>
+                          {getCategoryIcon(category.key) && (
+                            <img 
+                              src={getCategoryIcon(category.key)} 
+                              alt={category.name} 
+                              style={{ width: '24px', height: '24px', marginRight: '8px' }} 
+                            />
+                          )}
                           {category.name}
                           <span style={{ marginLeft: '8px', fontSize: '14px', fontWeight: 'normal' }}>
                             ({category.items.length})
