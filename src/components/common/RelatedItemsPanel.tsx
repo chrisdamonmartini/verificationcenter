@@ -403,28 +403,66 @@ const RelatedItemsPanel: React.FC<RelatedItemsPanelProps> = ({
         
         {/* Navigation arrows for expanded items */}
         <div style={{ display: 'flex', justifyContent: 'space-between', marginTop: '8px' }}>
-          <Button 
-            style={{ 
+          <div
+            style={{
               backgroundColor: colors.category.parameter,
-              borderColor: colors.category.parameter,
-              color: 'white'
+              color: 'white',
+              position: 'relative',
+              height: '32px',
+              lineHeight: '32px',
+              padding: '0 8px 0 16px',
+              cursor: 'pointer',
+              borderRadius: '4px 0 0 4px',
+              width: '110px',
+              display: 'flex',
+              alignItems: 'center',
+              justifyContent: 'center'
             }}
-            size="small"
-            icon={<span>←</span>}
+            onClick={() => console.log('Navigate upstream')}
           >
-            Upstream
-          </Button>
-          <Button 
-            style={{ 
+            <div style={{ position: 'absolute', left: '2px' }}>←</div>
+            <span style={{ marginLeft: '4px' }}>Upstream</span>
+            {/* Left arrow shape using pseudo-element */}
+            <div style={{
+              position: 'absolute',
+              right: '-15px',
+              width: 0,
+              height: 0,
+              borderTop: '16px solid transparent',
+              borderBottom: '16px solid transparent',
+              borderLeft: `15px solid ${colors.category.parameter}`,
+            }} />
+          </div>
+          
+          <div
+            style={{
               backgroundColor: colors.category.parameter,
-              borderColor: colors.category.parameter,
-              color: 'white' 
+              color: 'white',
+              position: 'relative',
+              height: '32px',
+              lineHeight: '32px',
+              padding: '0 16px 0 8px',
+              cursor: 'pointer',
+              borderRadius: '0 4px 4px 0',
+              width: '110px',
+              display: 'flex',
+              alignItems: 'center',
+              justifyContent: 'center'
             }}
-            size="small"
-            icon={<span style={{ marginLeft: '8px' }}>→</span>}
+            onClick={() => console.log('Navigate downstream')}
           >
-            Downstream
-          </Button>
+            <div style={{
+              position: 'absolute',
+              left: '-15px',
+              width: 0,
+              height: 0,
+              borderTop: '16px solid transparent',
+              borderBottom: '16px solid transparent',
+              borderRight: `15px solid ${colors.category.parameter}`,
+            }} />
+            <span style={{ marginRight: '4px' }}>Downstream</span>
+            <div style={{ position: 'absolute', right: '2px' }}>→</div>
+          </div>
         </div>
       </div>
     );
