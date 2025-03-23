@@ -429,10 +429,10 @@ const RelatedItemsPanel: React.FC<RelatedItemsPanelProps> = ({
               height: 0,
               borderTop: '16px solid transparent',
               borderBottom: '16px solid transparent',
-              borderRight: `8px solid ${colors.category.parameter}`,
-              transform: 'translateX(-100%)'
+              borderRight: `6px solid ${colors.category.parameter}`,
+              transform: 'translateX(-70%)'
             }} />
-            <span>UPSTREAM</span>
+            <span style={{ fontSize: '12px' }}>UPSTREAM</span>
           </div>
           
           <div
@@ -452,7 +452,7 @@ const RelatedItemsPanel: React.FC<RelatedItemsPanelProps> = ({
             }}
             onClick={() => console.log('Navigate downstream')}
           >
-            <span>DOWNSTREAM</span>
+            <span style={{ fontSize: '12px' }}>DOWNSTREAM</span>
             {/* Right arrow shape - smaller and contained */}
             <div style={{
               position: 'absolute',
@@ -462,8 +462,8 @@ const RelatedItemsPanel: React.FC<RelatedItemsPanelProps> = ({
               height: 0,
               borderTop: '16px solid transparent',
               borderBottom: '16px solid transparent',
-              borderLeft: `8px solid ${colors.category.parameter}`,
-              transform: 'translateX(100%)'
+              borderLeft: `6px solid ${colors.category.parameter}`,
+              transform: 'translateX(70%)'
             }} />
           </div>
         </div>
