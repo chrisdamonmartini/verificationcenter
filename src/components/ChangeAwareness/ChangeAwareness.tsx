@@ -64,12 +64,13 @@ import { StandardChangeTable } from './shared/StandardChangeTable';
 import { renderAutoDetectedCategory } from './shared/TableConfigurations';
 import { useChangesData } from './shared/hooks';
 import RequirementsIcon from '../../icons/Requirements.svg';
-import MissionIcon from '../../icons/Mission.svg';
+import MissionIcon from '../../icons/typeTarget48.svg';
 import FunctionsIcon from '../../icons/Functions.svg';
 import LogicalIcon from '../../icons/Logical.svg';
 import ParametersIcon from '../../icons/Parameters.svg';
-import CADIcon from '../../icons/typePartComponent48.svg';
 import EBOMIcon from '../../icons/typeClass48.svg';
+import CADIcon from '../../icons/typePartComponent48.svg';
+import OverviewIcon from '../../icons/typeFolderCollection48.svg';
 
 const { Title, Text, Paragraph } = Typography;
 const { TabPane } = Tabs;
@@ -647,7 +648,20 @@ const ChangeAwareness: React.FC = () => {
           }}
         >
           <TabPane
-            tab={<span>Overview</span>}
+            tab={<span style={{ display: 'flex', alignItems: 'center' }}>
+              <img 
+                src={OverviewIcon} 
+                alt="Overview" 
+                style={{ 
+                  width: '16px', 
+                  height: '16px', 
+                  marginRight: '8px',
+                  verticalAlign: 'middle', 
+                  display: 'inline-block'
+                }} 
+              />
+              <span>Overview</span>
+            </span>}
             key="overview"
           >
             <ImprovedOverviewChanges />
