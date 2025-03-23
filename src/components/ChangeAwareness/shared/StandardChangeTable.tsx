@@ -248,7 +248,8 @@ export function StandardChangeTable<T extends StandardBaseChange>({
               )
             )
           }}
-          size="middle"
+          size="small"
+          className="common-table"
           locale={{
             emptyText: (
               <div style={{ padding: "20px 0" }}>
