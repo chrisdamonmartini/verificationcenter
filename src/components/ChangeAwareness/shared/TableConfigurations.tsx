@@ -312,7 +312,8 @@ export const getStandardColumns = <T extends StandardBaseChange>(
       key: 'id',
       render: (text) => <Text>{text}</Text>,
       sorter: (a, b) => a.id.localeCompare(b.id),
-      sortDirections: ['ascend', 'descend']
+      sortDirections: ['ascend', 'descend'],
+      className: 'id-column'
     },
     {
       title: 'Title',
@@ -320,7 +321,8 @@ export const getStandardColumns = <T extends StandardBaseChange>(
       key: 'title',
       render: (text) => <Text>{text}</Text>,
       ellipsis: true,
-      width: '40%'
+      width: '40%',
+      className: 'title-column'
     },
     {
       title: 'Category',
@@ -359,7 +361,9 @@ export const getStandardColumns = <T extends StandardBaseChange>(
         );
       },
       sorter: (a, b) => new Date(b.date).getTime() - new Date(a.date).getTime(),
-      defaultSortOrder: 'descend'
+      defaultSortOrder: 'descend',
+      width: 120,
+      className: 'date-column'
     },
     {
       title: 'Status',
@@ -378,7 +382,8 @@ export const getStandardColumns = <T extends StandardBaseChange>(
       onFilter: (value, record) => record.status === value,
       sorter: (a, b) => a.status.localeCompare(b.status),
       sortDirections: ['ascend', 'descend'],
-      width: 100
+      width: 120,
+      className: 'status-column'
     },
     {
       title: 'Author',
@@ -392,7 +397,8 @@ export const getStandardColumns = <T extends StandardBaseChange>(
       ),
       sorter: (a, b) => a.author.localeCompare(b.author),
       sortDirections: ['ascend', 'descend'],
-      width: 200
+      width: 200,
+      className: 'author-column'
     }
   ];
 
