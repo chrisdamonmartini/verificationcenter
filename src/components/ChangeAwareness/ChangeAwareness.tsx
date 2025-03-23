@@ -140,7 +140,7 @@ const sliderStyles = {
 const ImprovedOverviewChanges: React.FC = () => {
   const [weeks, setWeeks] = useState<number>(8);
   const [productType, setProductType] = useState<'missile' | 'fighter'>('missile');
-  const [chartCollapsed, setChartCollapsed] = useState<boolean>(false);
+  const [chartCollapsed, setChartCollapsed] = useState<boolean>(true);
   const colors = useColors();
 
   // Custom colors for the pie chart segments with distinct colors for Function and Logical
