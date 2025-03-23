@@ -47,7 +47,7 @@ import Settings from './components/Settings/Settings';
 import { ProductProvider } from './context/ProductContext';
 import { TeamcenterProvider } from './context/TeamcenterContext';
 // Import Change Awareness components
-import ChangeAwareness from './components/ChangeAwareness/ChangeAwareness';
+import ChangeAwareness from './components/ChangeAwareness/ChangeAwareness.tsx';
 import CADDesignChanges from './components/ChangeAwareness/CADDesignChanges';
 import EngineeringBOMChanges from './components/ChangeAwareness/EngineeringBOMChanges';
 import { FlightTestManagement } from './components/FlightTest/FlightTestManagement';
