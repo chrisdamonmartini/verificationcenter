@@ -274,30 +274,35 @@ const RelatedItemsPanel: React.FC<RelatedItemsPanelProps> = ({
     if (!currentItemType) return null;
     
     // Common variations in naming
-    const currentKey = currentItemType.toLowerCase();
+    const currentKey = currentItemType.toLowerCase().trim();
+    
+    console.log("Current key before normalization:", currentKey);
     
     // Map known variations to their standard keys
-    if (currentKey === 'parameter' || currentKey.includes('param')) return 'parameters';
-    if (currentKey === 'requirement') return 'requirements';
-    if (currentKey === 'operationalscenario' || currentKey === 'scenario') return 'operationalScenario';
-    if (currentKey === 'function') return 'functions';
+    if (currentKey === 'parameter' || currentKey === 'parameters' || currentKey.includes('param')) return 'parameters';
+    if (currentKey === 'requirement' || currentKey === 'requirements') return 'requirements';
+    if (currentKey === 'operationalscenario' || currentKey === 'scenario' || currentKey === 'operationalscenarios') return 'operationalScenario';
+    if (currentKey === 'function' || currentKey === 'functions') return 'functions';
     if (currentKey === 'logical') return 'logical';
-    if (currentKey === 'mission') return 'mission';
+    if (currentKey === 'mission' || currentKey === 'missions') return 'mission';
     if (currentKey === 'cad') return 'cad';
-    if (currentKey === 'ebom' || currentKey === 'bom') return 'ebom';
-    if (currentKey === 'model') return 'models';
+    if (currentKey === 'ebom' || currentKey === 'bom' || currentKey === 'engineering bom') return 'ebom';
+    if (currentKey === 'model' || currentKey === 'models') return 'models';
     if (currentKey === 'automation') return 'automation';
     
+    console.log("No exact match found, returning original:", currentKey);
     // If no mapping was found, return the original
     return currentKey;
   };
   
   const normalizedCurrentKey = getNormalizedCurrentKey();
+  console.log("Normalized current key:", normalizedCurrentKey);
   
-  // Always show all categories - no longer filter by items.length
+  // Always show all categories
   const categories = categoryConfigs.map(category => {
     // Is this the category of the current expanded item?
     const isCurrentCategory = normalizedCurrentKey === category.key;
+    console.log(`Category ${category.key} - is current? ${isCurrentCategory}`);
     
     // Rule 1: If it is the category of the item that we are expanded on
     if (isCurrentCategory) {

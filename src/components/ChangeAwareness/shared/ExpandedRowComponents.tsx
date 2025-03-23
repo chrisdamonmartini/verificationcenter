@@ -171,6 +171,26 @@ export const StandardExpandedRow = <T extends StandardExpandedChange>({
   
   // Create a current item object from the record
   const currentItemType = record.category.toLowerCase();
+  console.log("Original category from record:", record.category);
+  
+  // Normalize category based on common variations
+  // This makes sure we pass a standardized category name to RelatedItemsPanel
+  const getNormalizedCategory = (category: string) => {
+    const key = category.toLowerCase().trim();
+    
+    if (key === 'parameter' || key.includes('param')) return 'parameters';
+    if (key === 'requirement') return 'requirements'; 
+    if (key === 'operationalscenario' || key === 'scenario') return 'operationalScenario';
+    if (key === 'function') return 'functions';
+    if (key === 'mission') return 'mission';
+    if (key === 'bom' || key === 'ebom') return 'ebom';
+    
+    return key;
+  };
+  
+  // Get normalized category
+  const normalizedCategory = getNormalizedCategory(currentItemType);
+  console.log("Normalized category for RelatedItemsPanel:", normalizedCategory);
   
   // Create the current item in the format expected by RelatedItemsPanel
   const currentItem = {
@@ -207,7 +227,7 @@ export const StandardExpandedRow = <T extends StandardExpandedChange>({
               parameters={relatedItems.parameters}
               defaultActiveTab={Object.keys(relatedItems).find(key => relatedItems[key as keyof typeof relatedItems].length > 0)}
               currentItem={currentItem}
-              currentItemType={currentItemType}
+              currentItemType={normalizedCategory}
               onCreateRelationship={handleCreateRelationship}
             />
           </Col>
