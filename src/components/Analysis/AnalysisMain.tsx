@@ -9,6 +9,7 @@ import AutomationIcon from '../../icons/AnalysisRequest.svg';
 import HPCStatus from '../Simulation/HPCStatus';
 import ResultsAnalysis from '../Simulation/ResultsAnalysis';
 import SimulationRuns from '../Simulation/SimulationRuns';
+import ContentPanel from '../common/ContentPanel';
 
 const { TabPane } = Tabs;
 
@@ -16,8 +17,8 @@ const AnalysisMain: React.FC = () => {
   const [activeTab, setActiveTab] = useState<string>('analyses');
   
   return (
-    <div className="analysis-container" style={{ padding: '20px' }}>
-      <Card bordered={false} className="analysis-card">
+    <div className="analysis-container">
+      <ContentPanel>
         <Tabs 
           activeKey={activeTab} 
           onChange={setActiveTab}
@@ -26,9 +27,9 @@ const AnalysisMain: React.FC = () => {
         >
           <TabPane 
             tab={
-              <span>
-                <img src={AnalysisIcon} alt="Analyses" style={{ width: '24px', height: '24px', marginRight: '8px' }} />
-                Analyses
+              <span style={{ display: 'flex', alignItems: 'center' }}>
+                <img src={AnalysisIcon} alt="Analyses" style={{ width: '24px', height: '24px', marginRight: '8px', verticalAlign: 'middle', display: 'inline-block' }} />
+                <span>Analyses</span>
               </span>
             } 
             key="analyses"
@@ -38,9 +39,9 @@ const AnalysisMain: React.FC = () => {
           
           <TabPane 
             tab={
-              <span>
-                <img src={ModelIcon} alt="Models" style={{ width: '24px', height: '24px', marginRight: '8px' }} />
-                Models
+              <span style={{ display: 'flex', alignItems: 'center' }}>
+                <img src={ModelIcon} alt="Models" style={{ width: '24px', height: '24px', marginRight: '8px', verticalAlign: 'middle', display: 'inline-block' }} />
+                <span>Models</span>
               </span>
             } 
             key="models"
@@ -50,9 +51,9 @@ const AnalysisMain: React.FC = () => {
           
           <TabPane 
             tab={
-              <span>
-                <img src={AutomationIcon} alt="Automation" style={{ width: '24px', height: '24px', marginRight: '8px' }} />
-                Automation
+              <span style={{ display: 'flex', alignItems: 'center' }}>
+                <img src={AutomationIcon} alt="Automation" style={{ width: '24px', height: '24px', marginRight: '8px', verticalAlign: 'middle', display: 'inline-block' }} />
+                <span>Automation</span>
               </span>
             } 
             key="automation"
@@ -62,9 +63,9 @@ const AnalysisMain: React.FC = () => {
 
           <TabPane 
             tab={
-              <span>
-                <img src={AutomationIcon} alt="Results Analysis" style={{ width: '24px', height: '24px', marginRight: '8px' }} />
-                Results Analysis
+              <span style={{ display: 'flex', alignItems: 'center' }}>
+                <img src={AutomationIcon} alt="Results Analysis" style={{ width: '24px', height: '24px', marginRight: '8px', verticalAlign: 'middle', display: 'inline-block' }} />
+                <span>Results Analysis</span>
               </span>
             } 
             key="results"
@@ -74,9 +75,9 @@ const AnalysisMain: React.FC = () => {
 
           <TabPane 
             tab={
-              <span>
-                <img src={AutomationIcon} alt="Simulation Runs" style={{ width: '24px', height: '24px', marginRight: '8px' }} />
-                Simulation Runs
+              <span style={{ display: 'flex', alignItems: 'center' }}>
+                <img src={AutomationIcon} alt="Simulation Runs" style={{ width: '24px', height: '24px', marginRight: '8px', verticalAlign: 'middle', display: 'inline-block' }} />
+                <span>Simulation Runs</span>
               </span>
             } 
             key="runs"
@@ -86,9 +87,9 @@ const AnalysisMain: React.FC = () => {
 
           <TabPane 
             tab={
-              <span>
-                <img src={AutomationIcon} alt="HPC Status" style={{ width: '24px', height: '24px', marginRight: '8px' }} />
-                HPC Status
+              <span style={{ display: 'flex', alignItems: 'center' }}>
+                <img src={AutomationIcon} alt="HPC Status" style={{ width: '24px', height: '24px', marginRight: '8px', verticalAlign: 'middle', display: 'inline-block' }} />
+                <span>HPC Status</span>
               </span>
             } 
             key="hpc"
@@ -96,7 +97,7 @@ const AnalysisMain: React.FC = () => {
             <HPCStatus />
           </TabPane>
         </Tabs>
-      </Card>
+      </ContentPanel>
     </div>
   );
 };
