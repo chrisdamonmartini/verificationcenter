@@ -469,14 +469,14 @@ const RelatedItemsPanel: React.FC<RelatedItemsPanelProps> = ({
       padding: '20px',
       overflow: 'auto'
     } : {}}>
-      {/* Filter controls with integrated action buttons */}
+      {/* Header with just the title */}
       {showFilter && (
         <Row 
           justify="space-between" 
           align="middle"
           style={{ 
             padding: '8px 16px', 
-            marginBottom: '12px', 
+            marginBottom: '8px', 
             backgroundColor: colors.chart.backgroundLight,
             borderRadius: '4px'
           }}
@@ -484,8 +484,18 @@ const RelatedItemsPanel: React.FC<RelatedItemsPanelProps> = ({
           <Col>
             <Typography.Title level={5} style={{ margin: 0 }}>Related Items</Typography.Title>
           </Col>
-          
-          {/* Move action buttons to the right side of the header */}
+        </Row>
+      )}
+      
+      {/* Action buttons below header, right-aligned */}
+      {showFilter && (
+        <Row 
+          justify="end" 
+          align="middle"
+          style={{ 
+            marginBottom: '12px'
+          }}
+        >
           <Col>
             <Space>
               <Button 
