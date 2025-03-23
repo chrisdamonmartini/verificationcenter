@@ -64,6 +64,9 @@ import { StandardChangeTable } from './shared/StandardChangeTable';
 import { renderAutoDetectedCategory } from './shared/TableConfigurations';
 import { useChangesData } from './shared/hooks';
 import RequirementsIcon from '../../icons/Requirements.svg';
+import MissionIcon from '../../icons/Mission.svg';
+import FunctionsIcon from '../../icons/Functions.svg';
+import LogicalIcon from '../../icons/Logical.svg';
 
 const { Title, Text, Paragraph } = Typography;
 const { TabPane } = Tabs;
@@ -648,7 +651,20 @@ const ChangeAwareness: React.FC = () => {
           </TabPane>
 
           <TabPane
-            tab={<span><RocketOutlined /> Mission</span>}
+            tab={<span style={{ display: 'flex', alignItems: 'center' }}>
+              <img 
+                src={MissionIcon} 
+                alt="Mission" 
+                style={{ 
+                  width: '16px', 
+                  height: '16px', 
+                  marginRight: '8px',
+                  verticalAlign: 'middle', 
+                  display: 'inline-block'
+                }} 
+              />
+              <span>Mission</span>
+            </span>}
             key="mission"
           >
             <ImprovedMissionChanges />
@@ -689,14 +705,40 @@ const ChangeAwareness: React.FC = () => {
           </TabPane>
 
           <TabPane
-            tab={<span><FunctionOutlined /> Functions</span>}
+            tab={<span style={{ display: 'flex', alignItems: 'center' }}>
+              <img 
+                src={FunctionsIcon} 
+                alt="Functions" 
+                style={{ 
+                  width: '16px', 
+                  height: '16px', 
+                  marginRight: '8px',
+                  verticalAlign: 'middle', 
+                  display: 'inline-block'
+                }} 
+              />
+              <span>Functions</span>
+            </span>}
             key="functions"
           >
             <ImprovedFunctionsChanges />
           </TabPane>
 
           <TabPane
-            tab={<span><ClusterOutlined /> Logical</span>}
+            tab={<span style={{ display: 'flex', alignItems: 'center' }}>
+              <img 
+                src={LogicalIcon} 
+                alt="Logical" 
+                style={{ 
+                  width: '16px', 
+                  height: '16px', 
+                  marginRight: '8px',
+                  verticalAlign: 'middle', 
+                  display: 'inline-block'
+                }} 
+              />
+              <span>Logical</span>
+            </span>}
             key="logical"
           >
             <ImprovedLogicalChanges />
