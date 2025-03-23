@@ -4,6 +4,8 @@ import { ClockCircleOutlined, CheckCircleOutlined, ExclamationCircleOutlined, Ex
 import dayjs from 'dayjs';
 import useColors from '../../hooks/useColors';
 import OpenIcon from '../../icons/cmdOpen24.svg';
+import ShowIcon from '../../icons/cmdShow24.svg';
+import HideIcon from '../../icons/cmdHide16.svg';
 
 const { Text } = Typography;
 
@@ -581,9 +583,13 @@ const RelatedItemsPanel: React.FC<RelatedItemsPanelProps> = ({
               type="default" 
               size="small"
               onClick={() => setShowAllCategories(!showAllCategories)}
-            >
-              {showAllCategories ? 'Hide Empty' : 'See All'}
-            </Button>
+              icon={showAllCategories ? 
+                <img src={HideIcon} alt="Hide Empty" style={{ width: '24px', height: '24px' }} /> : 
+                <img src={ShowIcon} alt="Show All" style={{ width: '24px', height: '24px' }} />
+              }
+              style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', width: '40px', height: '32px' }}
+              title={showAllCategories ? "Hide Empty" : "Show All"}
+            />
             
             <Button
               type="default"
