@@ -13,6 +13,7 @@ import HPCStatus from '../Simulation/HPCStatus';
 import ResultsAnalysis from '../Simulation/ResultsAnalysis';
 import SimulationRuns from '../Simulation/SimulationRuns';
 import ContentPanel from '../common/ContentPanel';
+import TabWithIcon from '../common/TabWithIcon';
 import useColors from '../../hooks/useColors';
 
 const { TabPane } = Tabs;
@@ -81,72 +82,42 @@ const AnalysisMain: React.FC = () => {
           className="changes-tabs"
         >
           <TabPane 
-            tab={
-              <span style={{ display: 'flex', alignItems: 'center' }}>
-                <img src={AnalysisIcon} alt="Analyses" style={{ width: '24px', height: '24px', marginRight: '8px', verticalAlign: 'middle', display: 'inline-block' }} />
-                <span>Analyses</span>
-              </span>
-            } 
+            tab={<TabWithIcon icon={AnalysisIcon} label="Analyses" />}
             key="analyses"
           >
             <AnalysesTab />
           </TabPane>
           
           <TabPane 
-            tab={
-              <span style={{ display: 'flex', alignItems: 'center' }}>
-                <img src={ModelIcon} alt="Models" style={{ width: '24px', height: '24px', marginRight: '8px', verticalAlign: 'middle', display: 'inline-block' }} />
-                <span>Models</span>
-              </span>
-            } 
+            tab={<TabWithIcon icon={ModelIcon} label="Models" />}
             key="models"
           >
             <ModelsTab />
           </TabPane>
           
           <TabPane 
-            tab={
-              <span style={{ display: 'flex', alignItems: 'center' }}>
-                <img src={AutomationIcon} alt="Automation" style={{ width: '24px', height: '24px', marginRight: '8px', verticalAlign: 'middle', display: 'inline-block' }} />
-                <span>Automation</span>
-              </span>
-            } 
+            tab={<TabWithIcon icon={AutomationIcon} label="Automation" />}
             key="automation"
           >
             <AutomationTab />
           </TabPane>
 
           <TabPane 
-            tab={
-              <span style={{ display: 'flex', alignItems: 'center' }}>
-                <img src={ResultsAnalysisIcon} alt="Results Analysis" style={{ width: '24px', height: '24px', marginRight: '8px', verticalAlign: 'middle', display: 'inline-block' }} />
-                <span>Results Analysis</span>
-              </span>
-            } 
+            tab={<TabWithIcon icon={ResultsAnalysisIcon} label="Results Analysis" />}
             key="results"
           >
             <ResultsAnalysis />
           </TabPane>
 
           <TabPane 
-            tab={
-              <span style={{ display: 'flex', alignItems: 'center' }}>
-                <img src={SimulationRunsIcon} alt="Simulation Runs" style={{ width: '24px', height: '24px', marginRight: '8px', verticalAlign: 'middle', display: 'inline-block' }} />
-                <span>Simulation Runs</span>
-              </span>
-            } 
+            tab={<TabWithIcon icon={SimulationRunsIcon} label="Simulation Runs" />}
             key="runs"
           >
             <SimulationRuns />
           </TabPane>
 
           <TabPane 
-            tab={
-              <span style={{ display: 'flex', alignItems: 'center' }}>
-                <img src={HPCStatusIcon} alt="HPC Status" style={{ width: '24px', height: '24px', marginRight: '8px', verticalAlign: 'middle', display: 'inline-block' }} />
-                <span>HPC Status</span>
-              </span>
-            } 
+            tab={<TabWithIcon icon={HPCStatusIcon} label="HPC Status" />}
             key="hpc"
           >
             <HPCStatus />
