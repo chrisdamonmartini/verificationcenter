@@ -173,35 +173,42 @@ export const StandardExpandedRow = <T extends StandardExpandedChange>({
   const currentItemType = record.category.toLowerCase();
   console.log("Original category from record:", record.category);
   
-  // Normalize category based on common variations
-  // This makes sure we pass a standardized category name to RelatedItemsPanel
-  const getNormalizedCategory = (category: string) => {
-    const key = category.toLowerCase().trim();
+  // Simplified function to map the current item's type to a standardized category
+  const getCategoryType = () => {
+    // Extract ID prefix to determine type (most reliable method)
+    const idPrefix = record.id.split('-')[0]?.toLowerCase();
+    console.log("ID prefix for type determination:", idPrefix);
     
-    console.log("Original category key before mapping:", key);
+    // First check ID prefix - this is the most reliable indicator
+    if (idPrefix === 'req') return 'requirements';
+    if (idPrefix === 'param') return 'parameters';
+    if (idPrefix === 'func') return 'functions';
+    if (idPrefix === 'mission') return 'mission';
+    if (idPrefix === 'scen') return 'operationalScenario';
+    if (idPrefix === 'log') return 'logical';
+    if (idPrefix === 'cad') return 'cad';
+    if (idPrefix === 'bom') return 'ebom';
     
-    // Map exact cases first
-    if (key === 'engineering bom') return 'ebom';
-    if (key === 'requirement') return 'requirements';
-    if (key === 'parameter') return 'parameters';
-    if (key === 'operationalscenario') return 'operationalScenario';
+    // If ID prefix didn't match, try the record category
+    const category = record.category.toLowerCase().trim();
+    console.log("Using category from record:", category);
     
-    // Then check includes - this is less precise but catches variations
-    if (key.includes('param')) return 'parameters';
-    if (key.includes('requirement')) return 'requirements';
-    if (key.includes('bom')) return 'ebom';
-    if (key.includes('scenario')) return 'operationalScenario';
-    if (key.includes('function')) return 'functions';
-    if (key.includes('mission')) return 'mission';
+    if (category.includes('requirement')) return 'requirements';
+    if (category.includes('parameter')) return 'parameters';
+    if (category.includes('function')) return 'functions';
+    if (category.includes('mission')) return 'mission';
+    if (category.includes('scenario')) return 'operationalScenario';
+    if (category.includes('logical')) return 'logical';
+    if (category.includes('cad')) return 'cad';
+    if (category.includes('bom') || category.includes('engineering')) return 'ebom';
     
-    console.log("No mapping found for category:", key);
-    return key;
+    // Default fallback - use the raw category
+    return category;
   };
   
-  // Get normalized category
-  const normalizedCategory = getNormalizedCategory(currentItemType);
-  console.log("Normalized category for RelatedItemsPanel:", normalizedCategory);
-  console.log("All available category keys:", Object.keys(relatedItems).join(', '));
+  // Get the exact category that should be highlighted
+  const highlightCategory = getCategoryType();
+  console.log("Category that should be highlighted:", highlightCategory);
   
   // Create the current item in the format expected by RelatedItemsPanel
   const currentItem = {
@@ -238,7 +245,7 @@ export const StandardExpandedRow = <T extends StandardExpandedChange>({
               parameters={relatedItems.parameters}
               defaultActiveTab={Object.keys(relatedItems).find(key => relatedItems[key as keyof typeof relatedItems].length > 0)}
               currentItem={currentItem}
-              currentItemType={normalizedCategory}
+              currentItemType={highlightCategory}
               onCreateRelationship={handleCreateRelationship}
             />
           </Col>
