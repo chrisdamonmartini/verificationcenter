@@ -18,7 +18,7 @@ import {
   PlayCircleOutlined,
   BranchesOutlined
 } from '@ant-design/icons';
-import vcLogo from '../../icons/vc.png';
+import vcLogo from '../../icons/verificationcenterico.jpeg';
 
 // Updated navigation items for Verification Management - Flattened structure
 export const SidebarData = [
@@ -46,11 +46,6 @@ export const SidebarData = [
     title: 'Analysis',
     path: '/analysis',
     icon: <ProjectOutlined />
-  },
-  {
-    title: 'Digital Thread',
-    path: '/digital-thread',
-    icon: <BranchesOutlined />
   },
   {
     title: 'Test Mgmt.',
@@ -169,7 +164,7 @@ const Sidebar: React.FC<SidebarProps> = ({ currentView, onNavigate }) => {
               <div className="text-center">
                 <span style={{ 
                   fontSize: '10px', 
-                  fontFamily: 'Arial, sans-serif',
+                  fontFamily: 'Segoe UI, sans-serif',
                   lineHeight: '1.1',
                   display: 'block',
                   width: '56px',
