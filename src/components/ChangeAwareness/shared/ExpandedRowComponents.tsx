@@ -171,10 +171,6 @@ export const StandardExpandedRow = <T extends StandardExpandedChange>({
   
   // Create a current item object from the record
   const currentItemType = record.category.toLowerCase();
-  console.log(`Original currentItemType: ${currentItemType}`);
-  
-  // We don't need to map the type here anymore - the RelatedItemsPanel handles normalization
-  // This simplifies our code and reduces the chance of mismatches
   
   // Create the current item in the format expected by RelatedItemsPanel
   const currentItem = {

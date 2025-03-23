@@ -270,7 +270,6 @@ const RelatedItemsPanel: React.FC<RelatedItemsPanelProps> = ({
   ];
   
   // Get the current item category key in a normalized form for comparison
-  // This helps with cases where the naming might differ slightly (e.g., singular vs plural)
   const getNormalizedCurrentKey = () => {
     if (!currentItemType) return null;
     
@@ -294,13 +293,11 @@ const RelatedItemsPanel: React.FC<RelatedItemsPanelProps> = ({
   };
   
   const normalizedCurrentKey = getNormalizedCurrentKey();
-  console.log('Normalized current key:', normalizedCurrentKey);
   
   // Always show all categories - no longer filter by items.length
   const categories = categoryConfigs.map(category => {
     // Is this the category of the current expanded item?
     const isCurrentCategory = normalizedCurrentKey === category.key;
-    console.log(`Category ${category.key} isCurrentCategory: ${isCurrentCategory}`);
     
     // Rule 1: If it is the category of the item that we are expanded on
     if (isCurrentCategory) {
