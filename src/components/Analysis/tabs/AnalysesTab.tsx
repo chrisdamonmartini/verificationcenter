@@ -286,24 +286,24 @@ const AnalysesTab: React.FC = () => {
     switch (status) {
       case 'Completed':
         return (
-          <Tag color="success">
+          <Tag color="success" style={{ margin: 0, padding: '0 6px', height: '18px', lineHeight: '18px' }}>
             Completed
           </Tag>
         );
       case 'In Progress':
         return (
-          <Tag color="processing">
+          <Tag color="processing" style={{ margin: 0, padding: '0 6px', height: '18px', lineHeight: '18px' }}>
             In Progress
           </Tag>
         );
       case 'Pending':
         return (
-          <Tag color="default">
+          <Tag color="warning" style={{ margin: 0, padding: '0 6px', height: '18px', lineHeight: '18px' }}>
             Pending
           </Tag>
         );
       default:
-        return <Tag>{status}</Tag>;
+        return status;
     }
   };
   
@@ -312,24 +312,24 @@ const AnalysesTab: React.FC = () => {
     switch (type) {
       case 'Design':
         return (
-          <Tag color="purple">
+          <Tag color="blue" style={{ margin: 0, padding: '0 6px', height: '18px', lineHeight: '18px' }}>
             Design
           </Tag>
         );
       case 'Verification':
         return (
-          <Tag color="blue">
+          <Tag color="purple" style={{ margin: 0, padding: '0 6px', height: '18px', lineHeight: '18px' }}>
             Verification
           </Tag>
         );
       case 'Simulation':
         return (
-          <Tag color="cyan">
+          <Tag color="cyan" style={{ margin: 0, padding: '0 6px', height: '18px', lineHeight: '18px' }}>
             Simulation
           </Tag>
         );
       default:
-        return <Tag>{type}</Tag>;
+        return type;
     }
   };
   
@@ -429,7 +429,7 @@ const AnalysesTab: React.FC = () => {
           record.status === 'Completed' ? 'success' : 
           record.status === 'In Progress' ? 'active' : 'normal';
         
-        return <Progress percent={progress} status={progressStatus} size="small" />;
+        return <Progress percent={progress} status={progressStatus} size="small" style={{ margin: 0 }} />;
       },
     },
     {
@@ -465,18 +465,6 @@ const AnalysesTab: React.FC = () => {
       width: 120,
       render: (lastRun) => lastRun || 'N/A',
     },
-    {
-      title: 'ACTIONS',
-      key: 'actions',
-      width: 120,
-      render: (_, record) => (
-        <Space size="small">
-          <Button type="text" size="small" style={{ padding: 0 }}>✓</Button>
-          <Button type="text" size="small" style={{ padding: 0 }}>⋮</Button>
-          <Button type="text" size="small" style={{ padding: 0 }}>▶</Button>
-        </Space>
-      ),
-    },
   ];
   
   // Stats for the header
@@ -485,6 +473,14 @@ const AnalysesTab: React.FC = () => {
   const inProgressAnalyses = sampleAnalyses.filter(item => item.status === 'In Progress').length;
   const pendingAnalyses = sampleAnalyses.filter(item => item.status === 'Pending').length;
   
+  // Formatted stats for the StandardTable
+  const tableStats = [
+    { label: 'Total', value: totalAnalyses },
+    { label: 'Completed', value: completedAnalyses, color: '#52c41a' },
+    { label: 'In Progress', value: inProgressAnalyses, color: '#1890ff' },
+    { label: 'Pending', value: pendingAnalyses, color: '#faad14' }
+  ];
+  
   return (
     <StandardTable
       title="Analyses"
@@ -492,12 +488,7 @@ const AnalysesTab: React.FC = () => {
       columns={columns}
       loading={false}
       expandedRowRender={expandedRowRender}
-      stats={{
-        total: totalAnalyses,
-        completed: completedAnalyses,
-        inProgress: inProgressAnalyses,
-        pending: pendingAnalyses
-      }}
+      stats={tableStats}
       searchableFields={['id', 'name', 'assignedTo']}
       refreshData={() => console.log('Refreshing data...')}
     />

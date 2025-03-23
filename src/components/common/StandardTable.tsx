@@ -14,12 +14,11 @@ import type { ColumnsType, TableProps } from 'antd/es/table';
 import {
   ReloadOutlined,
   SearchOutlined,
-  HistoryOutlined
+  HistoryOutlined,
+  PlusOutlined,
+  MinusOutlined
 } from '@ant-design/icons';
 import useColors from '../../hooks/useColors';
-import ChildIcon from '../../icons/cmdChild24.svg';
-import ChildExpandedIcon from '../../icons/cmdChildExpanded24.svg';
-import noDataImage from '../../icons/noDataTable.svg';
 import '../../styles/tableStyles.css';
 
 const { Title } = Typography;
@@ -87,17 +86,17 @@ export function StandardTable<T>({
   const expandable = expandedRowRender
     ? {
         expandedRowRender,
-        expandRowByClick: true,
+        expandRowByClick: false,
         expandIcon: ({ expanded, onExpand, record }: any) => (
-          <img
-            src={expanded ? '/icons/minus.svg' : '/icons/plus.svg'}
-            alt={expanded ? 'Collapse' : 'Expand'}
+          <span 
             onClick={(e) => {
               e.stopPropagation();
               onExpand(record, e);
             }}
-            style={{ cursor: 'pointer', marginRight: 8 }}
-          />
+            style={{ cursor: 'pointer', marginRight: 8, display: 'inline-flex', alignItems: 'center' }}
+          >
+            {expanded ? <MinusOutlined /> : <PlusOutlined />}
+          </span>
         ),
       }
     : undefined;
@@ -154,13 +153,12 @@ export function StandardTable<T>({
         locale={{
           emptyText: (
             <Empty
-              image={noDataImage}
               imageStyle={{ height: 60 }}
               description="No Data Available"
             />
           ),
         }}
-        bordered
+        size="small"
         {...tableProps}
       />
     </div>
