@@ -74,6 +74,32 @@ import OperationalScenariosIcon from '../../../icons/typeBranchRevision48.svg';
 
 const { Text } = Typography;
 
+// Domain hierarchy for determining downstream relationships
+const domainHierarchy = {
+  mission: ['operationalScenario', 'requirement', 'parameter', 'function', 'logical', 'cad', 'bom'],
+  operationalScenario: ['requirement', 'parameter', 'function', 'logical', 'cad', 'bom'],
+  requirement: ['parameter', 'function', 'logical', 'cad', 'bom'],
+  parameter: ['function', 'logical', 'cad', 'bom'],
+  function: ['logical', 'cad', 'bom'],
+  logical: ['cad', 'bom'],
+  cad: ['bom'],
+  bom: []
+};
+
+// Helper function to filter impacted items to only include downstream domains
+const getDownstreamImpactedItems = (record: any) => {
+  const currentDomain = record.domain;
+  const downstreamDomains = domainHierarchy[currentDomain] || [];
+  
+  if (!record.impactedItems || !Array.isArray(record.impactedItems)) {
+    return [];
+  }
+  
+  return record.impactedItems.filter(item => 
+    downstreamDomains.includes(item.type)
+  );
+};
+
 // Extend BaseChange interface to include required fields
 export interface StandardBaseChange extends BaseChange {
   id: string;
@@ -463,11 +489,11 @@ export const getStandardColumns = <T extends StandardBaseChange>(
       title: 'Pot. Impact',
       key: 'impact',
       render: (_, record) => {
-        const impactedItems = record.impactedItems;
-        const total = impactedItems?.length || 0;
+        const downstreamItems = getDownstreamImpactedItems(record);
+        const total = downstreamItems.length;
         
         return (
-          <Tooltip title="Items potentially impacted by this change">
+          <Tooltip title="Downstream items potentially impacted by this change">
             <span>{total} items</span>
           </Tooltip>
         );
