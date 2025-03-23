@@ -1,9 +1,7 @@
-import React, { useState } from 'react';
-import { Table, Tag, Progress, Space, Button, Input, Select } from 'antd';
-import { SearchOutlined, CheckCircleOutlined, SyncOutlined, ClockCircleOutlined } from '@ant-design/icons';
+import React from 'react';
+import { Tag, Progress, Space, Button } from 'antd';
 import type { ColumnsType } from 'antd/es/table';
-
-const { Option } = Select;
+import { StandardTable } from '../../common/StandardTable';
 
 // Interface for analysis items
 interface AnalysisItem {
@@ -72,10 +70,6 @@ const sampleAnalyses: AnalysisItem[] = [
 ];
 
 const AnalysesTab: React.FC = () => {
-  const [searchText, setSearchText] = useState('');
-  const [statusFilter, setStatusFilter] = useState<string | null>(null);
-  const [typeFilter, setTypeFilter] = useState<string | null>(null);
-  
   // Status tag renderer
   const getStatusTag = (status: string) => {
     switch (status) {
@@ -215,66 +209,27 @@ const AnalysesTab: React.FC = () => {
     },
   ];
   
-  // Filter the data based on search and filters
-  const filteredData = sampleAnalyses.filter(item => {
-    const matchesSearch = searchText
-      ? (item.name.toLowerCase().includes(searchText.toLowerCase()) ||
-         item.id.toLowerCase().includes(searchText.toLowerCase()) ||
-         item.assignedTo.toLowerCase().includes(searchText.toLowerCase()))
-      : true;
-    
-    const matchesStatus = statusFilter
-      ? item.status === statusFilter
-      : true;
-    
-    const matchesType = typeFilter
-      ? item.type === typeFilter
-      : true;
-    
-    return matchesSearch && matchesStatus && matchesType;
-  });
-  
   // Stats for the header
   const totalAnalyses = sampleAnalyses.length;
   const completedAnalyses = sampleAnalyses.filter(item => item.status === 'Completed').length;
   const inProgressAnalyses = sampleAnalyses.filter(item => item.status === 'In Progress').length;
+  const pendingAnalyses = sampleAnalyses.filter(item => item.status === 'Pending').length;
   
   return (
-    <div className="analyses-tab-container">
-      <div className="stats-bar" style={{ marginBottom: '16px', display: 'flex', gap: '16px' }}>
-        <div>Total: {totalAnalyses}</div>
-        <div>Completed: {completedAnalyses}</div>
-        <div>In Progress: {inProgressAnalyses}</div>
-        
-        <div style={{ marginLeft: 'auto', display: 'flex', gap: '8px' }}>
-          <Input
-            placeholder="Search analyses..."
-            value={searchText}
-            onChange={e => setSearchText(e.target.value)}
-            prefix={<SearchOutlined />}
-            style={{ width: 200 }}
-          />
-          <Select
-            placeholder="All Statuses"
-            style={{ width: 140 }}
-            onChange={(value) => setStatusFilter(value)}
-            allowClear
-          >
-            <Option value="Completed">Completed</Option>
-            <Option value="In Progress">In Progress</Option>
-            <Option value="Pending">Pending</Option>
-          </Select>
-        </div>
-      </div>
-      
-      <Table
-        columns={columns}
-        dataSource={filteredData}
-        rowKey="id"
-        size="middle"
-        pagination={{ pageSize: 10 }}
-      />
-    </div>
+    <StandardTable
+      title="Analyses"
+      data={sampleAnalyses}
+      columns={columns}
+      loading={false}
+      stats={{
+        total: totalAnalyses,
+        completed: completedAnalyses,
+        inProgress: inProgressAnalyses,
+        pending: pendingAnalyses
+      }}
+      searchableFields={['id', 'name', 'assignedTo']}
+      refreshData={() => console.log('Refreshing data...')}
+    />
   );
 };
 

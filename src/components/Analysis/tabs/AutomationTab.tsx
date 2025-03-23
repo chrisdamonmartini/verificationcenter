@@ -1,11 +1,9 @@
-import React, { useState } from 'react';
-import { Table, Card, Typography, Tag, Space, Button, Tooltip, Progress, Input, Select } from 'antd';
-import { SearchOutlined, PlayCircleOutlined, PauseCircleOutlined, ClockCircleOutlined, CheckCircleOutlined, CloseCircleOutlined, InfoCircleOutlined } from '@ant-design/icons';
+import React from 'react';
+import { Tag, Space, Button, Tooltip, Progress } from 'antd';
+import { PlayCircleOutlined, PauseCircleOutlined, ClockCircleOutlined, CheckCircleOutlined, CloseCircleOutlined, InfoCircleOutlined } from '@ant-design/icons';
 import type { ColumnsType } from 'antd/es/table';
 import AutomationIcon from '../../../icons/AnalysisRequest.svg';
-
-const { Title, Text } = Typography;
-const { Option } = Select;
+import { StandardTable } from '../../common/StandardTable';
 
 // Interface for automation workflows
 interface AutomationWorkflow {
@@ -122,9 +120,6 @@ const sampleAutomation: AutomationWorkflow[] = [
 ];
 
 const AutomationTab: React.FC = () => {
-  const [searchText, setSearchText] = useState('');
-  const [statusFilter, setStatusFilter] = useState<string | null>(null);
-  
   // Status tag renderer
   const getStatusTag = (status: string) => {
     switch (status) {
@@ -204,36 +199,36 @@ const AutomationTab: React.FC = () => {
       width: 150,
       render: (progress, record) => {
         const progressStatus = 
-          record.status === 'Failed' ? 'exception' : 
-          record.status === 'Paused' ? 'normal' :
-          record.status === 'Completed' ? 'success' : 'active';
+          record.status === 'Completed' ? 'success' : 
+          record.status === 'Running' ? 'active' : 
+          record.status === 'Failed' ? 'exception' : 'normal';
         
         return <Progress percent={progress} status={progressStatus} size="small" />;
       },
     },
     {
-      title: 'Last Run',
-      dataIndex: 'lastRun',
-      key: 'lastRun',
-      width: 120,
+      title: 'Schedule',
+      dataIndex: 'schedule',
+      key: 'schedule',
+      width: 110,
     },
     {
       title: 'Next Run',
       dataIndex: 'nextRun',
       key: 'nextRun',
-      width: 120,
-    },
-    {
-      title: 'Owner',
-      dataIndex: 'owner',
-      key: 'owner',
-      width: 150,
+      width: 110,
     },
     {
       title: 'Environment',
       dataIndex: 'environmentName',
       key: 'environmentName',
-      width: 180,
+      width: 170,
+    },
+    {
+      title: 'Duration',
+      dataIndex: 'duration',
+      key: 'duration',
+      width: 130,
     },
     {
       title: 'Actions',
@@ -242,99 +237,78 @@ const AutomationTab: React.FC = () => {
       render: (_, record) => (
         <Space size="small">
           {record.status === 'Running' && (
-            <Button size="small" icon={<PauseCircleOutlined />}>Pause</Button>
+            <Button size="small" icon={<PauseCircleOutlined />}>
+              Pause
+            </Button>
           )}
-          {record.status === 'Paused' && (
-            <Button size="small" type="primary" icon={<PlayCircleOutlined />}>Resume</Button>
-          )}
-          {record.status === 'Scheduled' && (
-            <Button size="small" type="primary" icon={<PlayCircleOutlined />}>Start</Button>
-          )}
-          {record.status === 'Failed' && (
-            <Button size="small" type="primary" icon={<PlayCircleOutlined />}>Retry</Button>
+          {(record.status === 'Scheduled' || record.status === 'Paused') && (
+            <Button size="small" icon={<PlayCircleOutlined />}>
+              Start
+            </Button>
           )}
           {record.results && (
-            <Button size="small" type="link">Results</Button>
+            <Tooltip title="View Results">
+              <Button size="small" icon={<InfoCircleOutlined />}>
+                Results
+              </Button>
+            </Tooltip>
           )}
         </Space>
       ),
     },
   ];
   
-  // Filter the data based on search text and status filter
-  const filteredData = sampleAutomation.filter(item => {
-    const matchesSearch = searchText
-      ? (item.name.toLowerCase().includes(searchText.toLowerCase()) ||
-         item.description.toLowerCase().includes(searchText.toLowerCase()) ||
-         item.id.toLowerCase().includes(searchText.toLowerCase()))
-      : true;
-    
-    const matchesStatus = statusFilter
-      ? item.status === statusFilter
-      : true;
-    
-    return matchesSearch && matchesStatus;
-  });
+  // Expandable row render function
+  const expandedRowRender = (record: AutomationWorkflow) => (
+    <div style={{ padding: '0 48px' }}>
+      <p style={{ margin: '8px 0' }}><strong>Description:</strong> {record.description}</p>
+      <div style={{ display: 'flex', gap: '24px', margin: '16px 0' }}>
+        <div>
+          <p><strong>Owner:</strong> {record.owner}</p>
+          <p><strong>Last Run:</strong> {record.lastRun}</p>
+        </div>
+        <div>
+          <p><strong>Models:</strong> {record.modelIds.join(', ')}</p>
+          <p><strong>Environment ID:</strong> {record.environmentId}</p>
+        </div>
+        {record.status === 'Running' && (
+          <div>
+            <p><strong>CPU Usage:</strong> {record.cpuUsage}%</p>
+            <p><strong>Memory Usage:</strong> {record.memoryUsage}%</p>
+          </div>
+        )}
+      </div>
+    </div>
+  );
+  
+  // Calculate stats
+  const totalWorkflows = sampleAutomation.length;
+  const runningWorkflows = sampleAutomation.filter(item => item.status === 'Running').length;
+  const completedWorkflows = sampleAutomation.filter(item => item.status === 'Completed').length;
+  const pendingWorkflows = sampleAutomation.filter(item => ['Scheduled', 'Paused'].includes(item.status)).length;
+  
+  // Extra controls
+  const extraControls = (
+    <Button type="primary">New Workflow</Button>
+  );
   
   return (
-    <div className="automation-tab-container">
-      <div className="filter-section" style={{ marginBottom: 16, display: 'flex', justifyContent: 'space-between' }}>
-        <Space>
-          <Input
-            placeholder="Search automation workflows..."
-            value={searchText}
-            onChange={e => setSearchText(e.target.value)}
-            prefix={<SearchOutlined />}
-            style={{ width: 250 }}
-          />
-          <Select
-            placeholder="Filter by Status"
-            style={{ width: 180 }}
-            allowClear
-            onChange={(value) => setStatusFilter(value)}
-          >
-            <Option value="Running">Running</Option>
-            <Option value="Scheduled">Scheduled</Option>
-            <Option value="Completed">Completed</Option>
-            <Option value="Failed">Failed</Option>
-            <Option value="Paused">Paused</Option>
-          </Select>
-        </Space>
-        <Button type="primary">Create Workflow</Button>
-      </div>
-      
-      <Table
-        columns={columns}
-        dataSource={filteredData}
-        rowKey="id"
-        size="middle"
-        pagination={{ pageSize: 10 }}
-        expandable={{
-          expandedRowRender: (record) => (
-            <div style={{ padding: '0 20px' }}>
-              <p style={{ margin: 0 }}><strong>Description:</strong> {record.description}</p>
-              <p style={{ margin: '8px 0' }}>
-                <strong>Schedule:</strong> {record.schedule} | 
-                <strong> Duration:</strong> {record.duration} | 
-                <strong> Model IDs:</strong> {record.modelIds.join(', ')}
-              </p>
-              {(record.status === 'Running' || record.cpuUsage > 0) && (
-                <div style={{ display: 'flex', gap: '20px', marginTop: '8px' }}>
-                  <div>
-                    <strong>CPU Usage:</strong>
-                    <Progress percent={record.cpuUsage} size="small" />
-                  </div>
-                  <div>
-                    <strong>Memory Usage:</strong>
-                    <Progress percent={record.memoryUsage} size="small" />
-                  </div>
-                </div>
-              )}
-            </div>
-          ),
-        }}
-      />
-    </div>
+    <StandardTable
+      title="Automation Workflows"
+      data={sampleAutomation}
+      columns={columns}
+      loading={false}
+      expandedRowRender={expandedRowRender}
+      searchableFields={['id', 'name', 'description', 'environmentName']}
+      stats={{
+        total: totalWorkflows,
+        completed: completedWorkflows,
+        inProgress: runningWorkflows,
+        pending: pendingWorkflows
+      }}
+      extraControls={extraControls}
+      refreshData={() => console.log('Refreshing automation workflows...')}
+    />
   );
 };
 

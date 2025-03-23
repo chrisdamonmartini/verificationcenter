@@ -1,12 +1,9 @@
-import React, { useState } from 'react';
-import { Table, Input, Button, Tag, Space, Card, Typography, Select, Tabs } from 'antd';
-import { SearchOutlined, FileTextOutlined, CheckCircleOutlined, ClockCircleOutlined, ExclamationCircleOutlined } from '@ant-design/icons';
+import React from 'react';
+import { Tag, Button, Space } from 'antd';
+import { CheckCircleOutlined, ClockCircleOutlined, ExclamationCircleOutlined } from '@ant-design/icons';
 import type { ColumnsType } from 'antd/es/table';
 import ModelIcon from '../../../icons/AnalysisDataset.svg';
-
-const { Title, Text } = Typography;
-const { TabPane } = Tabs;
-const { Option } = Select;
+import { StandardTable } from '../../common/StandardTable';
 
 // Types for simulation models
 interface SimulationModel {
@@ -99,10 +96,6 @@ const sampleModels: SimulationModel[] = [
 ];
 
 const ModelsTab: React.FC = () => {
-  const [searchText, setSearchText] = useState('');
-  const [filterType, setFilterType] = useState<string | null>(null);
-  const [filterStatus, setFilterStatus] = useState<string | null>(null);
-  
   // Status tag renderer
   const getStatusTag = (status: string) => {
     switch (status) {
@@ -224,88 +217,50 @@ const ModelsTab: React.FC = () => {
     },
   ];
   
-  // Filter the data based on search text and filter selections
-  const filteredData = sampleModels.filter(item => {
-    const matchesSearch = searchText 
-      ? (item.name.toLowerCase().includes(searchText.toLowerCase()) || 
-         item.description.toLowerCase().includes(searchText.toLowerCase()) ||
-         item.id.toLowerCase().includes(searchText.toLowerCase()))
-      : true;
-    
-    const matchesType = filterType 
-      ? item.type === filterType
-      : true;
-    
-    const matchesStatus = filterStatus 
-      ? item.status === filterStatus
-      : true;
-    
-    return matchesSearch && matchesType && matchesStatus;
-  });
+  // Calculate stats for header
+  const activeModels = sampleModels.filter(model => model.status === 'Active').length;
+  const inDevelopmentModels = sampleModels.filter(model => model.status === 'In Development').length;
+  
+  // Expandable row render for expanded model details
+  const expandedRowRender = (record: SimulationModel) => (
+    <div style={{ padding: '0 48px' }}>
+      <p style={{ margin: '8px 0' }}><strong>Description:</strong> {record.description}</p>
+      <p style={{ margin: '8px 0' }}><strong>Version:</strong> {record.version}</p>
+      <p style={{ margin: '8px 0' }}>
+        <strong>Tags:</strong>{' '}
+        {record.tags.map(tag => (
+          <Tag key={tag}>{tag}</Tag>
+        ))}
+      </p>
+      <p style={{ margin: '8px 0' }}>
+        <strong>Applicable Requirements:</strong>{' '}
+        {record.applicableRequirements.map(req => (
+          <Tag key={req} color="blue">{req}</Tag>
+        ))}
+      </p>
+    </div>
+  );
   
   return (
-    <div className="models-tab-container">
-      <div className="filter-section" style={{ marginBottom: 16, display: 'flex', justifyContent: 'space-between' }}>
-        <Space>
-          <Input
-            placeholder="Search models..."
-            value={searchText}
-            onChange={e => setSearchText(e.target.value)}
-            prefix={<SearchOutlined />}
-            style={{ width: 250 }}
-          />
-          <Select
-            placeholder="Filter by Type"
-            style={{ width: 180 }}
-            allowClear
-            onChange={(value) => setFilterType(value)}
-          >
-            <Option value="Structural">Structural</Option>
-            <Option value="Aerodynamic">Aerodynamic</Option>
-            <Option value="Thermal">Thermal</Option>
-            <Option value="Durability">Durability</Option>
-            <Option value="Controls">Controls</Option>
-          </Select>
-          <Select
-            placeholder="Filter by Status"
-            style={{ width: 180 }}
-            allowClear
-            onChange={(value) => setFilterStatus(value)}
-          >
-            <Option value="Active">Active</Option>
-            <Option value="In Development">In Development</Option>
-            <Option value="Deprecated">Deprecated</Option>
-            <Option value="Archived">Archived</Option>
-          </Select>
-        </Space>
-        <Button type="primary">Add Model</Button>
-      </div>
-      
-      <Table
-        columns={columns}
-        dataSource={filteredData}
-        rowKey="id"
-        size="middle"
-        pagination={{ pageSize: 10 }}
-        expandable={{
-          expandedRowRender: (record) => (
-            <div style={{ padding: '0 20px' }}>
-              <p style={{ margin: 0 }}><strong>Description:</strong> {record.description}</p>
-              <p style={{ margin: '8px 0' }}>
-                <strong>Version:</strong> {record.version} | 
-                <strong> Applicable Requirements:</strong> {record.applicableRequirements.join(', ')}
-              </p>
-              <div>
-                <strong>Tags:</strong>{' '}
-                {record.tags.map(tag => (
-                  <Tag key={tag}>{tag}</Tag>
-                ))}
-              </div>
-            </div>
-          ),
-        }}
-      />
-    </div>
+    <StandardTable
+      title="Analysis Models"
+      data={sampleModels}
+      columns={columns}
+      loading={false}
+      expandedRowRender={expandedRowRender}
+      searchableFields={['id', 'name', 'description', 'type']}
+      stats={{
+        total: sampleModels.length,
+        completed: activeModels,
+        inProgress: inDevelopmentModels,
+        customStats: (
+          <div>
+            Validated: {sampleModels.filter(model => model.validationStatus === 'Fully Validated').length}
+          </div>
+        )
+      }}
+      refreshData={() => console.log('Refreshing models...')}
+    />
   );
 };
 
