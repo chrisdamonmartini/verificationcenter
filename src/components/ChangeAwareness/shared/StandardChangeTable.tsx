@@ -220,12 +220,34 @@ export function StandardChangeTable<T extends StandardBaseChange>({
             expandedRowRender,
             expandIcon: ({ expanded, onExpand, record }) => (
               expanded ? (
-                <div onClick={e => onExpand(record, e)} style={{ display: 'inline-flex', cursor: 'pointer', padding: '0 8px' }}>
-                  <img src={ChildExpandedIcon} alt="Collapse" style={{ width: '24px', height: '24px' }} />
+                <div 
+                  onClick={e => onExpand(record, e)} 
+                  style={{ 
+                    display: 'flex', 
+                    cursor: 'pointer', 
+                    alignItems: 'center', 
+                    justifyContent: 'center', 
+                    marginLeft: '-8px',
+                    width: '40px', 
+                    height: '40px'
+                  }}
+                >
+                  <img src={ChildExpandedIcon} alt="Collapse" style={{ width: '40px', height: '40px' }} />
                 </div>
               ) : (
-                <div onClick={e => onExpand(record, e)} style={{ display: 'inline-flex', cursor: 'pointer', padding: '0 8px' }}>
-                  <img src={ChildIcon} alt="Expand" style={{ width: '24px', height: '24px' }} />
+                <div 
+                  onClick={e => onExpand(record, e)} 
+                  style={{ 
+                    display: 'flex', 
+                    cursor: 'pointer', 
+                    alignItems: 'center', 
+                    justifyContent: 'center', 
+                    marginLeft: '-8px',
+                    width: '40px', 
+                    height: '40px'
+                  }}
+                >
+                  <img src={ChildIcon} alt="Expand" style={{ width: '40px', height: '40px' }} />
                 </div>
               )
             )
