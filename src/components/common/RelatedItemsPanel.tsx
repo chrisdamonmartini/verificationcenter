@@ -557,17 +557,43 @@ const RelatedItemsPanel: React.FC<RelatedItemsPanelProps> = ({
   }
 
   return (
-    <div className="related-items-panel" style={isFullScreen ? {
+    <div className={`related-items-panel ${isFullScreen ? 'fullscreen-mode' : ''}`} style={isFullScreen ? {
       position: 'fixed',
       top: 0,
       left: 0,
       right: 0,
       bottom: 0,
       backgroundColor: 'white',
-      zIndex: 1000,
+      zIndex: 9999,
       padding: '20px',
-      overflow: 'auto'
+      overflow: 'auto',
+      width: '100vw',
+      height: '100vh',
+      boxSizing: 'border-box',
     } : {}}>
+      {isFullScreen && (
+        <style>
+          {`
+            body {
+              overflow: hidden !important;
+            }
+            .fullscreen-mode {
+              position: fixed !important;
+              top: 0 !important;
+              left: 0 !important;
+              right: 0 !important;
+              bottom: 0 !important;
+              z-index: 9999 !important;
+            }
+            .navigation-container, .ant-tabs-nav, .ant-layout-header, .ant-layout-sider {
+              display: none !important;
+            }
+            #root > *:not(.related-items-panel) {
+              visibility: hidden !important;
+            }
+          `}
+        </style>
+      )}
       {/* Header with buttons on the same line */}
       {showFilter && (
         <Row 
@@ -576,7 +602,10 @@ const RelatedItemsPanel: React.FC<RelatedItemsPanelProps> = ({
             padding: '8px 16px', 
             marginBottom: '12px', 
             backgroundColor: colors.chart.backgroundLight,
-            borderRadius: '4px'
+            borderRadius: '4px',
+            position: isFullScreen ? 'sticky' : 'relative',
+            top: isFullScreen ? 0 : 'auto',
+            zIndex: isFullScreen ? 1 : 'auto'
           }}
         >
           <Space size={16}>
