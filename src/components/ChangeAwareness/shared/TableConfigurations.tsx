@@ -335,7 +335,8 @@ export const getStandardColumns = <T extends StandardBaseChange>(
         </div>
       ),
       ellipsis: true,
-      width: '40%'
+      width: '40%',
+      className: 'title-column'
     },
     {
       title: 'Category',
@@ -393,7 +394,8 @@ export const getStandardColumns = <T extends StandardBaseChange>(
       onFilter: (value, record) => record.status === value,
       sorter: (a, b) => a.status.localeCompare(b.status),
       sortDirections: ['ascend', 'descend'],
-      width: 100
+      width: 120,
+      className: 'status-column'
     },
     {
       title: 'Author',

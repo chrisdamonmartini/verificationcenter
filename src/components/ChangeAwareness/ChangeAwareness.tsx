@@ -515,14 +515,17 @@ const ChangeAwareness: React.FC = () => {
       .ant-tabs-ink-bar {
         background-color: ${colors.brand.primary} !important;
       }
+      .ant-tabs-tab {
+        padding: 12px 20px !important;
+        margin: 0 8px 0 0 !important;
+      }
+      .ant-tabs-tab .ant-tabs-tab-btn {
+        display: flex;
+        align-items: center;
+        white-space: nowrap;
+      }
       .ant-slider-track {
         background-color: ${colors.brand.primary} !important;
-      }
-      .ant-slider-handle {
-        border-color: ${colors.brand.primary} !important;
-      }
-      .ant-slider-handle:focus {
-        box-shadow: 0 0 0 5px ${colors.brand.primary}33 !important;
       }
       /* Table header styles */
       .ant-table-thead > tr > th {
@@ -530,6 +533,17 @@ const ChangeAwareness: React.FC = () => {
         color: ${colors.chart.textPrimary} !important;
         border: 0.5px solid #BFBFBF !important; /* Thinner border */
         padding: 8px 12px !important; /* Reduced vertical padding for headers */
+      }
+      /* Status column width adjustment */
+      .ant-table-thead > tr > th.status-column,
+      .ant-table-tbody > tr > td.status-column {
+        min-width: 120px !important;
+        width: 120px !important;
+      }
+      /* Title column adjustments */
+      .ant-table-thead > tr > th.title-column,
+      .ant-table-tbody > tr > td.title-column {
+        width: auto !important;
       }
       /* Table cell styles */
       .ant-table-tbody > tr > td {
