@@ -67,6 +67,8 @@ import RequirementsIcon from '../../icons/Requirements.svg';
 import MissionIcon from '../../icons/Mission.svg';
 import FunctionsIcon from '../../icons/Functions.svg';
 import LogicalIcon from '../../icons/Logical.svg';
+import ParametersIcon from '../../icons/Parameters.svg';
+import CADIcon from '../../icons/CADTopLevel.svg';
 
 const { Title, Text, Paragraph } = Typography;
 const { TabPane } = Tabs;
@@ -698,7 +700,20 @@ const ChangeAwareness: React.FC = () => {
           </TabPane>
 
           <TabPane
-            tab={<span><ControlOutlined /> Parameters</span>}
+            tab={<span style={{ display: 'flex', alignItems: 'center' }}>
+              <img 
+                src={ParametersIcon} 
+                alt="Parameters" 
+                style={{ 
+                  width: '16px', 
+                  height: '16px', 
+                  marginRight: '8px',
+                  verticalAlign: 'middle', 
+                  display: 'inline-block'
+                }} 
+              />
+              <span>Parameters</span>
+            </span>}
             key="parameters"
           >
             <ImprovedParametersChanges />
@@ -745,7 +760,20 @@ const ChangeAwareness: React.FC = () => {
           </TabPane>
 
           <TabPane
-            tab={<span><ApartmentOutlined /> CAD Design</span>}
+            tab={<span style={{ display: 'flex', alignItems: 'center' }}>
+              <img 
+                src={CADIcon} 
+                alt="CAD Design" 
+                style={{ 
+                  width: '16px', 
+                  height: '16px', 
+                  marginRight: '8px',
+                  verticalAlign: 'middle', 
+                  display: 'inline-block'
+                }} 
+              />
+              <span>CAD Design</span>
+            </span>}
             key="cad"
           >
             <ImprovedCADDesignChanges />
