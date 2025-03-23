@@ -4,7 +4,7 @@ import ModelsTab from './tabs/ModelsTab';
 import AutomationTab from './tabs/AutomationTab';
 import AnalysesTab from './tabs/AnalysesTab';
 import AnalysisIcon from '../../icons/AnalysisItem.svg';
-import ModelIcon from '../../icons/AnalysisDataset.svg';
+import ModelIcon from '../../icons/typeCAEModel48.svg';
 import AutomationIcon from '../../icons/typeAppDeploymentCenterStart48.svg';
 import ResultsAnalysisIcon from '../../icons/typeSimulationRequestRevision48.svg';
 import SimulationRunsIcon from '../../icons/typeSimulationJob48.svg';
