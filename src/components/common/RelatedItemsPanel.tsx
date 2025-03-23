@@ -367,37 +367,66 @@ const RelatedItemsPanel: React.FC<RelatedItemsPanelProps> = ({
   // Render expanded item summary - for the category we're expanded on
   const renderExpandedItemSummary = (item: RelatedItem, categoryColor: string) => {
     return (
-      <Card
-        key={item.id}
-        size="small"
-        style={{
-          backgroundColor: '#FFFFFF',
-          boxShadow: `0 0 8px ${categoryColor}80`,
-          width: '100%',
-          border: `2px solid ${categoryColor}`
-        }}
-        bodyStyle={{ padding: '8px' }}
-      >
-        <Space direction="vertical" size={4} style={{ width: '100%' }}>
-          <div>
-            <Text
-              strong
-              style={{ color: categoryColor, marginRight: '8px', display: 'block' }}
-            >
-              <ExpandOutlined style={{ marginRight: '5px' }} />
-              {item.id}
-            </Text>
-            <Text style={{ fontSize: '0.9rem', whiteSpace: 'normal' }}>{item.title}</Text>
-          </div>
-          
-          <div>
-            <Text type="secondary" style={{ fontSize: '12px' }}>
-              <ClockCircleOutlined style={{ marginRight: '4px' }} />
-              {formatDate(item.date)}
-            </Text>
-          </div>
-        </Space>
-      </Card>
+      <div style={{ width: '100%' }}>
+        <Card
+          key={item.id}
+          size="small"
+          style={{
+            backgroundColor: '#FFFFFF',
+            boxShadow: `0 0 8px ${categoryColor}80`,
+            width: '100%',
+            border: `2px solid ${categoryColor}`,
+            marginBottom: '8px'
+          }}
+          bodyStyle={{ padding: '8px' }}
+        >
+          <Space direction="vertical" size={4} style={{ width: '100%' }}>
+            <div>
+              <Text
+                strong
+                style={{ color: categoryColor, marginRight: '8px', display: 'block' }}
+              >
+                <ExpandOutlined style={{ marginRight: '5px' }} />
+                {item.id}
+              </Text>
+              <Text style={{ fontSize: '0.9rem', whiteSpace: 'normal' }}>{item.title}</Text>
+            </div>
+            
+            <div>
+              <Text type="secondary" style={{ fontSize: '12px' }}>
+                <ClockCircleOutlined style={{ marginRight: '4px' }} />
+                {formatDate(item.date)}
+              </Text>
+            </div>
+          </Space>
+        </Card>
+        
+        {/* Navigation arrows for expanded items */}
+        <div style={{ display: 'flex', justifyContent: 'space-between', marginTop: '8px' }}>
+          <Button 
+            style={{ 
+              backgroundColor: colors.category.parameter,
+              borderColor: colors.category.parameter,
+              color: 'white'
+            }}
+            size="small"
+            icon={<span>←</span>}
+          >
+            Upstream
+          </Button>
+          <Button 
+            style={{ 
+              backgroundColor: colors.category.parameter,
+              borderColor: colors.category.parameter,
+              color: 'white' 
+            }}
+            size="small"
+            icon={<span style={{ marginLeft: '8px' }}>→</span>}
+          >
+            Downstream
+          </Button>
+        </div>
+      </div>
     );
   };
 
