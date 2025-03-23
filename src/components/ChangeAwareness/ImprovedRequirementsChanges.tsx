@@ -17,19 +17,18 @@ const ImprovedRequirementsChanges: React.FC = () => {
     <div className="requirements-changes">
       <ContentPanel>
         <StandardChangeTable<RequirementChange>
-          domain="requirement"
-          title="Requirements Changes"
+          domain="requirements"
+          title="Requirement Changes"
           weeks={weeks}
           setWeeks={setWeeks}
           productType={productType}
           categoryRenderer={renderRequirementCategory}
           expandedRowOptions={{
             showImpact: true,
-            showTechnicalDetails: true,
-            showDependencies: true
+            showTechnicalDetails: true
           }}
           tableOptions={{
-            hideStatsCard: true
+            hideStatsCard: false
           }}
         />
       </ContentPanel>
