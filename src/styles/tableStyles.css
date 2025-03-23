@@ -46,7 +46,6 @@
 .common-table .ant-table {
   border: 1px solid #d9d9d9;
   border-radius: 4px;
-  overflow: hidden;
   font-size: 13px;
 }
 
@@ -138,22 +137,22 @@
   margin-bottom: 16px;
 }
 
-/* Table borders and outline */
+/* Fix table overflow issues */
 .common-table .ant-table-container {
   border: 1px solid #d9d9d9;
   border-radius: 4px;
+  overflow: visible;
 }
 
-/* Making grid lines visible for whole table */
+/* Fix table display for all cells */
+.common-table .ant-table-cell {
+  visibility: visible !important;
+  display: table-cell !important;
+}
+
+/* Removing problematic border-collapse styling */
 .common-table .ant-table-container table {
-  border-collapse: separate;
-  border-spacing: 0;
-}
-
-.common-table .ant-table-container table,
-.common-table .ant-table-container table tr,
-.common-table .ant-table-container table td {
-  border-collapse: separate;
+  border-collapse: collapse;
 }
 
 /* Ensuring the expand icon column has a fixed width */
@@ -220,6 +219,16 @@
 
 .common-table .action-button:last-child {
   margin-right: 0;
+}
+
+/* Ensure content is visible */
+.common-table .ant-table-wrapper {
+  clear: both;
+  max-width: 100%;
+}
+
+.common-table .ant-table-content {
+  visibility: visible !important;
 }
 
 /* Nested tables styling (for expandable rows) */
