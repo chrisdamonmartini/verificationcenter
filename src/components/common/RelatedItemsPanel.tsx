@@ -113,6 +113,12 @@ const RelatedItemsPanel: React.FC<RelatedItemsPanelProps> = ({
   onCreateRelationship,
 }) => {
   const colors = useColors();
+  // State for showing all categories (including empty ones)
+  const [showAllCategories, setShowAllCategories] = useState(false);
+  // State for highlighting changed items
+  const [highlightChanges, setHighlightChanges] = useState(false);
+  // State for full screen mode
+  const [isFullScreen, setIsFullScreen] = useState(false);
   // Always show all items, keep the state for backward compatibility
   const [showAll] = useState(true);
   const [activeCategories, setActiveCategories] = useState<Record<string, boolean>>({
@@ -316,6 +322,13 @@ const RelatedItemsPanel: React.FC<RelatedItemsPanelProps> = ({
     }
   });
 
+  // Filter categories based on the showAllCategories state
+  const filteredCategories = showAllCategories 
+    ? categories 
+    : categories.filter(category => 
+        category.items.length > 0 || normalizedCurrentKey === category.key
+      );
+
   // Add current item to categories if it exists and is not already included
   if (currentItem && currentItemType) {
     const categoryKey = currentItemType.toLowerCase();
@@ -391,17 +404,89 @@ const RelatedItemsPanel: React.FC<RelatedItemsPanelProps> = ({
     );
   };
 
+  // Function to determine if an item has been changed (mock for now)
+  // In a real implementation, this would check against the time period filter
+  const hasChanged = (item: RelatedItem) => {
+    // For now, we'll consider items with "Modified" or "Updated" status as changed
+    return item.status === 'Modified' || item.status === 'Updated';
+  };
+
+  // Render a single item card with optional highlighting for changed items
+  const renderItemCard = (item: RelatedItem, categoryKey: string, categoryColor: string) => {
+    const isChanged = hasChanged(item);
+    
+    // Apply orange highlighting if this item has changed and highlight changes is enabled
+    const cardStyle: React.CSSProperties = {
+      marginBottom: '8px',
+      backgroundColor: '#FFFFFF',
+      ...(highlightChanges && isChanged 
+        ? {
+            boxShadow: `0 0 8px ${colors.category.parameter}`,
+            border: `1px solid ${colors.category.parameter}`
+          } 
+        : {})
+    };
+
+    return (
+      <Card
+        key={item.id}
+        size="small"
+        style={cardStyle}
+        bodyStyle={{ padding: '8px' }}
+      >
+        <div style={{ display: 'flex', flexDirection: 'column' }}>
+          <div style={{ display: 'flex', justifyContent: 'space-between', marginBottom: '4px' }}>
+            <Text code copyable={{ text: item.id }} style={{ 
+              marginRight: '4px',
+              color: highlightChanges && isChanged ? colors.category.parameter : categoryColor
+            }}>
+              {item.id}
+            </Text>
+            {renderStatusTag(item.status)}
+          </div>
+          
+          <Text 
+            strong
+            style={{ 
+              marginBottom: '4px',
+              color: highlightChanges && isChanged ? colors.category.parameter : undefined
+            }}
+          >
+            {item.title}
+          </Text>
+          
+          <div style={{ fontSize: '0.8rem', color: colors.text.secondary, display: 'flex', gap: '8px', flexWrap: 'wrap' }}>
+            <span>
+              <ClockCircleOutlined /> {formatDate(item.date)}
+            </span>
+            <span>{item.author}</span>
+          </div>
+        </div>
+      </Card>
+    );
+  };
+
   // No items to display - since we're now showing all categories, this should no longer happen
   if (categories.length === 0) {
     return renderEmpty();
   }
 
   return (
-    <div className="related-items-panel">
+    <div className="related-items-panel" style={isFullScreen ? {
+      position: 'fixed',
+      top: 0,
+      left: 0,
+      right: 0,
+      bottom: 0,
+      backgroundColor: 'white',
+      zIndex: 1000,
+      padding: '20px',
+      overflow: 'auto'
+    } : {}}>
       {/* Filter controls */}
       {showFilter && categories.length > 1 && (
         <Row 
-          justify="start" 
+          justify="space-between" 
           align="middle"
           style={{ 
             padding: '8px 16px', 
@@ -412,6 +497,33 @@ const RelatedItemsPanel: React.FC<RelatedItemsPanelProps> = ({
         >
           <Col>
             <Typography.Title level={5} style={{ margin: 0 }}>Related Items</Typography.Title>
+          </Col>
+          <Col>
+            <Space>
+              <Button 
+                type="text" 
+                size="small"
+                onClick={() => setShowAllCategories(!showAllCategories)}
+              >
+                {showAllCategories ? 'Hide Empty' : 'See All'}
+              </Button>
+              <Button
+                type="text"
+                size="small"
+                onClick={() => setHighlightChanges(!highlightChanges)}
+                style={highlightChanges ? { color: colors.category.parameter } : {}}
+              >
+                Highlight Additional Change
+              </Button>
+              <Button
+                type="text"
+                size="small"
+                onClick={() => setIsFullScreen(!isFullScreen)}
+                style={{ color: isFullScreen ? colors.category.parameter : undefined }}
+              >
+                {isFullScreen ? 'Leave Full Screen' : 'Full Screen'}
+              </Button>
+            </Space>
           </Col>
         </Row>
       )}
@@ -428,7 +540,7 @@ const RelatedItemsPanel: React.FC<RelatedItemsPanelProps> = ({
           flexDirection: 'row', 
           gap: '16px'
         }}>
-          {categories
+          {filteredCategories
             .filter(category => category.active)
             .map(category => (
               <div key={category.key} style={{ 
@@ -466,46 +578,16 @@ const RelatedItemsPanel: React.FC<RelatedItemsPanelProps> = ({
                         // Check if this is the current item being expanded
                         const isCurrentItem = currentItem && item.id === currentItem.id && category.key === currentItemType;
                         
+                        // If it's the current item, use the special rendering
+                        if (isCurrentItem) {
+                          return renderExpandedItemSummary(item, category.color);
+                        }
+                        
+                        // Otherwise use the standard item card rendering with highlight support
                         return (
-                          <Card
-                            key={item.id}
-                            size="small"
-                            style={{
-                              backgroundColor: '#FFFFFF', // Always white fill for actual objects
-                              boxShadow: isCurrentItem ? `0 0 8px ${category.color}80` : '0 1px 2px rgba(0,0,0,0.1)',
-                              cursor: onItemClick ? 'pointer' : 'default',
-                              width: '100%',
-                              border: isCurrentItem ? `2px solid ${category.color}` : `1px solid ${category.color}40`
-                            }}
-                            onClick={() => onItemClick && onItemClick(item, category.key)}
-                            bodyStyle={{ padding: '8px' }}
-                          >
-                            <Space direction="vertical" size={4} style={{ width: '100%' }}>
-                              <div>
-                                <Text
-                                  strong
-                                  style={{ color: category.color, marginRight: '8px', display: 'block' }}
-                                >
-                                  {isCurrentItem && <ExpandOutlined style={{ marginRight: '5px' }} />}
-                                  {item.id}
-                                </Text>
-                                <Text style={{ fontSize: '0.9rem', whiteSpace: 'normal' }}>{item.title}</Text>
-                              </div>
-                              
-                              <div>
-                                <Space>
-                                  {isCurrentItem && (
-                                    <Tag color={category.color}>Current</Tag>
-                                  )}
-                                  {!isCurrentItem && renderStatusTag(item.status)}
-                                  <Text type="secondary" style={{ fontSize: '12px' }}>
-                                    <ClockCircleOutlined style={{ marginRight: '4px' }} />
-                                    {formatDate(item.date)}
-                                  </Text>
-                                </Space>
-                              </div>
-                            </Space>
-                          </Card>
+                          <div key={item.id} onClick={() => onItemClick && onItemClick(item, category.key)}>
+                            {renderItemCard(item, category.key, category.color)}
+                          </div>
                         );
                       })}
                     </Space>
