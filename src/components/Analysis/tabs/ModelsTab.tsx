@@ -2,7 +2,7 @@ import React from 'react';
 import { Tag, Button, Space } from 'antd';
 import { CheckCircleOutlined, ClockCircleOutlined, ExclamationCircleOutlined } from '@ant-design/icons';
 import type { ColumnsType } from 'antd/es/table';
-import ModelIcon from '../../../icons/CAEModel.svg';
+import ModelIcon from '../../../icons/typeCAEModel48.svg';
 import { StandardTable } from '../../common/StandardTable';
 
 // Types for simulation models

@@ -17,6 +17,7 @@ import LogicalIcon from '../../icons/Logical.svg';
 import ParametersIcon from '../../icons/Parameters.svg';
 import EBOMIcon from '../../icons/typeClass48.svg';
 import CADIcon from '../../icons/typePartComponent48.svg';
+import ModelIcon from '../../icons/typeCAEModel48.svg';
 import OperationalScenariosIcon from '../../icons/typeBranchRevision48.svg';
 
 const { Text } = Typography;
@@ -579,6 +580,8 @@ const RelatedItemsPanel: React.FC<RelatedItemsPanelProps> = ({
         return CADIcon;
       case 'ebom':
         return EBOMIcon;
+      case 'models':
+        return ModelIcon;
       default:
         return null;
     }
