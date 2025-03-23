@@ -366,6 +366,9 @@ const RelatedItemsPanel: React.FC<RelatedItemsPanelProps> = ({
 
   // Render expanded item summary - for the category we're expanded on
   const renderExpandedItemSummary = (item: RelatedItem, categoryColor: string) => {
+    // Determine if this is a Mission item by checking the categoryColor or an explicit passed property
+    const isMission = categoryColor === colors.category.mission;
+
     return (
       <div style={{ width: '100%' }}>
         <Card
@@ -402,38 +405,43 @@ const RelatedItemsPanel: React.FC<RelatedItemsPanelProps> = ({
         </Card>
         
         {/* Navigation arrows for expanded items - with spacing and proper width */}
-        <div style={{ display: 'flex', justifyContent: 'space-between', width: '100%' }}>
-          <div
-            style={{
-              backgroundColor: colors.category.parameter,
-              color: 'white',
-              position: 'relative',
-              height: '32px',
-              lineHeight: '32px',
-              padding: '0 10px',
-              cursor: 'pointer',
-              width: '115px',
-              display: 'flex',
-              alignItems: 'center',
-              justifyContent: 'center',
-              borderRadius: '4px'
-            }}
-            onClick={() => console.log('Navigate upstream')}
-          >
-            {/* Left arrow shape - smaller and contained */}
-            <div style={{
-              position: 'absolute',
-              left: '0',
-              top: '0',
-              width: 0,
-              height: 0,
-              borderTop: '16px solid transparent',
-              borderBottom: '16px solid transparent',
-              borderRight: `6px solid ${colors.category.parameter}`,
-              transform: 'translateX(-70%)'
-            }} />
-            <span style={{ fontSize: '12px' }}>UPSTREAM</span>
-          </div>
+        <div style={{ display: 'flex', justifyContent: isMission ? 'flex-end' : 'space-between', width: '100%' }}>
+          {/* Only show Upstream button if not a Mission item */}
+          {!isMission && (
+            <div
+              style={{
+                backgroundColor: colors.category.parameter,
+                color: 'white',
+                position: 'relative',
+                height: '32px',
+                lineHeight: '32px',
+                padding: '0 10px',
+                cursor: 'pointer',
+                width: '115px',
+                display: 'flex',
+                alignItems: 'center',
+                justifyContent: 'center',
+                borderRadius: '4px'
+              }}
+              onClick={() => console.log('Navigate upstream')}
+              onMouseOver={(e) => { e.currentTarget.style.backgroundColor = '#00688C' }}
+              onMouseOut={(e) => { e.currentTarget.style.backgroundColor = colors.category.parameter }}
+            >
+              {/* Left arrow shape - smaller and contained */}
+              <div style={{
+                position: 'absolute',
+                left: '0',
+                top: '0',
+                width: 0,
+                height: 0,
+                borderTop: '16px solid transparent',
+                borderBottom: '16px solid transparent',
+                borderRight: `6px solid ${colors.category.parameter}`,
+                transform: 'translateX(-70%)'
+              }} />
+              <span style={{ fontSize: '12px' }}>UPSTREAM</span>
+            </div>
+          )}
           
           <div
             style={{
@@ -451,6 +459,8 @@ const RelatedItemsPanel: React.FC<RelatedItemsPanelProps> = ({
               borderRadius: '4px'
             }}
             onClick={() => console.log('Navigate downstream')}
+            onMouseOver={(e) => { e.currentTarget.style.backgroundColor = '#00688C' }}
+            onMouseOut={(e) => { e.currentTarget.style.backgroundColor = colors.category.parameter }}
           >
             <span style={{ fontSize: '12px' }}>DOWNSTREAM</span>
             {/* Right arrow shape - smaller and contained */}
