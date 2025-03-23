@@ -377,7 +377,8 @@ export const getStandardColumns = <T extends StandardBaseChange>(
       ],
       onFilter: (value, record) => record.status === value,
       sorter: (a, b) => a.status.localeCompare(b.status),
-      sortDirections: ['ascend', 'descend']
+      sortDirections: ['ascend', 'descend'],
+      width: 100
     },
     {
       title: 'Author',
@@ -390,7 +391,8 @@ export const getStandardColumns = <T extends StandardBaseChange>(
         </Space>
       ),
       sorter: (a, b) => a.author.localeCompare(b.author),
-      sortDirections: ['ascend', 'descend']
+      sortDirections: ['ascend', 'descend'],
+      width: 200
     }
   ];
 
