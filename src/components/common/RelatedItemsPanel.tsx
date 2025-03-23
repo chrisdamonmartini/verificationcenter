@@ -469,64 +469,50 @@ const RelatedItemsPanel: React.FC<RelatedItemsPanelProps> = ({
       padding: '20px',
       overflow: 'auto'
     } : {}}>
-      {/* Header with just the title */}
+      {/* Header with buttons on the same line */}
       {showFilter && (
         <Row 
-          justify="space-between" 
           align="middle"
           style={{ 
             padding: '8px 16px', 
-            marginBottom: '8px', 
+            marginBottom: '12px', 
             backgroundColor: colors.chart.backgroundLight,
             borderRadius: '4px'
           }}
         >
-          <Col>
+          <Space size={16}>
             <Typography.Title level={5} style={{ margin: 0 }}>Related Items</Typography.Title>
-          </Col>
-        </Row>
-      )}
-      
-      {/* Action buttons below header, right-aligned */}
-      {showFilter && (
-        <Row 
-          justify="end" 
-          align="middle"
-          style={{ 
-            marginBottom: '12px'
-          }}
-        >
-          <Col>
-            <Space>
-              <Button 
-                type="default" 
-                size="small"
-                onClick={() => setShowAllCategories(!showAllCategories)}
-              >
-                {showAllCategories ? 'Hide Empty' : 'See All'}
-              </Button>
-              <Button
-                type="default"
-                size="small"
-                onClick={() => setHighlightChanges(!highlightChanges)}
-                style={highlightChanges ? { 
-                  color: 'white', 
-                  backgroundColor: colors.brand.primary,
-                  borderColor: colors.brand.primary 
-                } : {}}
-              >
-                Highlight Additional Change
-              </Button>
-              <Button
-                type="default"
-                size="small"
-                onClick={() => setIsFullScreen(!isFullScreen)}
-                style={{ color: isFullScreen ? colors.category.parameter : undefined }}
-              >
-                {isFullScreen ? 'Leave Full Screen' : 'Full Screen'}
-              </Button>
-            </Space>
-          </Col>
+            
+            <Button 
+              type="default" 
+              size="small"
+              onClick={() => setShowAllCategories(!showAllCategories)}
+            >
+              {showAllCategories ? 'Hide Empty' : 'See All'}
+            </Button>
+            
+            <Button
+              type="default"
+              size="small"
+              onClick={() => setHighlightChanges(!highlightChanges)}
+              style={highlightChanges ? { 
+                color: 'white', 
+                backgroundColor: '#00688C',
+                borderColor: '#00688C' 
+              } : {}}
+            >
+              Highlight Additional Change
+            </Button>
+            
+            <Button
+              type="default"
+              size="small"
+              onClick={() => setIsFullScreen(!isFullScreen)}
+              style={{ color: isFullScreen ? colors.category.parameter : undefined }}
+            >
+              {isFullScreen ? 'Leave Full Screen' : 'Full Screen'}
+            </Button>
+          </Space>
         </Row>
       )}
 
