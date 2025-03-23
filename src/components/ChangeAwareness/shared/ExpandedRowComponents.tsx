@@ -178,19 +178,30 @@ export const StandardExpandedRow = <T extends StandardExpandedChange>({
   const getNormalizedCategory = (category: string) => {
     const key = category.toLowerCase().trim();
     
-    if (key === 'parameter' || key.includes('param')) return 'parameters';
-    if (key === 'requirement') return 'requirements'; 
-    if (key === 'operationalscenario' || key === 'scenario') return 'operationalScenario';
-    if (key === 'function') return 'functions';
-    if (key === 'mission') return 'mission';
-    if (key === 'bom' || key === 'ebom') return 'ebom';
+    console.log("Original category key before mapping:", key);
     
+    // Map exact cases first
+    if (key === 'engineering bom') return 'ebom';
+    if (key === 'requirement') return 'requirements';
+    if (key === 'parameter') return 'parameters';
+    if (key === 'operationalscenario') return 'operationalScenario';
+    
+    // Then check includes - this is less precise but catches variations
+    if (key.includes('param')) return 'parameters';
+    if (key.includes('requirement')) return 'requirements';
+    if (key.includes('bom')) return 'ebom';
+    if (key.includes('scenario')) return 'operationalScenario';
+    if (key.includes('function')) return 'functions';
+    if (key.includes('mission')) return 'mission';
+    
+    console.log("No mapping found for category:", key);
     return key;
   };
   
   // Get normalized category
   const normalizedCategory = getNormalizedCategory(currentItemType);
   console.log("Normalized category for RelatedItemsPanel:", normalizedCategory);
+  console.log("All available category keys:", Object.keys(relatedItems).join(', '));
   
   // Create the current item in the format expected by RelatedItemsPanel
   const currentItem = {

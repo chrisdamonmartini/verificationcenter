@@ -276,33 +276,54 @@ const RelatedItemsPanel: React.FC<RelatedItemsPanelProps> = ({
     // Common variations in naming
     const currentKey = currentItemType.toLowerCase().trim();
     
-    console.log("Current key before normalization:", currentKey);
+    console.log("RelatedItemsPanel - Current key before normalization:", currentKey);
+    console.log("RelatedItemsPanel - All category keys available:", categoryConfigs.map(c => c.key).join(', '));
+    
+    // Direct matches for our specific category keys
+    for (const category of categoryConfigs) {
+      if (currentKey === category.key) {
+        console.log(`Direct match found: ${currentKey} = ${category.key}`);
+        return category.key;
+      }
+    }
     
     // Map known variations to their standard keys
-    if (currentKey === 'parameter' || currentKey === 'parameters' || currentKey.includes('param')) return 'parameters';
-    if (currentKey === 'requirement' || currentKey === 'requirements') return 'requirements';
-    if (currentKey === 'operationalscenario' || currentKey === 'scenario' || currentKey === 'operationalscenarios') return 'operationalScenario';
+    if (currentKey === 'parameter' || currentKey === 'parameters' || currentKey.includes('param')) {
+      console.log("Mapping to parameters category");
+      return 'parameters';
+    }
+    if (currentKey === 'requirement' || currentKey === 'requirements') {
+      console.log("Mapping to requirements category");
+      return 'requirements';
+    }
+    if (currentKey === 'operationalscenario' || currentKey === 'scenario' || currentKey === 'operationalscenarios') {
+      console.log("Mapping to operationalScenario category");
+      return 'operationalScenario';
+    }
     if (currentKey === 'function' || currentKey === 'functions') return 'functions';
     if (currentKey === 'logical') return 'logical';
     if (currentKey === 'mission' || currentKey === 'missions') return 'mission';
     if (currentKey === 'cad') return 'cad';
-    if (currentKey === 'ebom' || currentKey === 'bom' || currentKey === 'engineering bom') return 'ebom';
+    if (currentKey === 'ebom' || currentKey === 'bom' || currentKey === 'engineering bom') {
+      console.log("Mapping to ebom category");
+      return 'ebom';
+    }
     if (currentKey === 'model' || currentKey === 'models') return 'models';
     if (currentKey === 'automation') return 'automation';
     
-    console.log("No exact match found, returning original:", currentKey);
+    console.log("RelatedItemsPanel - No exact match found, returning original:", currentKey);
     // If no mapping was found, return the original
     return currentKey;
   };
   
   const normalizedCurrentKey = getNormalizedCurrentKey();
-  console.log("Normalized current key:", normalizedCurrentKey);
+  console.log("RelatedItemsPanel - Final normalized current key:", normalizedCurrentKey);
   
   // Always show all categories
   const categories = categoryConfigs.map(category => {
     // Is this the category of the current expanded item?
     const isCurrentCategory = normalizedCurrentKey === category.key;
-    console.log(`Category ${category.key} - is current? ${isCurrentCategory}`);
+    console.log(`Category ${category.key} - is current? ${isCurrentCategory}, normalized key: ${normalizedCurrentKey}`);
     
     // Rule 1: If it is the category of the item that we are expanded on
     if (isCurrentCategory) {
