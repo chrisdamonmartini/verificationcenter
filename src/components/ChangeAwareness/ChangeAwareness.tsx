@@ -662,7 +662,20 @@ const ChangeAwareness: React.FC = () => {
           </TabPane>
 
           <TabPane
-            tab={<span><img src={RequirementsIcon} alt="Requirements" style={{ width: '16px', height: '16px', marginRight: '8px' }} />Requirements</span>}
+            tab={<span style={{ display: 'flex', alignItems: 'center' }}>
+              <img 
+                src={RequirementsIcon} 
+                alt="Requirements" 
+                style={{ 
+                  width: '16px', 
+                  height: '16px', 
+                  marginRight: '8px',
+                  verticalAlign: 'middle', 
+                  display: 'inline-block'
+                }} 
+              />
+              <span>Requirements</span>
+            </span>}
             key="requirements"
           >
             <ImprovedRequirementsChanges />
