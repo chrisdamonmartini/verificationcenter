@@ -2,6 +2,7 @@ import React, { useState } from 'react';
 import { Card, Tabs } from 'antd';
 import ModelsTab from './tabs/ModelsTab';
 import AutomationTab from './tabs/AutomationTab';
+import AnalysesTab from './tabs/AnalysesTab';
 import AnalysisIcon from '../../icons/AnalysisItem.svg';
 import ModelIcon from '../../icons/AnalysisDataset.svg';
 import AutomationIcon from '../../icons/AnalysisRequest.svg';
@@ -29,10 +30,7 @@ const AnalysisMain: React.FC = () => {
             } 
             key="analyses"
           >
-            <div className="analyses-content">
-              <p>Analyses tab placeholder. This tab will display the analysis items.</p>
-              <p>The analysis functionality is demonstrated in the AnalysisDetail component.</p>
-            </div>
+            <AnalysesTab />
           </TabPane>
           
           <TabPane 
