@@ -17,6 +17,7 @@ import {
 import useColors from '../../hooks/useColors';
 import ChildIcon from '../../icons/cmdChild24.svg';
 import ChildExpandedIcon from '../../icons/cmdChildExpanded24.svg';
+import '../../styles/tableStyles.css';
 
 export interface StandardTableProps<T> {
   title: string;
@@ -64,11 +65,11 @@ export function StandardTable<T extends { id: string }>({
       });
 
   return (
-    <Card>
+    <Card className="common-table">
       <Space direction="vertical" style={{ width: '100%' }}>
-        <Row gutter={16} align="middle" style={{ marginBottom: 16 }}>
+        <Row gutter={16} align="middle" style={{ marginBottom: 16 }} className="table-controls">
           <Col span={16}>
-            <div className="stats-bar" style={{ display: 'flex', gap: '16px' }}>
+            <div className="stats-bar">
               {stats && (
                 <>
                   <div>Total: {stats.total}</div>
