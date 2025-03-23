@@ -125,36 +125,36 @@ const AutomationTab: React.FC = () => {
     switch (status) {
       case 'Running':
         return (
-          <Tag icon={<PlayCircleOutlined />} color="processing">
+          <Tag icon={<PlayCircleOutlined />} color="processing" style={{ margin: 0, padding: '0 6px', height: '18px', lineHeight: '18px' }}>
             {status}
           </Tag>
         );
       case 'Completed':
         return (
-          <Tag icon={<CheckCircleOutlined />} color="success">
+          <Tag icon={<CheckCircleOutlined />} color="success" style={{ margin: 0, padding: '0 6px', height: '18px', lineHeight: '18px' }}>
             {status}
           </Tag>
         );
       case 'Failed':
         return (
-          <Tag icon={<CloseCircleOutlined />} color="error">
+          <Tag icon={<CloseCircleOutlined />} color="error" style={{ margin: 0, padding: '0 6px', height: '18px', lineHeight: '18px' }}>
             {status}
           </Tag>
         );
       case 'Scheduled':
         return (
-          <Tag icon={<ClockCircleOutlined />} color="default">
+          <Tag icon={<ClockCircleOutlined />} color="default" style={{ margin: 0, padding: '0 6px', height: '18px', lineHeight: '18px' }}>
             {status}
           </Tag>
         );
       case 'Paused':
         return (
-          <Tag icon={<PauseCircleOutlined />} color="warning">
+          <Tag icon={<PauseCircleOutlined />} color="warning" style={{ margin: 0, padding: '0 6px', height: '18px', lineHeight: '18px' }}>
             {status}
           </Tag>
         );
       default:
-        return <Tag>{status}</Tag>;
+        return <Tag style={{ margin: 0, padding: '0 6px', height: '18px', lineHeight: '18px' }}>{status}</Tag>;
     }
   };
   
@@ -203,7 +203,7 @@ const AutomationTab: React.FC = () => {
           record.status === 'Running' ? 'active' : 
           record.status === 'Failed' ? 'exception' : 'normal';
         
-        return <Progress percent={progress} status={progressStatus} size="small" />;
+        return <Progress percent={progress} status={progressStatus} size="small" style={{ margin: 0 }} />;
       },
     },
     {
@@ -283,9 +283,17 @@ const AutomationTab: React.FC = () => {
   
   // Calculate stats
   const totalWorkflows = sampleAutomation.length;
-  const runningWorkflows = sampleAutomation.filter(item => item.status === 'Running').length;
   const completedWorkflows = sampleAutomation.filter(item => item.status === 'Completed').length;
-  const pendingWorkflows = sampleAutomation.filter(item => ['Scheduled', 'Paused'].includes(item.status)).length;
+  const runningWorkflows = sampleAutomation.filter(item => item.status === 'Running').length;
+  const pendingWorkflows = sampleAutomation.filter(item => item.status === 'Scheduled').length;
+  
+  // Formatted stats for the StandardTable
+  const tableStats = [
+    { label: 'Total', value: totalWorkflows },
+    { label: 'Completed', value: completedWorkflows, color: '#52c41a' },
+    { label: 'Running', value: runningWorkflows, color: '#1890ff' },
+    { label: 'Scheduled', value: pendingWorkflows, color: '#faad14' }
+  ];
   
   // Extra controls
   const extraControls = (
@@ -300,12 +308,7 @@ const AutomationTab: React.FC = () => {
       loading={false}
       expandedRowRender={expandedRowRender}
       searchableFields={['id', 'name', 'description', 'environmentName']}
-      stats={{
-        total: totalWorkflows,
-        completed: completedWorkflows,
-        inProgress: runningWorkflows,
-        pending: pendingWorkflows
-      }}
+      stats={tableStats}
       extraControls={extraControls}
       refreshData={() => console.log('Refreshing automation workflows...')}
     />

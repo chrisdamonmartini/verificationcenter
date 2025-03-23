@@ -100,15 +100,15 @@ const ModelsTab: React.FC = () => {
   const getStatusTag = (status: string) => {
     switch (status) {
       case 'Active':
-        return <Tag color="green">{status}</Tag>;
+        return <Tag color="green" style={{ margin: 0, padding: '0 6px', height: '18px', lineHeight: '18px' }}>{status}</Tag>;
       case 'In Development':
-        return <Tag color="blue">{status}</Tag>;
+        return <Tag color="blue" style={{ margin: 0, padding: '0 6px', height: '18px', lineHeight: '18px' }}>{status}</Tag>;
       case 'Deprecated':
-        return <Tag color="orange">{status}</Tag>;
+        return <Tag color="orange" style={{ margin: 0, padding: '0 6px', height: '18px', lineHeight: '18px' }}>{status}</Tag>;
       case 'Archived':
-        return <Tag color="gray">{status}</Tag>;
+        return <Tag color="gray" style={{ margin: 0, padding: '0 6px', height: '18px', lineHeight: '18px' }}>{status}</Tag>;
       default:
-        return <Tag>{status}</Tag>;
+        return <Tag style={{ margin: 0, padding: '0 6px', height: '18px', lineHeight: '18px' }}>{status}</Tag>;
     }
   };
   
@@ -116,13 +116,13 @@ const ModelsTab: React.FC = () => {
   const getValidationTag = (status: string) => {
     switch (status) {
       case 'Fully Validated':
-        return <Tag icon={<CheckCircleOutlined />} color="success">{status}</Tag>;
+        return <Tag icon={<CheckCircleOutlined />} color="success" style={{ margin: 0, padding: '0 6px', height: '18px', lineHeight: '18px' }}>{status}</Tag>;
       case 'Partially Validated':
-        return <Tag icon={<ClockCircleOutlined />} color="processing">{status}</Tag>;
+        return <Tag icon={<ClockCircleOutlined />} color="processing" style={{ margin: 0, padding: '0 6px', height: '18px', lineHeight: '18px' }}>{status}</Tag>;
       case 'Not Validated':
-        return <Tag icon={<ExclamationCircleOutlined />} color="warning">{status}</Tag>;
+        return <Tag icon={<ExclamationCircleOutlined />} color="warning" style={{ margin: 0, padding: '0 6px', height: '18px', lineHeight: '18px' }}>{status}</Tag>;
       default:
-        return <Tag>{status}</Tag>;
+        return <Tag style={{ margin: 0, padding: '0 6px', height: '18px', lineHeight: '18px' }}>{status}</Tag>;
     }
   };
   
@@ -204,22 +204,20 @@ const ModelsTab: React.FC = () => {
       key: 'owner',
       width: 150,
     },
-    {
-      title: 'Action',
-      key: 'action',
-      width: 120,
-      render: (_, record) => (
-        <Space size="small">
-          <Button type="link" size="small">View</Button>
-          <Button type="link" size="small">Open</Button>
-        </Space>
-      ),
-    },
   ];
   
   // Calculate stats for header
   const activeModels = sampleModels.filter(model => model.status === 'Active').length;
   const inDevelopmentModels = sampleModels.filter(model => model.status === 'In Development').length;
+  const validatedModels = sampleModels.filter(model => model.validationStatus === 'Fully Validated').length;
+  
+  // Formatted stats for the StandardTable
+  const tableStats = [
+    { label: 'Total', value: sampleModels.length },
+    { label: 'Active', value: activeModels, color: '#52c41a' },
+    { label: 'In Development', value: inDevelopmentModels, color: '#1890ff' },
+    { label: 'Validated', value: validatedModels, color: '#722ed1' }
+  ];
   
   // Expandable row render for expanded model details
   const expandedRowRender = (record: SimulationModel) => (
@@ -229,13 +227,13 @@ const ModelsTab: React.FC = () => {
       <p style={{ margin: '8px 0' }}>
         <strong>Tags:</strong>{' '}
         {record.tags.map(tag => (
-          <Tag key={tag}>{tag}</Tag>
+          <Tag key={tag} style={{ margin: '0 4px 4px 0', padding: '0 6px', height: '18px', lineHeight: '18px' }}>{tag}</Tag>
         ))}
       </p>
       <p style={{ margin: '8px 0' }}>
         <strong>Applicable Requirements:</strong>{' '}
         {record.applicableRequirements.map(req => (
-          <Tag key={req} color="blue">{req}</Tag>
+          <Tag key={req} color="blue" style={{ margin: '0 4px 4px 0', padding: '0 6px', height: '18px', lineHeight: '18px' }}>{req}</Tag>
         ))}
       </p>
     </div>
@@ -249,16 +247,7 @@ const ModelsTab: React.FC = () => {
       loading={false}
       expandedRowRender={expandedRowRender}
       searchableFields={['id', 'name', 'description', 'type']}
-      stats={{
-        total: sampleModels.length,
-        completed: activeModels,
-        inProgress: inDevelopmentModels,
-        customStats: (
-          <div>
-            Validated: {sampleModels.filter(model => model.validationStatus === 'Fully Validated').length}
-          </div>
-        )
-      }}
+      stats={tableStats}
       refreshData={() => console.log('Refreshing models...')}
     />
   );
