@@ -5,7 +5,7 @@ import AutomationTab from './tabs/AutomationTab';
 import AnalysesTab from './tabs/AnalysesTab';
 import AnalysisIcon from '../../icons/AnalysisItem.svg';
 import ModelIcon from '../../icons/AnalysisDataset.svg';
-import AutomationIcon from '../../icons/AnalysisRequest.svg';
+import AutomationIcon from '../../icons/typeAppDeploymentCenterStart48.svg';
 import ResultsAnalysisIcon from '../../icons/typeSimulationRequestRevision48.svg';
 import SimulationRunsIcon from '../../icons/typeSimulationJob48.svg';
 import HPCStatusIcon from '../../icons/typeOperation48.svg';
