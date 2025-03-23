@@ -68,7 +68,7 @@ import MissionIcon from '../../icons/Mission.svg';
 import FunctionsIcon from '../../icons/Functions.svg';
 import LogicalIcon from '../../icons/Logical.svg';
 import ParametersIcon from '../../icons/Parameters.svg';
-import CADIcon from '../../icons/CADTopLevel.svg';
+import CADIcon from '../../icons/typePartComponent48.svg';
 import EBOMIcon from '../../icons/typeClass48.svg';
 
 const { Title, Text, Paragraph } = Typography;
