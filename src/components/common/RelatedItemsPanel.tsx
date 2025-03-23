@@ -483,10 +483,10 @@ const RelatedItemsPanel: React.FC<RelatedItemsPanelProps> = ({
       padding: '20px',
       overflow: 'auto'
     } : {}}>
-      {/* Filter controls */}
+      {/* Filter controls - Title only */}
       {showFilter && categories.length > 1 && (
         <Row 
-          justify="space-between" 
+          justify="start" 
           align="middle"
           style={{ 
             padding: '8px 16px', 
@@ -498,35 +498,41 @@ const RelatedItemsPanel: React.FC<RelatedItemsPanelProps> = ({
           <Col>
             <Typography.Title level={5} style={{ margin: 0 }}>Related Items</Typography.Title>
           </Col>
-          <Col>
-            <Space>
-              <Button 
-                type="text" 
-                size="small"
-                onClick={() => setShowAllCategories(!showAllCategories)}
-              >
-                {showAllCategories ? 'Hide Empty' : 'See All'}
-              </Button>
-              <Button
-                type="text"
-                size="small"
-                onClick={() => setHighlightChanges(!highlightChanges)}
-                style={highlightChanges ? { color: colors.category.parameter } : {}}
-              >
-                Highlight Additional Change
-              </Button>
-              <Button
-                type="text"
-                size="small"
-                onClick={() => setIsFullScreen(!isFullScreen)}
-                style={{ color: isFullScreen ? colors.category.parameter : undefined }}
-              >
-                {isFullScreen ? 'Leave Full Screen' : 'Full Screen'}
-              </Button>
-            </Space>
-          </Col>
         </Row>
       )}
+
+      {/* Action Buttons as standalone row */}
+      <Row gutter={[8, 16]} style={{ marginBottom: '12px' }}>
+        <Col>
+          <Button 
+            type="default" 
+            size="small"
+            onClick={() => setShowAllCategories(!showAllCategories)}
+          >
+            {showAllCategories ? 'Hide Empty' : 'See All'}
+          </Button>
+        </Col>
+        <Col>
+          <Button
+            type="default"
+            size="small"
+            onClick={() => setHighlightChanges(!highlightChanges)}
+            style={highlightChanges ? { color: colors.category.parameter } : {}}
+          >
+            Highlight Additional Change
+          </Button>
+        </Col>
+        <Col>
+          <Button
+            type="default"
+            size="small"
+            onClick={() => setIsFullScreen(!isFullScreen)}
+            style={{ color: isFullScreen ? colors.category.parameter : undefined }}
+          >
+            {isFullScreen ? 'Leave Full Screen' : 'Full Screen'}
+          </Button>
+        </Col>
+      </Row>
 
       {/* Related items grid with horizontal scrolling */}
       <div style={{ 
