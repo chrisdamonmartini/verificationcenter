@@ -435,31 +435,20 @@ const RelatedItemsPanel: React.FC<RelatedItemsPanelProps> = ({
         bodyStyle={{ padding: '8px' }}
       >
         <div style={{ display: 'flex', flexDirection: 'column' }}>
-          <div style={{ display: 'flex', justifyContent: 'space-between', marginBottom: '4px' }}>
-            <Text code style={{ 
-              marginRight: '4px',
-              color: highlightChanges && isChanged ? colors.category.parameter : categoryColor
+          <div style={{ marginBottom: '4px' }}>
+            <Text style={{ 
+              color: highlightChanges && isChanged ? colors.category.parameter : categoryColor,
+              display: 'block'
             }}>
               {item.id}
             </Text>
-            {renderStatusTag(item.status)}
+            <Text style={{ fontSize: '0.9rem', whiteSpace: 'normal' }}>{item.title}</Text>
           </div>
           
-          <Text 
-            strong
-            style={{ 
-              marginBottom: '4px',
-              color: highlightChanges && isChanged ? colors.category.parameter : undefined
-            }}
-          >
-            {item.title}
-          </Text>
-          
-          <div style={{ fontSize: '0.8rem', color: colors.text.secondary, display: 'flex', gap: '8px', flexWrap: 'wrap' }}>
-            <span>
-              <ClockCircleOutlined /> {formatDate(item.date)}
-            </span>
-            <span>{item.author}</span>
+          <div style={{ fontSize: '0.8rem', color: colors.text.secondary }}>
+            <ClockCircleOutlined style={{ marginRight: '4px' }} /> 
+            {formatDate(item.date)}
+            {renderStatusTag(item.status)}
           </div>
         </div>
       </Card>
