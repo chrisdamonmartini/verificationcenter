@@ -4,7 +4,7 @@ import { RequirementChange } from '../../types/changeAwareness';
 import { renderRequirementCategory } from './shared/TableConfigurations';
 
 const ImprovedRequirementsChanges: React.FC = () => {
-  const [weeks, setWeeks] = useState<number>(8);
+  const [weeks, setWeeks] = useState<number>(52);
   const [productType, setProductType] = useState<'missile' | 'fighter'>('missile');
   
   useEffect(() => {
@@ -13,7 +13,7 @@ const ImprovedRequirementsChanges: React.FC = () => {
 
   return (
     <StandardChangeTable<RequirementChange>
-      domain="requirements"
+      domain="requirement"
       title="Requirement Changes"
       weeks={weeks}
       setWeeks={setWeeks}
