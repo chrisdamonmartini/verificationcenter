@@ -48,6 +48,11 @@ export const SidebarData = [
     icon: <ProjectOutlined />
   },
   {
+    title: 'Model Management',
+    path: '/model-management',
+    icon: <AppstoreOutlined />
+  },
+  {
     title: 'Simulation',
     path: '/simulation',
     icon: <FundOutlined />
