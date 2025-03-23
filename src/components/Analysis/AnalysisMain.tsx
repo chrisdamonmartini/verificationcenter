@@ -6,6 +6,9 @@ import AnalysesTab from './tabs/AnalysesTab';
 import AnalysisIcon from '../../icons/AnalysisItem.svg';
 import ModelIcon from '../../icons/AnalysisDataset.svg';
 import AutomationIcon from '../../icons/AnalysisRequest.svg';
+import ResultsAnalysisIcon from '../../icons/typeDocument48.svg';
+import SimulationRunsIcon from '../../icons/typeProcess48.svg';
+import HPCStatusIcon from '../../icons/typeDynamicSystem48.svg';
 import HPCStatus from '../Simulation/HPCStatus';
 import ResultsAnalysis from '../Simulation/ResultsAnalysis';
 import SimulationRuns from '../Simulation/SimulationRuns';
@@ -23,7 +26,7 @@ const AnalysisMain: React.FC = () => {
           activeKey={activeTab} 
           onChange={setActiveTab}
           size="large"
-          tabBarStyle={{ marginBottom: '16px' }}
+          className="changes-tabs"
         >
           <TabPane 
             tab={
@@ -64,7 +67,7 @@ const AnalysisMain: React.FC = () => {
           <TabPane 
             tab={
               <span style={{ display: 'flex', alignItems: 'center' }}>
-                <img src={AutomationIcon} alt="Results Analysis" style={{ width: '24px', height: '24px', marginRight: '8px', verticalAlign: 'middle', display: 'inline-block' }} />
+                <img src={ResultsAnalysisIcon} alt="Results Analysis" style={{ width: '24px', height: '24px', marginRight: '8px', verticalAlign: 'middle', display: 'inline-block' }} />
                 <span>Results Analysis</span>
               </span>
             } 
@@ -76,7 +79,7 @@ const AnalysisMain: React.FC = () => {
           <TabPane 
             tab={
               <span style={{ display: 'flex', alignItems: 'center' }}>
-                <img src={AutomationIcon} alt="Simulation Runs" style={{ width: '24px', height: '24px', marginRight: '8px', verticalAlign: 'middle', display: 'inline-block' }} />
+                <img src={SimulationRunsIcon} alt="Simulation Runs" style={{ width: '24px', height: '24px', marginRight: '8px', verticalAlign: 'middle', display: 'inline-block' }} />
                 <span>Simulation Runs</span>
               </span>
             } 
@@ -88,7 +91,7 @@ const AnalysisMain: React.FC = () => {
           <TabPane 
             tab={
               <span style={{ display: 'flex', alignItems: 'center' }}>
-                <img src={AutomationIcon} alt="HPC Status" style={{ width: '24px', height: '24px', marginRight: '8px', verticalAlign: 'middle', display: 'inline-block' }} />
+                <img src={HPCStatusIcon} alt="HPC Status" style={{ width: '24px', height: '24px', marginRight: '8px', verticalAlign: 'middle', display: 'inline-block' }} />
                 <span>HPC Status</span>
               </span>
             } 

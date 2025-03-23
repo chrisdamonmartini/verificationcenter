@@ -34,6 +34,24 @@ body {
   background-color: white;
 }
 
+/* Consistent tabs styling for Change Awareness and Analysis */
+.changes-tabs {
+  margin-bottom: 16px;
+}
+
+.changes-tabs .ant-tabs-nav {
+  padding-left: 8px;
+}
+
+.changes-tabs .ant-tabs-tab {
+  padding: 12px 16px;
+  margin-right: 4px;
+}
+
+.changes-tabs .ant-tabs-tab + .ant-tabs-tab {
+  margin-left: 8px;
+}
+
 /* Settings tab layout fixes */
 .settings-container {
   height: 100%;
