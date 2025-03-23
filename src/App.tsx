@@ -58,6 +58,8 @@ import { SidebarData } from './components/Sidebar/Sidebar';
 // Import Analysis components
 import AnalysisDetail from './components/Analysis/AnalysisDetail';
 import AnalysisMain from './components/Analysis/AnalysisMain';
+// Import Simulation component
+import SimulationMain from './components/Simulation/SimulationMain';
 
 // Define a type for requirements
 interface Requirement {
@@ -322,7 +324,7 @@ function App() {
       case 'simulation/results':
         return <ResultsAnalysis />;
       case 'simulation':
-        return <ModelsManagement />;
+        return <SimulationMain />;
       
       // Digital Thread route - should show the component with three tabs
       case 'digital-thread':

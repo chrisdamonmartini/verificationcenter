@@ -38,19 +38,24 @@ export const SidebarData = [
     icon: <FileProtectOutlined />
   },
   {
+    title: 'Verification Mgmt.',
+    path: '/verification-planning',
+    icon: <FaIcons.FaClipboardCheck />
+  },
+  {
     title: 'Analysis',
     path: '/analysis',
     icon: <ProjectOutlined />
   },
   {
+    title: 'Simulation',
+    path: '/simulation',
+    icon: <FundOutlined />
+  },
+  {
     title: 'Digital Thread',
     path: '/digital-thread',
     icon: <BranchesOutlined />
-  },
-  {
-    title: 'Verification',
-    path: '/verification-matrix',
-    icon: <CheckCircleOutlined />
   },
   {
     title: 'Test Mgmt.',
