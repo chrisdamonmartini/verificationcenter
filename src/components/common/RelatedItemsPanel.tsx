@@ -402,7 +402,7 @@ const RelatedItemsPanel: React.FC<RelatedItemsPanelProps> = ({
         </Card>
         
         {/* Navigation arrows for expanded items - attached directly to card */}
-        <div style={{ display: 'flex', justifyContent: 'space-between' }}>
+        <div style={{ display: 'flex', justifyContent: 'space-between', width: '100%' }}>
           <div
             style={{
               backgroundColor: colors.category.parameter,
@@ -410,27 +410,29 @@ const RelatedItemsPanel: React.FC<RelatedItemsPanelProps> = ({
               position: 'relative',
               height: '32px',
               lineHeight: '32px',
-              padding: '0 8px 0 16px',
+              padding: '0 8px',
               cursor: 'pointer',
-              borderRadius: '4px 0 0 4px',
-              width: '110px',
+              width: '50%',
               display: 'flex',
               alignItems: 'center',
-              justifyContent: 'center'
+              justifyContent: 'center',
+              borderRadius: '0 0 0 4px'
             }}
             onClick={() => console.log('Navigate upstream')}
           >
             {/* Left arrow shape - point outward */}
             <div style={{
               position: 'absolute',
-              left: '-10px', // Bring in the arrow point
+              left: '0',
+              bottom: '0',
               width: 0,
               height: 0,
               borderTop: '16px solid transparent',
               borderBottom: '16px solid transparent',
-              borderRight: `10px solid ${colors.category.parameter}`, // Reduce arrow size
+              borderRight: `16px solid ${colors.category.parameter}`,
+              transform: 'translateX(-100%)'
             }} />
-            <span>Upstream</span>
+            <span>UPSTREAM</span>
           </div>
           
           <div
@@ -440,26 +442,28 @@ const RelatedItemsPanel: React.FC<RelatedItemsPanelProps> = ({
               position: 'relative',
               height: '32px',
               lineHeight: '32px',
-              padding: '0 16px 0 8px',
+              padding: '0 8px',
               cursor: 'pointer',
-              borderRadius: '0 4px 4px 0',
-              width: '110px',
+              width: '50%',
               display: 'flex',
               alignItems: 'center',
-              justifyContent: 'center'
+              justifyContent: 'center',
+              borderRadius: '0 0 4px 0'
             }}
             onClick={() => console.log('Navigate downstream')}
           >
-            <span>Downstream</span>
+            <span>DOWNSTREAM</span>
             {/* Right arrow shape - point outward */}
             <div style={{
               position: 'absolute',
-              right: '-10px', // Bring in the arrow point
+              right: '0',
+              bottom: '0',
               width: 0,
               height: 0,
               borderTop: '16px solid transparent',
               borderBottom: '16px solid transparent',
-              borderLeft: `10px solid ${colors.category.parameter}`, // Reduce arrow size
+              borderLeft: `16px solid ${colors.category.parameter}`,
+              transform: 'translateX(100%)'
             }} />
           </div>
         </div>
