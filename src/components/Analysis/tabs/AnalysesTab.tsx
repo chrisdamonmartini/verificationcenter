@@ -1,5 +1,5 @@
-import React, { useState } from 'react';
-import { Tag, Progress, Space, Button, Drawer, Row, Col } from 'antd';
+import React from 'react';
+import { Tag, Progress, Space, Button } from 'antd';
 import type { ColumnsType } from 'antd/es/table';
 import { StandardTable } from '../../common/StandardTable';
 import RelatedItemsPanel, { RelatedItem, MissionItem, RequirementItem, FunctionItem, LogicalItem, CADItem, EBOMItem, ModelItem, AutomationItem } from '../../common/RelatedItemsPanel';
@@ -281,9 +281,6 @@ const mockRelatedItems: Record<string, {
 };
 
 const AnalysesTab: React.FC = () => {
-  const [selectedAnalysis, setSelectedAnalysis] = useState<AnalysisItem | null>(null);
-  const [showRelatedItems, setShowRelatedItems] = useState<boolean>(false);
-  
   // Status tag renderer
   const getStatusTag = (status: string) => {
     switch (status) {
@@ -336,10 +333,63 @@ const AnalysesTab: React.FC = () => {
     }
   };
   
-  // Handle row selection for viewing related items
-  const handleViewRelatedItems = (record: AnalysisItem) => {
-    setSelectedAnalysis(record);
-    setShowRelatedItems(true);
+  // Handle related item click
+  const handleRelatedItemClick = (item: RelatedItem, type: string) => {
+    console.log(`Clicked on ${type} item:`, item);
+    // In a real app, you might navigate to the item's detail page
+  };
+  
+  // Expanded row render function for showing related items
+  const expandedRowRender = (record: AnalysisItem) => {
+    const relatedItems = mockRelatedItems[record.id] || {
+      mission: [],
+      requirements: [],
+      functions: [],
+      logical: [],
+      cad: [],
+      ebom: [],
+      models: [],
+      automation: []
+    };
+    
+    // Create the current item in the format expected by RelatedItemsPanel
+    const currentItem = {
+      id: record.id,
+      title: record.name,
+      status: (record.status === 'Completed' ? 'Completed' : 
+              record.status === 'In Progress' ? 'Active' :
+              'Current') as 'Completed' | 'Current' | 'Active' | 'Modified' | 'Released' | 'In Development' | 'Deprecated' | 'Archived' | 'Updated',
+      date: record.dueDate,
+      author: record.assignedTo
+    };
+    
+    // Determine which category should be considered the current item type
+    const currentItemType = 'models'; // Analysis items are typically associated with models
+    
+    // Handle creating a relationship
+    const handleCreateRelationship = (categoryKey: string) => {
+      console.log(`Creating relationship with ${categoryKey} for analysis ${record.id}`);
+      // In a real implementation, this would open a modal or navigate to create a relationship
+    };
+    
+    return (
+      <div style={{ padding: '0 20px 20px 20px' }}>
+        <RelatedItemsPanel
+          mission={relatedItems.mission}
+          requirements={relatedItems.requirements}
+          functions={relatedItems.functions}
+          logical={relatedItems.logical}
+          cad={relatedItems.cad}
+          ebom={relatedItems.ebom}
+          models={relatedItems.models}
+          automation={relatedItems.automation}
+          onItemClick={handleRelatedItemClick}
+          currentItem={currentItem}
+          currentItemType={currentItemType}
+          onCreateRelationship={handleCreateRelationship}
+        />
+      </div>
+    );
   };
   
   // Table columns definition
@@ -422,23 +472,12 @@ const AnalysesTab: React.FC = () => {
       render: (_, record) => (
         <Space size="small">
           <Button type="text" size="small" style={{ padding: 0 }}>✓</Button>
-          <Button 
-            type="text" 
-            size="small" 
-            style={{ padding: 0 }}
-            onClick={() => handleViewRelatedItems(record)}
-          >⋮</Button>
+          <Button type="text" size="small" style={{ padding: 0 }}>⋮</Button>
           <Button type="text" size="small" style={{ padding: 0 }}>▶</Button>
         </Space>
       ),
     },
   ];
-  
-  // Handle related item click
-  const handleRelatedItemClick = (item: RelatedItem, type: string) => {
-    console.log(`Clicked on ${type} item:`, item);
-    // In a real app, you might navigate to the item's detail page
-  };
   
   // Stats for the header
   const totalAnalyses = sampleAnalyses.length;
@@ -446,63 +485,22 @@ const AnalysesTab: React.FC = () => {
   const inProgressAnalyses = sampleAnalyses.filter(item => item.status === 'In Progress').length;
   const pendingAnalyses = sampleAnalyses.filter(item => item.status === 'Pending').length;
   
-  // Render Related Items Panel
-  const renderRelatedItemsPanel = () => {
-    if (!selectedAnalysis) return null;
-    
-    const relatedItems = mockRelatedItems[selectedAnalysis.id] || {
-      mission: [],
-      requirements: [],
-      functions: [],
-      logical: [],
-      cad: [],
-      ebom: [],
-      models: [],
-      automation: []
-    };
-    
-    return (
-      <RelatedItemsPanel
-        mission={relatedItems.mission}
-        requirements={relatedItems.requirements}
-        functions={relatedItems.functions}
-        logical={relatedItems.logical}
-        cad={relatedItems.cad}
-        ebom={relatedItems.ebom}
-        models={relatedItems.models}
-        automation={relatedItems.automation}
-        onItemClick={handleRelatedItemClick}
-      />
-    );
-  };
-  
   return (
-    <>
-      <StandardTable
-        title="Analyses"
-        data={sampleAnalyses}
-        columns={columns}
-        loading={false}
-        stats={{
-          total: totalAnalyses,
-          completed: completedAnalyses,
-          inProgress: inProgressAnalyses,
-          pending: pendingAnalyses
-        }}
-        searchableFields={['id', 'name', 'assignedTo']}
-        refreshData={() => console.log('Refreshing data...')}
-      />
-      
-      <Drawer
-        title={`Related Items - ${selectedAnalysis?.name || ''}`}
-        placement="right"
-        size="large"
-        onClose={() => setShowRelatedItems(false)}
-        open={showRelatedItems}
-      >
-        {renderRelatedItemsPanel()}
-      </Drawer>
-    </>
+    <StandardTable
+      title="Analyses"
+      data={sampleAnalyses}
+      columns={columns}
+      loading={false}
+      expandedRowRender={expandedRowRender}
+      stats={{
+        total: totalAnalyses,
+        completed: completedAnalyses,
+        inProgress: inProgressAnalyses,
+        pending: pendingAnalyses
+      }}
+      searchableFields={['id', 'name', 'assignedTo']}
+      refreshData={() => console.log('Refreshing data...')}
+    />
   );
 };
 
