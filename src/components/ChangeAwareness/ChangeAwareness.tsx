@@ -24,7 +24,11 @@ import {
   ClusterOutlined,
   PieChartOutlined,
   LeftOutlined,
-  RightOutlined
+  RightOutlined,
+  BarChartOutlined,
+  ProjectOutlined,
+  RadarChartOutlined,
+  CloudOutlined,
 } from '@ant-design/icons';
 // Import recharts components
 import { 
@@ -59,6 +63,7 @@ import { AnyChange } from '../../types/changeAwareness';
 import { StandardChangeTable } from './shared/StandardChangeTable';
 import { renderAutoDetectedCategory } from './shared/TableConfigurations';
 import { useChangesData } from './shared/hooks';
+import RequirementsIcon from '../../icons/Requirements.svg';
 
 const { Title, Text, Paragraph } = Typography;
 const { TabPane } = Tabs;
@@ -643,7 +648,7 @@ const ChangeAwareness: React.FC = () => {
           </TabPane>
 
           <TabPane
-            tab={<span><FileTextOutlined /> Requirements</span>}
+            tab={<span><img src={RequirementsIcon} alt="Requirements" style={{ width: '16px', height: '16px', marginRight: '8px' }} />Requirements</span>}
             key="requirements"
           >
             <ImprovedRequirementsChanges />
