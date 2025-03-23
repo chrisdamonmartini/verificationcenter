@@ -391,13 +391,10 @@ const RelatedItemsPanel: React.FC<RelatedItemsPanelProps> = ({
           </div>
           
           <div>
-            <Space>
-              <Tag color={categoryColor}>Current</Tag>
-              <Text type="secondary" style={{ fontSize: '12px' }}>
-                <ClockCircleOutlined style={{ marginRight: '4px' }} />
-                {formatDate(item.date)}
-              </Text>
-            </Space>
+            <Text type="secondary" style={{ fontSize: '12px' }}>
+              <ClockCircleOutlined style={{ marginRight: '4px' }} />
+              {formatDate(item.date)}
+            </Text>
           </div>
         </Space>
       </Card>
