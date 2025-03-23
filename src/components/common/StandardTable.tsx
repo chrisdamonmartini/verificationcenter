@@ -64,8 +64,15 @@ export function StandardTable<T extends { id: string }>({
         });
       });
 
+  // Process columns to ensure consistent styling
+  const processedColumns = columns.map(col => ({
+    ...col,
+    className: `${col.className || ''} table-column`,
+    // Add any additional column processing here if needed
+  }));
+
   return (
-    <Card className="common-table">
+    <Card className="common-table" title={title}>
       <Space direction="vertical" style={{ width: '100%' }}>
         <Row gutter={16} align="middle" style={{ marginBottom: 16 }} className="table-controls">
           <Col span={16}>
@@ -113,7 +120,7 @@ export function StandardTable<T extends { id: string }>({
         <Table
           rowKey="id"
           dataSource={filteredData}
-          columns={columns}
+          columns={processedColumns}
           loading={loading}
           expandable={expandedRowRender ? {
             expandedRowRender,
@@ -156,6 +163,7 @@ export function StandardTable<T extends { id: string }>({
               </div>
             )
           }}
+          bordered
           {...tableProps}
         />
       </Space>

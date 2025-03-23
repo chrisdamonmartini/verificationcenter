@@ -4,20 +4,29 @@
 .common-table .ant-table-thead > tr > th,
 .common-table .ant-table-tbody > tr > td {
   padding: 12px 16px;
-  height: 54px;
+  height: 48px;
+  border-right: 1px solid #f0f0f0;
+  vertical-align: middle;
 }
 
 /* Table header styling */
 .common-table .ant-table-thead > tr > th {
-  background-color: #f0f2f5;
+  background-color: #f7f7f7;
   color: #333;
   font-weight: 600;
-  border-bottom: 1px solid #e8e8e8;
+  border-bottom: 1px solid #d9d9d9;
+  border-right: 1px solid #d9d9d9;
+  padding: 10px 16px;
+  height: 42px;
+}
+
+.common-table .ant-table-thead > tr > th:last-child {
+  border-right: none;
 }
 
 /* Table row borders and hover effect */
 .common-table .ant-table-tbody > tr > td {
-  border-bottom: 1px solid #f0f0f0;
+  border-bottom: 1px solid #e8e8e8;
 }
 
 .common-table .ant-table-tbody > tr:hover > td {
@@ -35,13 +44,28 @@
 
 /* Table border and card styling */
 .common-table .ant-table {
-  border: 1px solid #e8e8e8;
+  border: 1px solid #d9d9d9;
   border-radius: 4px;
   overflow: hidden;
+  font-size: 13px;
 }
 
 .common-table.ant-card {
-  box-shadow: 0 1px 2px rgba(0, 0, 0, 0.03);
+  box-shadow: 0 1px 2px rgba(0, 0, 0, 0.05);
+  margin-bottom: 0;
+}
+
+/* Card title styling to match Change Awareness */
+.common-table .ant-card-head {
+  min-height: 48px;
+  padding: 0 16px;
+  border-bottom: 1px solid #f0f0f0;
+}
+
+.common-table .ant-card-head-title {
+  padding: 12px 0;
+  font-size: 16px;
+  font-weight: 500;
 }
 
 /* Row expansion icon styling */
@@ -50,11 +74,28 @@
 }
 
 /* Status tags consistent styling */
-.common-table .status-tag {
+.common-table .status-tag,
+.common-table .ant-tag {
   border-radius: 4px;
   padding: 2px 8px;
   font-size: 12px;
   font-weight: 500;
+  border: 1px solid transparent;
+  line-height: 20px;
+  display: inline-flex;
+  align-items: center;
+}
+
+/* Progress bar styling */
+.common-table .ant-progress-bg {
+  height: 8px !important;
+}
+
+.common-table .ant-progress-outer {
+  margin-right: 0 !important;
+  padding-right: 0 !important;
+  width: 100%;
+  max-width: 160px;
 }
 
 /* Stats row styling in table header area */
@@ -63,6 +104,7 @@
   gap: 16px;
   color: #666;
   font-size: 13px;
+  padding: 4px 0;
 }
 
 .common-table .stats-bar > div {
@@ -98,8 +140,86 @@
 
 /* Table borders and outline */
 .common-table .ant-table-container {
-  border: 1px solid #e8e8e8;
+  border: 1px solid #d9d9d9;
   border-radius: 4px;
+}
+
+/* Making grid lines visible for whole table */
+.common-table .ant-table-container table {
+  border-collapse: separate;
+  border-spacing: 0;
+}
+
+.common-table .ant-table-container table,
+.common-table .ant-table-container table tr,
+.common-table .ant-table-container table td {
+  border-collapse: separate;
+}
+
+/* Ensuring the expand icon column has a fixed width */
+.common-table .ant-table-row-expand-icon-cell {
+  width: 50px !important;
+}
+
+/* Make sure the expand/collapse icon looks consistent */
+.common-table .ant-table-row-expand-icon {
+  border: 1px solid #d9d9d9;
+}
+
+/* Status tag colors */
+.common-table .ant-tag-success {
+  color: #52c41a;
+  background: #f6ffed;
+  border-color: #b7eb8f;
+}
+
+.common-table .ant-tag-processing {
+  color: #1890ff;
+  background: #e6f7ff;
+  border-color: #91d5ff;
+}
+
+.common-table .ant-tag-warning {
+  color: #faad14;
+  background: #fffbe6;
+  border-color: #ffe58f;
+}
+
+.common-table .ant-tag-error {
+  color: #f5222d;
+  background: #fff1f0;
+  border-color: #ffa39e;
+}
+
+/* Completed status */
+.common-table .status-completed {
+  color: #52c41a;
+  background: #f6ffed;
+  border-color: #b7eb8f;
+}
+
+/* In Progress status */
+.common-table .status-in-progress {
+  color: #1890ff;
+  background: #e6f7ff;
+  border-color: #91d5ff;
+}
+
+/* Pending status */
+.common-table .status-pending {
+  color: #faad14;
+  background: #fffbe6;
+  border-color: #ffe58f;
+}
+
+/* Action buttons styling */
+.common-table .action-button {
+  margin-right: 8px;
+  color: #1890ff;
+}
+
+.common-table .action-button:last-child {
+  margin-right: 0;
 }
 
 /* Nested tables styling (for expandable rows) */
@@ -114,6 +234,6 @@
 
 .common-table .expanded-row-table .ant-table-container {
   border: none;
-  border-top: 1px solid #f0f0f0;
+  border-top: 1px solid #d9d9d9;
   border-radius: 0;
 } 
