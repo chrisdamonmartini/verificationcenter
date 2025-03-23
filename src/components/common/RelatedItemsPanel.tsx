@@ -366,8 +366,9 @@ const RelatedItemsPanel: React.FC<RelatedItemsPanelProps> = ({
 
   // Render expanded item summary - for the category we're expanded on
   const renderExpandedItemSummary = (item: RelatedItem, categoryColor: string) => {
-    // Determine if this is a Mission item by checking the categoryColor
-    const isMission = categoryColor === colors.category.mission;
+    // Determine if this is a Mission item by checking the categoryKey and/or color
+    // Get the current category key from normalizedCurrentKey
+    const isMission = normalizedCurrentKey === 'mission';
 
     return (
       <div style={{ width: '100%' }}>
