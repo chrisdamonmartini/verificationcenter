@@ -420,18 +420,17 @@ const RelatedItemsPanel: React.FC<RelatedItemsPanelProps> = ({
             }}
             onClick={() => console.log('Navigate upstream')}
           >
-            <div style={{ position: 'absolute', left: '2px' }}>←</div>
-            <span style={{ marginLeft: '4px' }}>Upstream</span>
-            {/* Left arrow shape using pseudo-element */}
+            {/* Left arrow shape - point outward */}
             <div style={{
               position: 'absolute',
-              right: '-15px',
+              left: '-15px',
               width: 0,
               height: 0,
               borderTop: '16px solid transparent',
               borderBottom: '16px solid transparent',
-              borderLeft: `15px solid ${colors.category.parameter}`,
+              borderRight: `15px solid ${colors.category.parameter}`,
             }} />
+            <span>Upstream</span>
           </div>
           
           <div
@@ -451,17 +450,17 @@ const RelatedItemsPanel: React.FC<RelatedItemsPanelProps> = ({
             }}
             onClick={() => console.log('Navigate downstream')}
           >
+            <span>Downstream</span>
+            {/* Right arrow shape - point outward */}
             <div style={{
               position: 'absolute',
-              left: '-15px',
+              right: '-15px',
               width: 0,
               height: 0,
               borderTop: '16px solid transparent',
               borderBottom: '16px solid transparent',
-              borderRight: `15px solid ${colors.category.parameter}`,
+              borderLeft: `15px solid ${colors.category.parameter}`,
             }} />
-            <span style={{ marginRight: '4px' }}>Downstream</span>
-            <div style={{ position: 'absolute', right: '2px' }}>→</div>
           </div>
         </div>
       </div>
