@@ -366,7 +366,7 @@ const RelatedItemsPanel: React.FC<RelatedItemsPanelProps> = ({
 
   // Render expanded item summary - for the category we're expanded on
   const renderExpandedItemSummary = (item: RelatedItem, categoryColor: string) => {
-    // Determine if this is a Mission item by checking the categoryColor or an explicit passed property
+    // Determine if this is a Mission item by checking the categoryColor
     const isMission = categoryColor === colors.category.mission;
 
     return (
@@ -424,8 +424,6 @@ const RelatedItemsPanel: React.FC<RelatedItemsPanelProps> = ({
                 borderRadius: '4px'
               }}
               onClick={() => console.log('Navigate upstream')}
-              onMouseOver={(e) => { e.currentTarget.style.backgroundColor = '#00688C' }}
-              onMouseOut={(e) => { e.currentTarget.style.backgroundColor = colors.category.parameter }}
             >
               {/* Left arrow shape - smaller and contained */}
               <div style={{
@@ -459,8 +457,6 @@ const RelatedItemsPanel: React.FC<RelatedItemsPanelProps> = ({
               borderRadius: '4px'
             }}
             onClick={() => console.log('Navigate downstream')}
-            onMouseOver={(e) => { e.currentTarget.style.backgroundColor = '#00688C' }}
-            onMouseOut={(e) => { e.currentTarget.style.backgroundColor = colors.category.parameter }}
           >
             <span style={{ fontSize: '12px' }}>DOWNSTREAM</span>
             {/* Right arrow shape - smaller and contained */}
