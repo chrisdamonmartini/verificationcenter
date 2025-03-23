@@ -1,7 +1,8 @@
-import React from 'react';
-import { Tag, Progress, Space, Button } from 'antd';
+import React, { useState } from 'react';
+import { Tag, Progress, Space, Button, Drawer, Row, Col } from 'antd';
 import type { ColumnsType } from 'antd/es/table';
 import { StandardTable } from '../../common/StandardTable';
+import RelatedItemsPanel, { RelatedItem, MissionItem, RequirementItem, FunctionItem, LogicalItem, CADItem, EBOMItem, ModelItem, AutomationItem } from '../../common/RelatedItemsPanel';
 
 // Interface for analysis items
 interface AnalysisItem {
@@ -69,7 +70,220 @@ const sampleAnalyses: AnalysisItem[] = [
   }
 ];
 
+// Mock related items data for each analysis
+const mockRelatedItems: Record<string, {
+  mission: MissionItem[];
+  requirements: RequirementItem[];
+  functions: FunctionItem[];
+  logical: LogicalItem[];
+  cad: CADItem[];
+  ebom: EBOMItem[];
+  models: ModelItem[];
+  automation: AutomationItem[];
+}> = {
+  'AN-001': {
+    mission: [
+      {
+        id: 'M-101',
+        title: 'High-Speed Cruise',
+        status: 'Current',
+        date: '2024-12-10',
+        author: 'Mission Planning',
+        objective: 'Sustain Mach 0.85 at 35,000 ft',
+        priority: 'High'
+      }
+    ],
+    requirements: [
+      {
+        id: 'SR-201',
+        title: 'Wing Load Requirements',
+        status: 'Released',
+        date: '2024-11-05',
+        author: 'Systems Engineering',
+        type: 'Performance',
+        verification: 'Analysis'
+      },
+      {
+        id: 'SR-202',
+        title: 'Structural Integrity',
+        status: 'Released',
+        date: '2024-11-10',
+        author: 'Structures Team',
+        type: 'System',
+        verification: 'Test'
+      }
+    ],
+    functions: [
+      {
+        id: 'FUNC-301',
+        title: 'Load Distribution',
+        status: 'Current',
+        date: '2024-10-15',
+        author: 'Aerodynamics',
+        category: 'Structural',
+        inputs: ['Airspeed', 'Altitude', 'Weight'],
+        outputs: ['Load Distribution']
+      }
+    ],
+    logical: [
+      {
+        id: 'LB-401',
+        title: 'Wing Structure Model',
+        status: 'Current',
+        date: '2024-11-20',
+        author: 'Design Team',
+        category: 'Block',
+        implementedFunctions: ['FUNC-301']
+      }
+    ],
+    cad: [
+      {
+        id: 'CAD-501',
+        title: 'Wing Assembly',
+        status: 'Released',
+        date: '2024-12-01',
+        author: 'CAD Department',
+        partNumber: 'WNG-A22-01',
+        revision: 'C',
+        maturity: 'Released'
+      }
+    ],
+    ebom: [],
+    models: [
+      {
+        id: 'MDL-701',
+        title: 'Wing FEM',
+        status: 'Current',
+        date: '2025-01-05',
+        author: 'Analysis Team',
+        type: 'Analysis',
+        format: 'Nastran',
+        version: '3.2'
+      }
+    ],
+    automation: []
+  },
+  'AN-002': {
+    mission: [],
+    requirements: [
+      {
+        id: 'SR-203',
+        title: 'Thermal Management',
+        status: 'Released',
+        date: '2024-11-15',
+        author: 'Systems Engineering',
+        type: 'Performance',
+        verification: 'Analysis'
+      }
+    ],
+    functions: [],
+    logical: [],
+    cad: [
+      {
+        id: 'CAD-503',
+        title: 'Engine Bay Assembly',
+        status: 'Released',
+        date: '2024-12-03',
+        author: 'CAD Department',
+        partNumber: 'ENG-B15-01',
+        revision: 'A',
+        maturity: 'Released'
+      }
+    ],
+    ebom: [],
+    models: [
+      {
+        id: 'MDL-703',
+        title: 'Thermal Analysis Model',
+        status: 'Current',
+        date: '2025-01-10',
+        author: 'Thermal Team',
+        type: 'Analysis',
+        format: 'CFD',
+        version: '1.5'
+      }
+    ],
+    automation: []
+  },
+  'AN-003': {
+    mission: [],
+    requirements: [
+      {
+        id: 'SR-204',
+        title: 'Aerodynamic Performance',
+        status: 'Released',
+        date: '2024-11-12',
+        author: 'Aero Team',
+        type: 'Performance',
+        verification: 'Analysis'
+      }
+    ],
+    functions: [],
+    logical: [],
+    cad: [],
+    ebom: [],
+    models: [
+      {
+        id: 'MDL-702',
+        title: 'Aerodynamic Model',
+        status: 'Current',
+        date: '2025-01-02',
+        author: 'Aerodynamics',
+        type: 'Simulation',
+        format: 'CFD',
+        version: '2.1'
+      }
+    ],
+    automation: [
+      {
+        id: 'AUTO-802',
+        title: 'Aerodynamic Performance Analysis',
+        status: 'Active',
+        date: '2025-01-12',
+        author: 'Aero Team',
+        type: 'Workflow',
+        language: 'Python',
+        lastRun: '2025-01-15'
+      }
+    ]
+  },
+  'AN-004': {
+    mission: [],
+    requirements: [],
+    functions: [],
+    logical: [],
+    cad: [],
+    ebom: [],
+    models: [],
+    automation: []
+  },
+  'AN-005': {
+    mission: [],
+    requirements: [],
+    functions: [],
+    logical: [],
+    cad: [],
+    ebom: [],
+    models: [
+      {
+        id: 'MDL-705',
+        title: 'Environmental Impact Model',
+        status: 'Current',
+        date: '2025-01-08',
+        author: 'Environmental Team',
+        type: 'Simulation',
+        format: 'Custom',
+        version: '1.0'
+      }
+    ],
+    automation: []
+  }
+};
+
 const AnalysesTab: React.FC = () => {
+  const [selectedAnalysis, setSelectedAnalysis] = useState<AnalysisItem | null>(null);
+  const [showRelatedItems, setShowRelatedItems] = useState<boolean>(false);
+  
   // Status tag renderer
   const getStatusTag = (status: string) => {
     switch (status) {
@@ -120,6 +334,12 @@ const AnalysesTab: React.FC = () => {
       default:
         return <Tag>{type}</Tag>;
     }
+  };
+  
+  // Handle row selection for viewing related items
+  const handleViewRelatedItems = (record: AnalysisItem) => {
+    setSelectedAnalysis(record);
+    setShowRelatedItems(true);
   };
   
   // Table columns definition
@@ -202,12 +422,23 @@ const AnalysesTab: React.FC = () => {
       render: (_, record) => (
         <Space size="small">
           <Button type="text" size="small" style={{ padding: 0 }}>✓</Button>
-          <Button type="text" size="small" style={{ padding: 0 }}>⋮</Button>
+          <Button 
+            type="text" 
+            size="small" 
+            style={{ padding: 0 }}
+            onClick={() => handleViewRelatedItems(record)}
+          >⋮</Button>
           <Button type="text" size="small" style={{ padding: 0 }}>▶</Button>
         </Space>
       ),
     },
   ];
+  
+  // Handle related item click
+  const handleRelatedItemClick = (item: RelatedItem, type: string) => {
+    console.log(`Clicked on ${type} item:`, item);
+    // In a real app, you might navigate to the item's detail page
+  };
   
   // Stats for the header
   const totalAnalyses = sampleAnalyses.length;
@@ -215,21 +446,63 @@ const AnalysesTab: React.FC = () => {
   const inProgressAnalyses = sampleAnalyses.filter(item => item.status === 'In Progress').length;
   const pendingAnalyses = sampleAnalyses.filter(item => item.status === 'Pending').length;
   
+  // Render Related Items Panel
+  const renderRelatedItemsPanel = () => {
+    if (!selectedAnalysis) return null;
+    
+    const relatedItems = mockRelatedItems[selectedAnalysis.id] || {
+      mission: [],
+      requirements: [],
+      functions: [],
+      logical: [],
+      cad: [],
+      ebom: [],
+      models: [],
+      automation: []
+    };
+    
+    return (
+      <RelatedItemsPanel
+        mission={relatedItems.mission}
+        requirements={relatedItems.requirements}
+        functions={relatedItems.functions}
+        logical={relatedItems.logical}
+        cad={relatedItems.cad}
+        ebom={relatedItems.ebom}
+        models={relatedItems.models}
+        automation={relatedItems.automation}
+        onItemClick={handleRelatedItemClick}
+      />
+    );
+  };
+  
   return (
-    <StandardTable
-      title="Analyses"
-      data={sampleAnalyses}
-      columns={columns}
-      loading={false}
-      stats={{
-        total: totalAnalyses,
-        completed: completedAnalyses,
-        inProgress: inProgressAnalyses,
-        pending: pendingAnalyses
-      }}
-      searchableFields={['id', 'name', 'assignedTo']}
-      refreshData={() => console.log('Refreshing data...')}
-    />
+    <>
+      <StandardTable
+        title="Analyses"
+        data={sampleAnalyses}
+        columns={columns}
+        loading={false}
+        stats={{
+          total: totalAnalyses,
+          completed: completedAnalyses,
+          inProgress: inProgressAnalyses,
+          pending: pendingAnalyses
+        }}
+        searchableFields={['id', 'name', 'assignedTo']}
+        refreshData={() => console.log('Refreshing data...')}
+      />
+      
+      <Drawer
+        title={`Related Items - ${selectedAnalysis?.name || ''}`}
+        placement="right"
+        size="large"
+        onClose={() => setShowRelatedItems(false)}
+        open={showRelatedItems}
+      >
+        {renderRelatedItemsPanel()}
+      </Drawer>
+    </>
   );
 };
 
