@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { Card, Row, Col, Badge, Typography, Tooltip, Empty, Switch, Space, Tag, Table, Button } from 'antd';
 import { ClockCircleOutlined, CheckCircleOutlined, ExclamationCircleOutlined, ExpandOutlined, PlusOutlined, LinkOutlined } from '@ant-design/icons';
 import dayjs from 'dayjs';
@@ -9,6 +9,7 @@ import HideIcon from '../../icons/cmdHide16.svg';
 import ShowImpactOfChangeIcon from '../../icons/cmdShowImpactOfChange24.svg';
 import FullScreenIcon from '../../icons/cmdFullScreen24.svg';
 import ExitFullScreenIcon from '../../icons/cmdExitFullScreen16.svg';
+import ReactDOM from 'react-dom';
 
 const { Text } = Typography;
 
@@ -551,6 +552,50 @@ const RelatedItemsPanel: React.FC<RelatedItemsPanelProps> = ({
     );
   };
 
+  // Effect to handle body overflow when fullscreen is active
+  useEffect(() => {
+    if (isFullScreen) {
+      // Save the current overflow style
+      const originalOverflow = document.body.style.overflow;
+      // Prevent scrolling on the body
+      document.body.style.overflow = 'hidden';
+      
+      // Create/append fullscreen styles to head
+      const styleElement = document.createElement('style');
+      styleElement.id = 'fullscreen-styles';
+      styleElement.innerHTML = `
+        .vc-fullscreen-active .ant-layout,
+        .vc-fullscreen-active .ant-layout-header,
+        .vc-fullscreen-active .ant-layout-sider,
+        .vc-fullscreen-active .ant-menu,
+        .vc-fullscreen-active .ant-tabs-nav,
+        .vc-fullscreen-active .ant-layout-content > *:not(.related-items-fullscreen-overlay) {
+          display: none !important;
+        }
+        .vc-fullscreen-active {
+          overflow: hidden !important;
+        }
+      `;
+      document.head.appendChild(styleElement);
+      
+      // Add class to body
+      document.body.classList.add('vc-fullscreen-active');
+
+      // Cleanup function
+      return () => {
+        // Restore original overflow style
+        document.body.style.overflow = originalOverflow;
+        // Remove the style element
+        const styleEl = document.getElementById('fullscreen-styles');
+        if (styleEl) {
+          document.head.removeChild(styleEl);
+        }
+        // Remove class from body
+        document.body.classList.remove('vc-fullscreen-active');
+      };
+    }
+  }, [isFullScreen]);
+
   // No items to display - since we're now showing all categories, this should no longer happen
   if (categories.length === 0) {
     return renderEmpty();
@@ -558,7 +603,7 @@ const RelatedItemsPanel: React.FC<RelatedItemsPanelProps> = ({
 
   return (
     <>
-      {isFullScreen ? (
+      {isFullScreen ? ReactDOM.createPortal(
         <div 
           className="related-items-fullscreen-overlay"
           style={{
@@ -721,7 +766,8 @@ const RelatedItemsPanel: React.FC<RelatedItemsPanelProps> = ({
                 ))}
             </div>
           </div>
-        </div>
+        </div>,
+        document.body
       ) : (
         <div className="related-items-panel">
           {/* Header with buttons for regular mode */}
