@@ -71,6 +71,7 @@ import ParametersIcon from '../../icons/Parameters.svg';
 import EBOMIcon from '../../icons/typeClass48.svg';
 import CADIcon from '../../icons/typePartComponent48.svg';
 import OverviewIcon from '../../icons/typeFolderCollection48.svg';
+import OperationalScenariosIcon from '../../icons/typeBranchRevision48.svg';
 
 const { Title, Text, Paragraph } = Typography;
 const { TabPane } = Tabs;
@@ -688,7 +689,20 @@ const ChangeAwareness: React.FC = () => {
           </TabPane>
 
           <TabPane
-            tab={<span><ClockCircleOutlined /> Operational Scenarios</span>}
+            tab={<span style={{ display: 'flex', alignItems: 'center' }}>
+              <img 
+                src={OperationalScenariosIcon} 
+                alt="Operational Scenarios" 
+                style={{ 
+                  width: '16px', 
+                  height: '16px', 
+                  marginRight: '8px',
+                  verticalAlign: 'middle', 
+                  display: 'inline-block'
+                }} 
+              />
+              <span>Operational Scenarios</span>
+            </span>}
             key="operational"
           >
             <ImprovedOperationalScenarios />
