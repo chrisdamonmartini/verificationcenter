@@ -654,8 +654,8 @@ const ChangeAwareness: React.FC = () => {
                 src={OverviewIcon} 
                 alt="Overview" 
                 style={{ 
-                  width: '16px', 
-                  height: '16px', 
+                  width: '24px', 
+                  height: '24px', 
                   marginRight: '8px',
                   verticalAlign: 'middle', 
                   display: 'inline-block'
@@ -674,8 +674,8 @@ const ChangeAwareness: React.FC = () => {
                 src={MissionIcon} 
                 alt="Mission" 
                 style={{ 
-                  width: '16px', 
-                  height: '16px', 
+                  width: '24px', 
+                  height: '24px', 
                   marginRight: '8px',
                   verticalAlign: 'middle', 
                   display: 'inline-block'
@@ -694,8 +694,8 @@ const ChangeAwareness: React.FC = () => {
                 src={OperationalScenariosIcon} 
                 alt="Operational Scenarios" 
                 style={{ 
-                  width: '16px', 
-                  height: '16px', 
+                  width: '24px', 
+                  height: '24px', 
                   marginRight: '8px',
                   verticalAlign: 'middle', 
                   display: 'inline-block'
@@ -714,8 +714,8 @@ const ChangeAwareness: React.FC = () => {
                 src={RequirementsIcon} 
                 alt="Requirements" 
                 style={{ 
-                  width: '16px', 
-                  height: '16px', 
+                  width: '24px', 
+                  height: '24px', 
                   marginRight: '8px',
                   verticalAlign: 'middle', 
                   display: 'inline-block'
@@ -734,8 +734,8 @@ const ChangeAwareness: React.FC = () => {
                 src={ParametersIcon} 
                 alt="Parameters" 
                 style={{ 
-                  width: '16px', 
-                  height: '16px', 
+                  width: '24px', 
+                  height: '24px', 
                   marginRight: '8px',
                   verticalAlign: 'middle', 
                   display: 'inline-block'
@@ -754,8 +754,8 @@ const ChangeAwareness: React.FC = () => {
                 src={FunctionsIcon} 
                 alt="Functions" 
                 style={{ 
-                  width: '16px', 
-                  height: '16px', 
+                  width: '24px', 
+                  height: '24px', 
                   marginRight: '8px',
                   verticalAlign: 'middle', 
                   display: 'inline-block'
@@ -774,8 +774,8 @@ const ChangeAwareness: React.FC = () => {
                 src={LogicalIcon} 
                 alt="Logical" 
                 style={{ 
-                  width: '16px', 
-                  height: '16px', 
+                  width: '24px', 
+                  height: '24px', 
                   marginRight: '8px',
                   verticalAlign: 'middle', 
                   display: 'inline-block'
@@ -794,8 +794,8 @@ const ChangeAwareness: React.FC = () => {
                 src={CADIcon} 
                 alt="CAD Design" 
                 style={{ 
-                  width: '16px', 
-                  height: '16px', 
+                  width: '24px', 
+                  height: '24px', 
                   marginRight: '8px',
                   verticalAlign: 'middle', 
                   display: 'inline-block'
@@ -814,8 +814,8 @@ const ChangeAwareness: React.FC = () => {
                 src={EBOMIcon} 
                 alt="Engineering BOM" 
                 style={{ 
-                  width: '16px', 
-                  height: '16px', 
+                  width: '24px', 
+                  height: '24px', 
                   marginRight: '8px',
                   verticalAlign: 'middle', 
                   display: 'inline-block'
