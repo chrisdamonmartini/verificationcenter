@@ -138,6 +138,7 @@ const ModelsTab: React.FC = () => {
       title: 'Name',
       dataIndex: 'name',
       key: 'name',
+      width: 250,
       render: (text, record) => (
         <Space>
           <img src={ModelIcon} alt="Model" style={{ width: '24px', height: '24px' }} />
@@ -175,7 +176,7 @@ const ModelsTab: React.FC = () => {
       title: 'Status',
       dataIndex: 'status',
       key: 'status',
-      width: 140,
+      width: 120,
       render: (text) => getStatusTag(text),
       filters: [
         { text: 'Active', value: 'Active' },
@@ -189,7 +190,7 @@ const ModelsTab: React.FC = () => {
       title: 'Validation',
       dataIndex: 'validationStatus',
       key: 'validationStatus',
-      width: 170,
+      width: 180,
       render: (text) => getValidationTag(text),
     },
     {

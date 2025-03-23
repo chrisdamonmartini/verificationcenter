@@ -404,6 +404,7 @@ const AnalysesTab: React.FC = () => {
       title: 'NAME',
       dataIndex: 'name',
       key: 'name',
+      width: 250,
       ellipsis: true,
     },
     {
@@ -423,7 +424,7 @@ const AnalysesTab: React.FC = () => {
       title: 'PROGRESS',
       dataIndex: 'progress',
       key: 'progress',
-      width: 150,
+      width: 130,
       render: (progress, record) => {
         const progressStatus = 
           record.status === 'Completed' ? 'success' : 
@@ -449,7 +450,7 @@ const AnalysesTab: React.FC = () => {
       title: 'DUE DATE',
       dataIndex: 'dueDate',
       key: 'dueDate',
-      width: 120,
+      width: 110,
       sorter: (a, b) => a.dueDate.localeCompare(b.dueDate),
     },
     {
@@ -462,7 +463,7 @@ const AnalysesTab: React.FC = () => {
       title: 'LAST RUN',
       dataIndex: 'lastRun',
       key: 'lastRun',
-      width: 120,
+      width: 110,
       render: (lastRun) => lastRun || 'N/A',
     },
   ];

@@ -170,6 +170,7 @@ const AutomationTab: React.FC = () => {
       title: 'Name',
       dataIndex: 'name',
       key: 'name',
+      width: 250,
       render: (text, record) => (
         <Space>
           <img src={AutomationIcon} alt="Automation" style={{ width: '16px', height: '16px' }} />
@@ -181,7 +182,7 @@ const AutomationTab: React.FC = () => {
       title: 'Status',
       dataIndex: 'status',
       key: 'status',
-      width: 140,
+      width: 120,
       render: (status) => getStatusTag(status),
       filters: [
         { text: 'Running', value: 'Running' },
@@ -196,7 +197,7 @@ const AutomationTab: React.FC = () => {
       title: 'Progress',
       dataIndex: 'progress',
       key: 'progress',
-      width: 150,
+      width: 130,
       render: (progress, record) => {
         const progressStatus = 
           record.status === 'Completed' ? 'success' : 
@@ -210,30 +211,30 @@ const AutomationTab: React.FC = () => {
       title: 'Schedule',
       dataIndex: 'schedule',
       key: 'schedule',
-      width: 110,
+      width: 100,
     },
     {
       title: 'Next Run',
       dataIndex: 'nextRun',
       key: 'nextRun',
-      width: 110,
+      width: 100,
     },
     {
       title: 'Environment',
       dataIndex: 'environmentName',
       key: 'environmentName',
-      width: 170,
+      width: 200,
     },
     {
       title: 'Duration',
       dataIndex: 'duration',
       key: 'duration',
-      width: 130,
+      width: 150,
     },
     {
       title: 'Actions',
       key: 'actions',
-      width: 180,
+      width: 150,
       render: (_, record) => (
         <Space size="small">
           {record.status === 'Running' && (
