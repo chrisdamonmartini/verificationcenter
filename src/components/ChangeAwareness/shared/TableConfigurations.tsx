@@ -62,6 +62,7 @@ import {
   ImpactedItem
 } from '../../../types/changeAwareness';
 import useColors from '../../../hooks/useColors';
+import OpenIcon from '../../../icons/cmdOpen16.svg';
 
 const { Text } = Typography;
 
@@ -318,7 +319,21 @@ export const getStandardColumns = <T extends StandardBaseChange>(
       title: 'Title',
       dataIndex: 'title',
       key: 'title',
-      render: (text) => <Text>{text}</Text>,
+      render: (text) => (
+        <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', width: '100%' }}>
+          <Text>{text}</Text>
+          <a 
+            href="#" 
+            onClick={(e) => {
+              e.stopPropagation();
+              window.open('about:blank', '_blank');
+            }}
+            style={{ marginLeft: '10px' }}
+          >
+            <img src={OpenIcon} alt="Open" style={{ width: '16px', height: '16px' }} />
+          </a>
+        </div>
+      ),
       ellipsis: true,
       width: '40%'
     },
