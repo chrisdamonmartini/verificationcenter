@@ -436,7 +436,7 @@ const RelatedItemsPanel: React.FC<RelatedItemsPanelProps> = ({
       >
         <div style={{ display: 'flex', flexDirection: 'column' }}>
           <div style={{ display: 'flex', justifyContent: 'space-between', marginBottom: '4px' }}>
-            <Text code copyable={{ text: item.id }} style={{ 
+            <Text code style={{ 
               marginRight: '4px',
               color: highlightChanges && isChanged ? colors.category.parameter : categoryColor
             }}>
