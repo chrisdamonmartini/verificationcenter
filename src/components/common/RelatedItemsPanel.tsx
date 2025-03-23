@@ -7,6 +7,8 @@ import OpenIcon from '../../icons/cmdOpen24.svg';
 import ShowIcon from '../../icons/cmdShow24.svg';
 import HideIcon from '../../icons/cmdHide16.svg';
 import ShowImpactOfChangeIcon from '../../icons/cmdShowImpactOfChange24.svg';
+import FullScreenIcon from '../../icons/cmdFullScreen24.svg';
+import ExitFullScreenIcon from '../../icons/cmdExitFullScreen16.svg';
 
 const { Text } = Typography;
 
@@ -615,10 +617,23 @@ const RelatedItemsPanel: React.FC<RelatedItemsPanelProps> = ({
               type="default"
               size="small"
               onClick={() => setIsFullScreen(!isFullScreen)}
-              style={{ color: isFullScreen ? colors.category.parameter : undefined }}
-            >
-              {isFullScreen ? 'Leave Full Screen' : 'Full Screen'}
-            </Button>
+              icon={isFullScreen ? 
+                <img src={ExitFullScreenIcon} alt="Exit Full Screen" style={{ width: '24px', height: '24px' }} /> : 
+                <img src={FullScreenIcon} alt="Full Screen" style={{ width: '24px', height: '24px' }} />
+              }
+              style={{ 
+                display: 'flex',
+                alignItems: 'center',
+                justifyContent: 'center',
+                width: '40px',
+                height: '32px',
+                ...(isFullScreen ? { 
+                  borderColor: colors.category.parameter,
+                  borderWidth: '2px'
+                } : {})
+              }}
+              title={isFullScreen ? "Exit Full Screen" : "Full Screen"}
+            />
           </Space>
         </Row>
       )}
