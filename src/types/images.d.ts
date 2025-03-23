@@ -1,4 +1,4 @@
-// Declaration file for images
+// Declaration file for image imports
 declare module '*.png' {
   const value: any;
   export default value;
