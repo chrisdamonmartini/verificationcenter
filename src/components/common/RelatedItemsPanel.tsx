@@ -3,7 +3,7 @@ import { Card, Row, Col, Badge, Typography, Tooltip, Empty, Switch, Space, Tag, 
 import { ClockCircleOutlined, CheckCircleOutlined, ExclamationCircleOutlined, ExpandOutlined, PlusOutlined, LinkOutlined } from '@ant-design/icons';
 import dayjs from 'dayjs';
 import useColors from '../../hooks/useColors';
-import OpenIcon from '../../icons/cmdOpen16.svg';
+import OpenIcon from '../../icons/cmdOpen24.svg';
 
 const { Text } = Typography;
 
@@ -394,7 +394,7 @@ const RelatedItemsPanel: React.FC<RelatedItemsPanelProps> = ({
                   window.open('about:blank', '_blank');
                 }}
               >
-                <img src={OpenIcon} alt="Open" style={{ width: '16px', height: '16px' }} />
+                <img src={OpenIcon} alt="Open" style={{ width: '24px', height: '24px' }} />
               </a>
             </div>
             <Text style={{ fontSize: '0.9rem', whiteSpace: 'normal' }}>{item.title}</Text>
@@ -531,7 +531,7 @@ const RelatedItemsPanel: React.FC<RelatedItemsPanelProps> = ({
                 window.open('about:blank', '_blank');
               }}
             >
-              <img src={OpenIcon} alt="Open" style={{ width: '16px', height: '16px' }} />
+              <img src={OpenIcon} alt="Open" style={{ width: '24px', height: '24px' }} />
             </a>
           </div>
           <Text style={{ fontSize: '0.9rem', whiteSpace: 'normal' }}>{item.title}</Text>

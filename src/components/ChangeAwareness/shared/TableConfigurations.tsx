@@ -62,7 +62,7 @@ import {
   ImpactedItem
 } from '../../../types/changeAwareness';
 import useColors from '../../../hooks/useColors';
-import OpenIcon from '../../../icons/cmdOpen16.svg';
+import OpenIcon from '../../../icons/cmdOpen24.svg';
 import RequirementsIcon from '../../../icons/Requirements.svg';
 import MissionIcon from '../../../icons/typeTarget48.svg';
 import FunctionsIcon from '../../../icons/Functions.svg';
@@ -373,7 +373,7 @@ export const getStandardColumns = <T extends StandardBaseChange>(
               }}
               style={{ marginLeft: '10px' }}
             >
-              <img src={OpenIcon} alt="Open" style={{ width: '16px', height: '16px' }} />
+              <img src={OpenIcon} alt="Open" style={{ width: '24px', height: '24px' }} />
             </a>
           </div>
         );
