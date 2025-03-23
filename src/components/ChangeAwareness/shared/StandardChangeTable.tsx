@@ -19,7 +19,8 @@ import {
   ReloadOutlined, 
   SearchOutlined,
   BarChartOutlined,
-  ClockCircleOutlined
+  ClockCircleOutlined,
+  HistoryOutlined
 } from '@ant-design/icons';
 import { BaseChange, AnyChange } from '../../../types/changeAwareness';
 import { StandardExpandedRow } from './ExpandedRowComponents';
@@ -32,7 +33,6 @@ import {
 } from './hooks';
 import TimeRangeSelector from './TimeRangeSelector';
 import useColors from '../../../hooks/useColors';
-import './styles.css'; // Import styles for resizable columns
 
 const { Text, Title } = Typography;
 const { RangePicker } = DatePicker;
@@ -135,14 +135,10 @@ export function StandardChangeTable<T extends StandardBaseChange>({
     if ('dataIndex' in col && typeof col.dataIndex === 'string' && searchableFields.includes(col.dataIndex)) {
       return {
         ...col,
-        ...getColumnSearchProps(col.dataIndex),
-        className: `${col.className || ''} resizable-column`.trim() // Add class for CSS resizing
+        ...getColumnSearchProps(col.dataIndex)
       } as ColumnType<T>;
     }
-    return {
-      ...col,
-      className: `${col.className || ''} resizable-column`.trim() // Add class for CSS resizing
-    };
+    return col;
   });
 
   // Expanded row component rendering
@@ -155,102 +151,83 @@ export function StandardChangeTable<T extends StandardBaseChange>({
       showDocuments={expandedRowOptions?.showDocuments}
       showCustomSection={!!expandedRowOptions?.customSectionContent}
       customSectionTitle={expandedRowOptions?.customSectionTitle}
-      customSectionContent={expandedRowOptions?.customSectionContent?.(record)}
+      customSectionContent={expandedRowOptions?.customSectionContent && expandedRowOptions.customSectionContent(record)}
     />
   );
 
   return (
-    <div style={{ width: '100%' }}>
-      {!tableOptions?.hideStatsCard && (
-        <Card className="stats-card" style={{ marginBottom: '16px' }}>
-          <Row gutter={16} align="middle">
-            <Col span={14}>
-              <Title level={4} style={{ margin: 0 }}>{title}</Title>
-              <Statistic
-                value={data.length}
-                suffix={`in last ${weeks} weeks`}
-                valueStyle={{ fontSize: '16px', marginBottom: '4px' }}
+    <Card>
+      <Space direction="vertical" style={{ width: '100%' }}>
+        <Row gutter={16} align="middle" style={{ marginBottom: 16 }}>
+          {!tableOptions?.hideStatsCard && (
+            <Col span={4}>
+              <Card 
+                className="dashboard-stat-card" 
+                style={{ 
+                  background: colors.status.major,
+                  borderRadius: '8px',
+                  boxShadow: '0 2px 8px rgba(0, 0, 0, 0.15)',
+                  padding: '8px 12px',
+                  height: 'auto',
+                  border: 'none'
+                }}
+                bodyStyle={{ padding: '0' }}
+              >
+                <div style={{ color: 'white' }}>
+                  <div style={{ fontSize: '14px', fontWeight: 'normal' }}>
+                    {title}
+                  </div>
+                  <div style={{ fontSize: '14px' }}>
+                    {data.length} in last {weeks} {weeks === 1 ? 'week' : 'weeks'}
+                  </div>
+                </div>
+              </Card>
+            </Col>
+          )}
+          <Col span={tableOptions?.hideStatsCard ? 16 : 12}>
+            <TimeRangeSelector weeks={weeks} setWeeks={setWeeks} />
+          </Col>
+          <Col span={8} style={{ display: 'flex', justifyContent: 'flex-end' }}>
+            <Space>
+              <Input
+                placeholder="Search..."
+                value={searchText}
+                onChange={e => setSearchText(e.target.value)}
+                style={{ width: 200 }}
+                prefix={<SearchOutlined />}
               />
-            </Col>
-            <Col span={10} style={{ textAlign: 'right' }}>
-              <Space>
-                <Input
-                  placeholder="Search..."
-                  prefix={<SearchOutlined />}
-                  onChange={e => setSearchText(e.target.value)}
-                  value={searchText}
-                  style={{ width: 200 }}
-                />
-                <Button 
-                  onClick={refreshData}
-                  icon={<ReloadOutlined />}
-                >
-                  Refresh
-                </Button>
-              </Space>
-            </Col>
-          </Row>
-        </Card>
-      )}
-      
-      <TimeRangeSelector 
-        weeks={weeks}
-        setWeeks={setWeeks}
-      />
-      
-      <div className="table-container" style={{ marginTop: '16px' }}>
+              <Button 
+                onClick={refreshData} 
+                loading={loading}
+                icon={<ReloadOutlined />}
+              >
+                Refresh
+              </Button>
+            </Space>
+          </Col>
+        </Row>
+
         <Table
           rowKey="id"
-          columns={columnsWithSearch}
           dataSource={filteredData(data)}
+          columns={columnsWithSearch}
           pagination={paginationProps}
-          loading={loading}
           onChange={handleTableChange}
+          loading={loading}
           expandable={{
-            expandedRowRender,
-            expandRowByClick: true
+            expandedRowRender
           }}
-          className="change-table resizable-table"
           size="middle"
+          locale={{
+            emptyText: (
+              <div style={{ padding: "20px 0" }}>
+                <HistoryOutlined style={{ fontSize: 36, color: "#bfbfbf", marginBottom: 10 }} />
+                <p>No changes for that period.</p>
+              </div>
+            )
+          }}
         />
-      </div>
-      
-      <Drawer
-        title={`Details: ${selectedChange?.title || ''}`}
-        placement="right"
-        onClose={handleCloseDetails}
-        open={isDetailsVisible}
-        width={600}
-      >
-        {selectedChange && (
-          <div>
-            <Typography.Title level={4}>{selectedChange.title}</Typography.Title>
-            <Typography.Paragraph>{selectedChange.description}</Typography.Paragraph>
-            
-            <Typography.Title level={5}>Change Information</Typography.Title>
-            <Row gutter={[16, 16]}>
-              <Col span={12}>
-                <Text strong>ID:</Text> {selectedChange.id}
-              </Col>
-              <Col span={12}>
-                <Text strong>Date:</Text> {new Date(selectedChange.date).toLocaleDateString()}
-              </Col>
-              <Col span={12}>
-                <Text strong>Author:</Text> {selectedChange.author}
-              </Col>
-              <Col span={12}>
-                <Text strong>Status:</Text> {selectedChange.status}
-              </Col>
-              <Col span={12}>
-                <Text strong>Category:</Text> {selectedChange.category}
-              </Col>
-              <Col span={12}>
-                <Text strong>Change Type:</Text> {selectedChange.changeType}
-              </Col>
-            </Row>
-          </div>
-        )}
-      </Drawer>
-    </div>
+      </Space>
+    </Card>
   );
 } 
