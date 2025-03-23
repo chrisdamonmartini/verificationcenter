@@ -641,7 +641,7 @@ const ChangeAwareness: React.FC = () => {
           }}
         >
           <TabPane
-            tab={<span><BranchesOutlined /> Overview</span>}
+            tab={<span>Overview</span>}
             key="overview"
           >
             <ImprovedOverviewChanges />
