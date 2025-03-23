@@ -2,7 +2,7 @@ import React from 'react';
 import { Tag, Button, Space } from 'antd';
 import { CheckCircleOutlined, ClockCircleOutlined, ExclamationCircleOutlined } from '@ant-design/icons';
 import type { ColumnsType } from 'antd/es/table';
-import ModelIcon from '../../../icons/typeCAEModel48.svg';
+import ModelIcon from '../../../icons/CAEModel.svg';
 import { StandardTable } from '../../common/StandardTable';
 
 // Types for simulation models
@@ -140,7 +140,7 @@ const ModelsTab: React.FC = () => {
       key: 'name',
       render: (text, record) => (
         <Space>
-          <img src={ModelIcon} alt="Model" style={{ width: '16px', height: '16px' }} />
+          <img src={ModelIcon} alt="Model" style={{ width: '24px', height: '24px' }} />
           <span>{text}</span>
         </Space>
       ),
