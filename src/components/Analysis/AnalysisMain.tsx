@@ -6,6 +6,9 @@ import AnalysesTab from './tabs/AnalysesTab';
 import AnalysisIcon from '../../icons/AnalysisItem.svg';
 import ModelIcon from '../../icons/AnalysisDataset.svg';
 import AutomationIcon from '../../icons/AnalysisRequest.svg';
+import HPCStatus from '../Simulation/HPCStatus';
+import ResultsAnalysis from '../Simulation/ResultsAnalysis';
+import SimulationRuns from '../Simulation/SimulationRuns';
 
 const { TabPane } = Tabs;
 
@@ -55,6 +58,42 @@ const AnalysisMain: React.FC = () => {
             key="automation"
           >
             <AutomationTab />
+          </TabPane>
+
+          <TabPane 
+            tab={
+              <span>
+                <img src={AutomationIcon} alt="Results Analysis" style={{ width: '24px', height: '24px', marginRight: '8px' }} />
+                Results Analysis
+              </span>
+            } 
+            key="results"
+          >
+            <ResultsAnalysis />
+          </TabPane>
+
+          <TabPane 
+            tab={
+              <span>
+                <img src={AutomationIcon} alt="Simulation Runs" style={{ width: '24px', height: '24px', marginRight: '8px' }} />
+                Simulation Runs
+              </span>
+            } 
+            key="runs"
+          >
+            <SimulationRuns />
+          </TabPane>
+
+          <TabPane 
+            tab={
+              <span>
+                <img src={AutomationIcon} alt="HPC Status" style={{ width: '24px', height: '24px', marginRight: '8px' }} />
+                HPC Status
+              </span>
+            } 
+            key="hpc"
+          >
+            <HPCStatus />
           </TabPane>
         </Tabs>
       </Card>
