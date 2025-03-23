@@ -69,6 +69,7 @@ import FunctionsIcon from '../../icons/Functions.svg';
 import LogicalIcon from '../../icons/Logical.svg';
 import ParametersIcon from '../../icons/Parameters.svg';
 import CADIcon from '../../icons/CADTopLevel.svg';
+import EBOMIcon from '../../icons/typeClass48.svg';
 
 const { Title, Text, Paragraph } = Typography;
 const { TabPane } = Tabs;
@@ -780,7 +781,20 @@ const ChangeAwareness: React.FC = () => {
           </TabPane>
 
           <TabPane
-            tab={<span><ToolOutlined /> Engineering BOM</span>}
+            tab={<span style={{ display: 'flex', alignItems: 'center' }}>
+              <img 
+                src={EBOMIcon} 
+                alt="Engineering BOM" 
+                style={{ 
+                  width: '16px', 
+                  height: '16px', 
+                  marginRight: '8px',
+                  verticalAlign: 'middle', 
+                  display: 'inline-block'
+                }} 
+              />
+              <span>Engineering BOM</span>
+            </span>}
             key="bom"
           >
             <ImprovedEngineeringBOMChanges />
