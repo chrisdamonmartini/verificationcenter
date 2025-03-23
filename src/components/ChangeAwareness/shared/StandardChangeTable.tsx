@@ -33,6 +33,8 @@ import {
 } from './hooks';
 import TimeRangeSelector from './TimeRangeSelector';
 import useColors from '../../../hooks/useColors';
+import ChildIcon from '../../../icons/cmdChild24.svg';
+import ChildExpandedIcon from '../../../icons/cmdChildExpanded24.svg';
 
 const { Text, Title } = Typography;
 const { RangePicker } = DatePicker;
@@ -215,7 +217,18 @@ export function StandardChangeTable<T extends StandardBaseChange>({
           onChange={handleTableChange}
           loading={loading}
           expandable={{
-            expandedRowRender
+            expandedRowRender,
+            expandIcon: ({ expanded, onExpand, record }) => (
+              expanded ? (
+                <div onClick={e => onExpand(record, e)} style={{ display: 'inline-flex', cursor: 'pointer', padding: '0 8px' }}>
+                  <img src={ChildExpandedIcon} alt="Collapse" style={{ width: '24px', height: '24px' }} />
+                </div>
+              ) : (
+                <div onClick={e => onExpand(record, e)} style={{ display: 'inline-flex', cursor: 'pointer', padding: '0 8px' }}>
+                  <img src={ChildIcon} alt="Expand" style={{ width: '24px', height: '24px' }} />
+                </div>
+              )
+            )
           }}
           size="middle"
           locale={{
