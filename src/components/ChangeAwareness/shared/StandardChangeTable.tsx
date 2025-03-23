@@ -228,11 +228,11 @@ export function StandardChangeTable<T extends StandardBaseChange>({
                     alignItems: 'center', 
                     justifyContent: 'center', 
                     padding: '8px',
-                    width: '12px', 
-                    height: '12px'
+                    width: '18px', 
+                    height: '18px'
                   }}
                 >
-                  <img src={ChildExpandedIcon} alt="Collapse" style={{ width: '12px', height: '12px' }} />
+                  <img src={ChildExpandedIcon} alt="Collapse" style={{ width: '18px', height: '18px' }} />
                 </div>
               ) : (
                 <div 
@@ -243,11 +243,11 @@ export function StandardChangeTable<T extends StandardBaseChange>({
                     alignItems: 'center', 
                     justifyContent: 'center', 
                     padding: '8px',
-                    width: '12px', 
-                    height: '12px'
+                    width: '18px', 
+                    height: '18px'
                   }}
                 >
-                  <img src={ChildIcon} alt="Expand" style={{ width: '12px', height: '12px' }} />
+                  <img src={ChildIcon} alt="Expand" style={{ width: '18px', height: '18px' }} />
                 </div>
               )
             )
