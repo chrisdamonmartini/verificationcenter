@@ -55,6 +55,9 @@ import { Aircraft } from './types';
 import DigitalThread from './components/DigitalThread/DigitalThread';
 // Import the SidebarData to get access to menu items
 import { SidebarData } from './components/Sidebar/Sidebar';
+// Import Analysis components
+import AnalysisDetail from './components/Analysis/AnalysisDetail';
+import AnalysisMain from './components/Analysis/AnalysisMain';
 
 // Define a type for requirements
 interface Requirement {
@@ -232,6 +235,9 @@ const SchedulePerformance = () => <SchedulePerformanceComponent />;
 // Digital Thread (with three tabs)
 const DigitalThreadComponent = () => <DigitalThread />;
 
+// Replace the Analyses component to use the new AnalysisMain component
+const Analyses = () => <AnalysisMain />;
+
 // Main App function
 function App() {
   const [activeView, setActiveView] = useState<string>('dashboard');
@@ -392,6 +398,10 @@ function App() {
       case 'change-awareness/cad':
       case 'change-awareness/bom':
         return <ChangeAwareness />;
+        
+      // Analysis
+      case 'analysis':
+        return <Analyses />;
         
       default:
         return (
