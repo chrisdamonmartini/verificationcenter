@@ -60,8 +60,6 @@ import AnalysisDetail from './components/Analysis/AnalysisDetail';
 import AnalysisMain from './components/Analysis/AnalysisMain';
 // Import Simulation component
 import SimulationMain from './components/Simulation/SimulationMain';
-// Import Model Management component
-import ModelManagementView from './components/ModelManagement/ModelManagementView';
 
 // Define a type for requirements
 interface Requirement {
@@ -406,10 +404,6 @@ function App() {
       // Analysis
       case 'analysis':
         return <Analyses />;
-        
-      // Model Management
-      case 'model-management':
-        return <ModelManagementView />;
         
       default:
         return (

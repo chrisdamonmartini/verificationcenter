@@ -33,7 +33,7 @@ export const SidebarData = [
     icon: <BellOutlined />
   },
   {
-    title: 'Requirements',
+    title: 'Requirement Mgmt.',
     path: '/requirements',
     icon: <FileProtectOutlined />
   },
