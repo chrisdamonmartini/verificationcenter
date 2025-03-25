@@ -1,7 +1,7 @@
 {
   "files": {
     "main.css": "/static/css/main.645b5c4e.css",
-    "main.js": "/static/js/main.163ea036.js",
+    "main.js": "/static/js/main.22c39cef.js",
     "static/media/verificationcenterico.jpeg": "/static/media/verificationcenterico.9c6fe234de334dbcbb9a.jpeg",
     "static/media/typeSimulationRequestRevision48.svg": "/static/media/typeSimulationRequestRevision48.0667e47642c949db8c8edb7c5c9b2937.svg",
     "static/media/AnalysisItem.svg": "/static/media/AnalysisItem.2b761457e5a78e810c208fe42ed40ec0.svg",
@@ -11,7 +11,6 @@
     "static/media/Functions.svg": "/static/media/Functions.26d541ec96de56791614f6bb874de775.svg",
     "static/media/typeBranchRevision48.svg": "/static/media/typeBranchRevision48.fd9c000494687879f1eff60bc43dfb97.svg",
     "static/media/TabIcon.svg": "/static/media/TabIcon.e4b8f7e011189f704f0d3e3653dd3771.svg",
-    "static/media/AnalysisRequest.svg": "/static/media/AnalysisRequest.ffeda4c6c6965269438160a86b5c0512.svg",
     "static/media/typePartComponent48.svg": "/static/media/typePartComponent48.6cd662c554d5f8e9cfc23ad8c465599b.svg",
     "static/media/cmdHide16.svg": "/static/media/cmdHide16.7377ea7bf4891f02cfc11d8b6ae6b30b.svg",
     "static/media/typeClass48.svg": "/static/media/typeClass48.5c11ac5e9223f7fc7aaf626359635c4b.svg",
@@ -30,10 +29,10 @@
     "static/media/cmdChild24.svg": "/static/media/cmdChild24.bc7db74409d63b6022e0a011d849a657.svg",
     "static/media/cmdChildExpanded24.svg": "/static/media/cmdChildExpanded24.966e6d6ffa871edf16d2ce322ef12c6a.svg",
     "main.645b5c4e.css.map": "/static/css/main.645b5c4e.css.map",
-    "main.163ea036.js.map": "/static/js/main.163ea036.js.map"
+    "main.22c39cef.js.map": "/static/js/main.22c39cef.js.map"
   },
   "entrypoints": [
     "static/css/main.645b5c4e.css",
-    "static/js/main.163ea036.js"
+    "static/js/main.22c39cef.js"
   ]
 }
