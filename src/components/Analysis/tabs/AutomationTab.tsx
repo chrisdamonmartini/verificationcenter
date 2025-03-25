@@ -1,9 +1,9 @@
-import React from 'react';
-import { Tag, Space, Button, Tooltip, Progress } from 'antd';
-import { PlayCircleOutlined, PauseCircleOutlined, ClockCircleOutlined, CheckCircleOutlined, CloseCircleOutlined, InfoCircleOutlined } from '@ant-design/icons';
+import React, { useState, useEffect } from 'react';
+import { Tag, Space, Button, Tooltip, Progress, Row, Col, Card, Slider, Switch, Input, Table } from 'antd';
+import { PlayCircleOutlined, PauseCircleOutlined, ClockCircleOutlined, CheckCircleOutlined, CloseCircleOutlined, InfoCircleOutlined, SearchOutlined, ReloadOutlined } from '@ant-design/icons';
 import type { ColumnsType } from 'antd/es/table';
-import AutomationIcon from '../../../icons/AnalysisRequest.svg';
-import { StandardTable } from '../../common/StandardTable';
+import AutomationIcon from '../../../icons/typeAppDeploymentCenterStart48.svg';
+import moment from 'moment';
 
 // Interface for automation workflows
 interface AutomationWorkflow {
@@ -25,6 +25,11 @@ interface AutomationWorkflow {
   results?: string;
 }
 
+// Function to get relative date from March 24, 2025
+const getRelativeDate = (daysAgo: number): string => {
+  return moment('2025-03-24').subtract(daysAgo, 'days').format('YYYY-MM-DD');
+};
+
 // Sample automation data
 const sampleAutomation: AutomationWorkflow[] = [
   {
@@ -35,7 +40,7 @@ const sampleAutomation: AutomationWorkflow[] = [
     progress: 100,
     schedule: 'Daily',
     nextRun: '2025-01-16',
-    lastRun: '2025-01-15',
+    lastRun: getRelativeDate(3),
     owner: 'Process Automation',
     environmentId: 'ENV-101',
     environmentName: 'High Performance Cluster',
@@ -53,7 +58,7 @@ const sampleAutomation: AutomationWorkflow[] = [
     progress: 65,
     schedule: 'Weekly',
     nextRun: '2025-01-22',
-    lastRun: '2025-01-15',
+    lastRun: getRelativeDate(7),
     owner: 'Aero Team',
     environmentId: 'ENV-102',
     environmentName: 'Cloud Compute Environment',
@@ -71,7 +76,7 @@ const sampleAutomation: AutomationWorkflow[] = [
     progress: 0,
     schedule: 'On Demand',
     nextRun: '2025-01-17',
-    lastRun: '2025-01-10',
+    lastRun: getRelativeDate(14),
     owner: 'Thermal Team',
     environmentId: 'ENV-101',
     environmentName: 'High Performance Cluster',
@@ -89,7 +94,7 @@ const sampleAutomation: AutomationWorkflow[] = [
     progress: 38,
     schedule: 'Weekly',
     nextRun: '2025-01-20',
-    lastRun: '2025-01-13',
+    lastRun: getRelativeDate(10),
     owner: 'Materials Team',
     environmentId: 'ENV-103',
     environmentName: 'Local Compute Environment',
@@ -107,7 +112,7 @@ const sampleAutomation: AutomationWorkflow[] = [
     progress: 45,
     schedule: 'Daily',
     nextRun: 'Paused',
-    lastRun: '2025-01-14',
+    lastRun: getRelativeDate(9),
     owner: 'Controls Team',
     environmentId: 'ENV-102',
     environmentName: 'Cloud Compute Environment',
@@ -119,42 +124,137 @@ const sampleAutomation: AutomationWorkflow[] = [
   }
 ];
 
+// Add the CSS styles for table and dashboard cards
+const tableStyles = `
+.automation-table-with-borders {
+  border-top: 1px solid #f0f0f0;
+}
+
+.automation-table-with-borders .ant-table-pagination {
+  border-left: none;
+  border-right: none;
+  margin: 16px 0;
+}
+
+/* Remove hover effects from dashboard cards */
+.dashboard-card:hover {
+  transform: none !important;
+  box-shadow: none !important;
+  cursor: default !important;
+}
+`;
+
 const AutomationTab: React.FC = () => {
-  // Status tag renderer
+  // State management
+  const [timeFrame, setTimeFrame] = useState<number>(8);
+  const [dateFilterEnabled, setDateFilterEnabled] = useState<boolean>(true);
+  const [searchText, setSearchText] = useState<string>('');
+  const [filteredWorkflows, setFilteredWorkflows] = useState<AutomationWorkflow[]>(sampleAutomation);
+
+  // Filter workflows based on time frame and search text
+  const filterWorkflows = (weeks: number, text: string) => {
+    console.log('Filtering workflows with timeframe:', weeks, 'weeks and search:', text);
+    let filtered = [...sampleAutomation];
+    
+    // Apply date filter if weeks > 0 (date filtering enabled)
+    if (weeks > 0) {
+      const cutoffDate = moment().subtract(weeks, 'weeks');
+      filtered = filtered.filter(workflow => {
+        const workflowDate = moment(workflow.lastRun);
+        return workflowDate.isAfter(cutoffDate);
+      });
+      console.log('After date filtering:', filtered.length, 'workflows remain');
+    }
+    
+    // Apply text search if there is search text
+    if (text && text.trim() !== '') {
+      const searchLower = text.toLowerCase();
+      filtered = filtered.filter(workflow => 
+        workflow.id.toLowerCase().includes(searchLower) ||
+        workflow.name.toLowerCase().includes(searchLower) ||
+        workflow.description.toLowerCase().includes(searchLower) ||
+        workflow.owner.toLowerCase().includes(searchLower) ||
+        workflow.environmentName.toLowerCase().includes(searchLower)
+      );
+      console.log('After text filtering:', filtered.length, 'workflows remain');
+    }
+    
+    setFilteredWorkflows(filtered);
+  };
+
+  // Update filtered data when dependencies change
+  useEffect(() => {
+    filterWorkflows(timeFrame, searchText);
+  }, [timeFrame, dateFilterEnabled, searchText]);
+
+  // Status tag renderer - simplified to just text without tags
   const getStatusTag = (status: string) => {
+    return <span style={{ fontSize: '14px' }}>{status}</span>;
+  };
+  
+  // Progress renderer
+  const getProgressBar = (progress: number, status: string) => {
+    let strokeColor;
+    const progressStatus = 
+      status === 'Completed' ? 'success' : 
+      status === 'Running' ? 'active' : 
+      status === 'Failed' ? 'exception' : 'normal';
+    
+    // Match colors with dashboard cards
     switch (status) {
-      case 'Running':
-        return (
-          <Tag icon={<PlayCircleOutlined />} color="processing" style={{ margin: 0, padding: '0 6px', height: '18px', lineHeight: '18px' }}>
-            {status}
-          </Tag>
-        );
       case 'Completed':
-        return (
-          <Tag icon={<CheckCircleOutlined />} color="success" style={{ margin: 0, padding: '0 6px', height: '18px', lineHeight: '18px' }}>
-            {status}
-          </Tag>
-        );
+        strokeColor = '#52c41a'; // Green for completed
+        break;
+      case 'Running':
+        strokeColor = '#1890ff'; // Blue for running
+        break;
       case 'Failed':
-        return (
-          <Tag icon={<CloseCircleOutlined />} color="error" style={{ margin: 0, padding: '0 6px', height: '18px', lineHeight: '18px' }}>
-            {status}
-          </Tag>
-        );
-      case 'Scheduled':
-        return (
-          <Tag icon={<ClockCircleOutlined />} color="default" style={{ margin: 0, padding: '0 6px', height: '18px', lineHeight: '18px' }}>
-            {status}
-          </Tag>
-        );
+        strokeColor = '#f5222d'; // Red for failed
+        break;
       case 'Paused':
-        return (
-          <Tag icon={<PauseCircleOutlined />} color="warning" style={{ margin: 0, padding: '0 6px', height: '18px', lineHeight: '18px' }}>
-            {status}
-          </Tag>
-        );
+        strokeColor = '#faad14'; // Orange/amber for paused
+        break;
+      case 'Scheduled':
+        strokeColor = '#8c8c8c'; // Grey for scheduled
+        break;
       default:
-        return <Tag style={{ margin: 0, padding: '0 6px', height: '18px', lineHeight: '18px' }}>{status}</Tag>;
+        strokeColor = undefined;
+    }
+    
+    return <Progress 
+      percent={progress} 
+      status={progressStatus} 
+      size="small" 
+      style={{ margin: 0 }} 
+      strokeColor={strokeColor}
+    />;
+  };
+
+  // Time period slider marks
+  const sliderMarks = {
+    1: '1w',
+    12: '12w',
+    26: '26w',
+    52: '52w'
+  };
+
+  // Handle time frame change
+  const handleTimeFrameChange = (value: number) => {
+    setTimeFrame(value);
+    // Only update filtered data if date filtering is enabled
+    if (dateFilterEnabled) {
+      filterWorkflows(value, searchText);
+    }
+  };
+
+  // Toggle date filtering
+  const handleToggleDateFilter = (checked: boolean) => {
+    setDateFilterEnabled(checked);
+    if (checked) {
+      filterWorkflows(timeFrame, searchText);
+    } else {
+      // When disabling date filter, show all workflows with text filter only
+      filterWorkflows(0, searchText); // Pass 0 to indicate no date filtering
     }
   };
   
@@ -173,7 +273,7 @@ const AutomationTab: React.FC = () => {
       width: 250,
       render: (text, record) => (
         <Space>
-          <img src={AutomationIcon} alt="Automation" style={{ width: '16px', height: '16px' }} />
+          <img src={AutomationIcon} alt="Automation" style={{ width: '24px', height: '24px' }} />
           <span>{text}</span>
         </Space>
       ),
@@ -198,14 +298,7 @@ const AutomationTab: React.FC = () => {
       dataIndex: 'progress',
       key: 'progress',
       width: 130,
-      render: (progress, record) => {
-        const progressStatus = 
-          record.status === 'Completed' ? 'success' : 
-          record.status === 'Running' ? 'active' : 
-          record.status === 'Failed' ? 'exception' : 'normal';
-        
-        return <Progress percent={progress} status={progressStatus} size="small" style={{ margin: 0 }} />;
-      },
+      render: (progress, record) => getProgressBar(progress, record.status),
     },
     {
       title: 'Schedule',
@@ -282,37 +375,128 @@ const AutomationTab: React.FC = () => {
     </div>
   );
   
-  // Calculate stats
-  const totalWorkflows = sampleAutomation.length;
-  const completedWorkflows = sampleAutomation.filter(item => item.status === 'Completed').length;
-  const runningWorkflows = sampleAutomation.filter(item => item.status === 'Running').length;
-  const pendingWorkflows = sampleAutomation.filter(item => item.status === 'Scheduled').length;
-  
-  // Formatted stats for the StandardTable
-  const tableStats = [
-    { label: 'Total', value: totalWorkflows },
-    { label: 'Completed', value: completedWorkflows, color: '#52c41a' },
-    { label: 'Running', value: runningWorkflows, color: '#1890ff' },
-    { label: 'Scheduled', value: pendingWorkflows, color: '#faad14' }
-  ];
-  
-  // Extra controls
-  const extraControls = (
-    <Button type="primary">New Workflow</Button>
-  );
-  
+  // Calculate stats for dashboard cards
+  const totalWorkflows = filteredWorkflows.length;
+  const completedWorkflows = filteredWorkflows.filter(workflow => workflow.status === 'Completed').length;
+  const runningWorkflows = filteredWorkflows.filter(workflow => workflow.status === 'Running').length;
+  const scheduledWorkflows = filteredWorkflows.filter(workflow => workflow.status === 'Scheduled').length;
+  const failedWorkflows = filteredWorkflows.filter(workflow => workflow.status === 'Failed').length;
+  const pausedWorkflows = filteredWorkflows.filter(workflow => workflow.status === 'Paused').length;
+
   return (
-    <StandardTable
-      title="Automation Workflows"
-      data={sampleAutomation}
-      columns={columns}
-      loading={false}
-      expandedRowRender={expandedRowRender}
-      searchableFields={['id', 'name', 'description', 'environmentName']}
-      stats={tableStats}
-      extraControls={extraControls}
-      refreshData={() => console.log('Refreshing automation workflows...')}
-    />
+    <div className="full-width-table-container">
+      <style>{tableStyles}</style>
+      <div style={{ display: 'flex', alignItems: 'flex-start', marginTop: '16px', marginBottom: '16px' }}>
+        <div style={{ display: 'flex', gap: '12px', flexWrap: 'wrap', maxWidth: '60%' }}>
+          <div className="dashboard-card card-all-simulations" style={{ padding: '12px 16px', backgroundColor: '#14364F' }}>
+            <div style={{ fontSize: '14px', fontWeight: 'normal', marginBottom: '4px', color: 'white' }}>All Workflows</div>
+            <div style={{ fontSize: '14px', fontWeight: 'normal', color: 'white' }}>{totalWorkflows} in last {timeFrame} weeks</div>
+          </div>
+          
+          <div className="dashboard-card card-function" style={{ padding: '12px 16px' }}>
+            <div style={{ fontSize: '14px', fontWeight: 'normal', marginBottom: '4px' }}>Completed</div>
+            <div style={{ fontSize: '14px', fontWeight: 'normal', color: '#52c41a' }}>{completedWorkflows}</div>
+          </div>
+          
+          <div className="dashboard-card card-logical" style={{ padding: '12px 16px' }}>
+            <div style={{ fontSize: '14px', fontWeight: 'normal', marginBottom: '4px' }}>Running</div>
+            <div style={{ fontSize: '14px', fontWeight: 'normal', color: '#1890ff' }}>{runningWorkflows}</div>
+          </div>
+          
+          <div className="dashboard-card card-parameter" style={{ padding: '12px 16px' }}>
+            <div style={{ fontSize: '14px', fontWeight: 'normal', marginBottom: '4px' }}>Scheduled</div>
+            <div style={{ fontSize: '14px', fontWeight: 'normal', color: '#8c8c8c' }}>{scheduledWorkflows}</div>
+          </div>
+          
+          <div className="dashboard-card card-parameter" style={{ padding: '12px 16px' }}>
+            <div style={{ fontSize: '14px', fontWeight: 'normal', marginBottom: '4px' }}>Failed</div>
+            <div style={{ fontSize: '14px', fontWeight: 'normal', color: '#f5222d' }}>{failedWorkflows}</div>
+          </div>
+          
+          <div className="dashboard-card card-parameter" style={{ padding: '12px 16px' }}>
+            <div style={{ fontSize: '14px', fontWeight: 'normal', marginBottom: '4px' }}>Paused</div>
+            <div style={{ fontSize: '14px', fontWeight: 'normal', color: '#faad14' }}>{pausedWorkflows}</div>
+          </div>
+        </div>
+
+        <div style={{ flex: 1, marginLeft: '24px' }}>
+          <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '4px' }}>
+            <div style={{ 
+              display: 'flex',
+              alignItems: 'center',
+              opacity: dateFilterEnabled ? 1 : 0.5,
+              transition: 'opacity 0.3s'
+            }}>
+              Time Period: {timeFrame} weeks
+              <div style={{ display: 'flex', alignItems: 'center', marginLeft: '16px' }}>
+                <span style={{ marginRight: '8px', fontSize: '13px', color: '#666' }}>
+                  Date filtering {dateFilterEnabled ? 'enabled' : 'disabled'}
+                </span>
+                <Switch 
+                  checkedChildren="On" 
+                  unCheckedChildren="Off" 
+                  defaultChecked={dateFilterEnabled}
+                  onChange={handleToggleDateFilter}
+                  size="small"
+                  style={{ backgroundColor: dateFilterEnabled ? '#2C668A' : undefined }}
+                />
+              </div>
+            </div>
+            
+            <div style={{ display: 'flex', alignItems: 'center' }}>
+              <Input 
+                prefix={<SearchOutlined />} 
+                placeholder="Search"
+                style={{ width: '200px', marginRight: '8px' }}
+                onChange={(e) => {
+                  setSearchText(e.target.value);
+                  filterWorkflows(timeFrame, e.target.value);
+                }}
+                value={searchText}
+              />
+              <Button 
+                icon={<ReloadOutlined />} 
+                onClick={() => filterWorkflows(timeFrame, searchText)}
+              >
+                Refresh
+              </Button>
+            </div>
+          </div>
+          
+          <Slider 
+            marks={sliderMarks}
+            min={1}
+            max={52}
+            value={timeFrame}
+            onChange={handleTimeFrameChange}
+            style={{ 
+              width: '100%',
+              opacity: dateFilterEnabled ? 1 : 0.5,
+              transition: 'opacity 0.3s',
+              marginRight: '10px'
+            }}
+            disabled={!dateFilterEnabled}
+            trackStyle={{ backgroundColor: '#2C668A' }}
+            handleStyle={{ borderColor: '#2C668A', backgroundColor: '#2C668A' }}
+          />
+        </div>
+      </div>
+
+      <Table
+        columns={columns}
+        dataSource={filteredWorkflows}
+        pagination={{ pageSize: 25, position: ['bottomRight'] }}
+        size="middle"
+        rowKey="id"
+        className="automation-table-with-borders full-width-table"
+        bordered={false}
+        style={{ marginTop: 0 }}
+        expandable={{
+          expandedRowRender: expandedRowRender,
+          expandRowByClick: false
+        }}
+      />
+    </div>
   );
 };
 

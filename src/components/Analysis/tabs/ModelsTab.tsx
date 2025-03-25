@@ -1,9 +1,10 @@
-import React from 'react';
-import { Tag, Button, Space } from 'antd';
-import { CheckCircleOutlined, ClockCircleOutlined, ExclamationCircleOutlined } from '@ant-design/icons';
+import React, { useState, useEffect } from 'react';
+import { Tag, Space, Button, Row, Col, Card, Slider, Switch, Input, Table } from 'antd';
+import { CheckCircleOutlined, ClockCircleOutlined, ExclamationCircleOutlined, SearchOutlined, ReloadOutlined, MinusOutlined, PlusOutlined } from '@ant-design/icons';
 import type { ColumnsType } from 'antd/es/table';
 import ModelIcon from '../../../icons/typeCAEModel48.svg';
 import { StandardTable } from '../../common/StandardTable';
+import moment from 'moment';
 
 // Types for simulation models
 interface SimulationModel {
@@ -21,6 +22,19 @@ interface SimulationModel {
   applicableRequirements: string[];
 }
 
+// Function to get relative date from March 24, 2025
+const getRelativeDate = (daysAgo: number): string => {
+  return moment('2025-03-24').subtract(daysAgo, 'days').format('YYYY-MM-DD');
+};
+
+// Function to check if a date is within past weeks
+const isWithinPastWeeks = (date: string, weeks: number): boolean => {
+  const referenceDate = moment('2025-03-24');
+  const modelDate = moment(date);
+  const weeksDiff = referenceDate.diff(modelDate, 'weeks');
+  return weeksDiff <= weeks;
+};
+
 // Sample data for demonstration
 const sampleModels: SimulationModel[] = [
   {
@@ -32,7 +46,7 @@ const sampleModels: SimulationModel[] = [
     status: 'Active',
     fidelity: 'High',
     owner: 'Analysis Team',
-    lastModified: '2025-01-05',
+    lastModified: getRelativeDate(5),
     validationStatus: 'Fully Validated',
     tags: ['Wing', 'Structural', 'FEM'],
     applicableRequirements: ['SR-201', 'SR-202']
@@ -46,7 +60,7 @@ const sampleModels: SimulationModel[] = [
     status: 'Active',
     fidelity: 'Medium',
     owner: 'Aerodynamics',
-    lastModified: '2025-01-02',
+    lastModified: getRelativeDate(2),
     validationStatus: 'Partially Validated',
     tags: ['Aero', 'CFD', 'Flight'],
     applicableRequirements: ['SR-103', 'SR-205']
@@ -60,7 +74,7 @@ const sampleModels: SimulationModel[] = [
     status: 'In Development',
     fidelity: 'Medium',
     owner: 'Thermal Team',
-    lastModified: '2025-01-10',
+    lastModified: getRelativeDate(10),
     validationStatus: 'Not Validated',
     tags: ['Thermal', 'Engine', 'Heat Transfer'],
     applicableRequirements: ['SR-301', 'SR-302']
@@ -74,7 +88,7 @@ const sampleModels: SimulationModel[] = [
     status: 'Active',
     fidelity: 'High',
     owner: 'Materials Team',
-    lastModified: '2025-01-08',
+    lastModified: getRelativeDate(8),
     validationStatus: 'Fully Validated',
     tags: ['Fatigue', 'Durability', 'Lifecycle'],
     applicableRequirements: ['SR-401', 'SR-403']
@@ -88,44 +102,114 @@ const sampleModels: SimulationModel[] = [
     status: 'Active',
     fidelity: 'Medium',
     owner: 'Controls Team',
-    lastModified: '2025-01-12',
+    lastModified: getRelativeDate(12),
     validationStatus: 'Partially Validated',
     tags: ['Controls', 'Dynamics', 'Feedback'],
     applicableRequirements: ['SR-501', 'SR-502']
   }
 ];
 
+// Add the CSS styles at the top of the file after the imports
+const tableStyles = `
+.models-table-with-borders {
+  border-top: 1px solid #f0f0f0;
+}
+
+.models-table-with-borders .ant-table-pagination {
+  border-left: none;
+  border-right: none;
+  margin: 16px 0;
+}
+
+/* Remove hover effects from dashboard cards */
+.dashboard-card:hover {
+  transform: none !important;
+  box-shadow: none !important;
+  cursor: default !important;
+}
+`;
+
 const ModelsTab: React.FC = () => {
+  // State management
+  const [timeFrame, setTimeFrame] = useState<number>(8);
+  const [dateFilterEnabled, setDateFilterEnabled] = useState<boolean>(true);
+  const [searchText, setSearchText] = useState<string>('');
+  const [filteredModels, setFilteredModels] = useState<SimulationModel[]>(sampleModels);
+
+  // Filter models based on time frame and search text
+  const filterModels = (weeks: number, text: string) => {
+    console.log('Filtering models with timeframe:', weeks, 'weeks and search:', text);
+    let filtered = [...sampleModels];
+    
+    // Apply date filter if weeks > 0 (date filtering enabled)
+    if (weeks > 0) {
+      const cutoffDate = moment().subtract(weeks, 'weeks');
+      filtered = filtered.filter(model => {
+        const modelDate = moment(model.lastModified);
+        return modelDate.isAfter(cutoffDate);
+      });
+      console.log('After date filtering:', filtered.length, 'models remain');
+    }
+    
+    // Apply text search if there is search text
+    if (text && text.trim() !== '') {
+      const searchLower = text.toLowerCase();
+      filtered = filtered.filter(model => 
+        model.id.toLowerCase().includes(searchLower) ||
+        model.name.toLowerCase().includes(searchLower) ||
+        model.description.toLowerCase().includes(searchLower) ||
+        model.type.toLowerCase().includes(searchLower) ||
+        model.owner.toLowerCase().includes(searchLower)
+      );
+      console.log('After text filtering:', filtered.length, 'models remain');
+    }
+    
+    setFilteredModels(filtered);
+  };
+
+  // Update filtered data when dependencies change
+  useEffect(() => {
+    filterModels(timeFrame, searchText);
+  }, [timeFrame, dateFilterEnabled, searchText]);
+
   // Status tag renderer
   const getStatusTag = (status: string) => {
-    switch (status) {
-      case 'Active':
-        return <Tag color="green" style={{ margin: 0, padding: '0 6px', height: '18px', lineHeight: '18px' }}>{status}</Tag>;
-      case 'In Development':
-        return <Tag color="blue" style={{ margin: 0, padding: '0 6px', height: '18px', lineHeight: '18px' }}>{status}</Tag>;
-      case 'Deprecated':
-        return <Tag color="orange" style={{ margin: 0, padding: '0 6px', height: '18px', lineHeight: '18px' }}>{status}</Tag>;
-      case 'Archived':
-        return <Tag color="gray" style={{ margin: 0, padding: '0 6px', height: '18px', lineHeight: '18px' }}>{status}</Tag>;
-      default:
-        return <Tag style={{ margin: 0, padding: '0 6px', height: '18px', lineHeight: '18px' }}>{status}</Tag>;
-    }
+    return <span style={{ fontSize: '14px' }}>{status}</span>;
   };
   
   // Validation status tag renderer
   const getValidationTag = (status: string) => {
-    switch (status) {
-      case 'Fully Validated':
-        return <Tag icon={<CheckCircleOutlined />} color="success" style={{ margin: 0, padding: '0 6px', height: '18px', lineHeight: '18px' }}>{status}</Tag>;
-      case 'Partially Validated':
-        return <Tag icon={<ClockCircleOutlined />} color="processing" style={{ margin: 0, padding: '0 6px', height: '18px', lineHeight: '18px' }}>{status}</Tag>;
-      case 'Not Validated':
-        return <Tag icon={<ExclamationCircleOutlined />} color="warning" style={{ margin: 0, padding: '0 6px', height: '18px', lineHeight: '18px' }}>{status}</Tag>;
-      default:
-        return <Tag style={{ margin: 0, padding: '0 6px', height: '18px', lineHeight: '18px' }}>{status}</Tag>;
+    return <span style={{ fontSize: '14px' }}>{status}</span>;
+  };
+
+  // Time period slider marks
+  const sliderMarks = {
+    1: '1w',
+    12: '12w',
+    26: '26w',
+    52: '52w'
+  };
+
+  // Handle time frame change
+  const handleTimeFrameChange = (value: number) => {
+    setTimeFrame(value);
+    // Only update filtered data if date filtering is enabled
+    if (dateFilterEnabled) {
+      filterModels(value, searchText);
     }
   };
-  
+
+  // Toggle date filtering
+  const handleToggleDateFilter = (checked: boolean) => {
+    setDateFilterEnabled(checked);
+    if (checked) {
+      filterModels(timeFrame, searchText);
+    } else {
+      // When disabling date filter, show all models with text filter only
+      filterModels(0, searchText); // Pass 0 to indicate no date filtering
+    }
+  };
+
   // Table columns definition
   const columns: ColumnsType<SimulationModel> = [
     {
@@ -206,20 +290,13 @@ const ModelsTab: React.FC = () => {
       width: 150,
     },
   ];
-  
-  // Calculate stats for header
-  const activeModels = sampleModels.filter(model => model.status === 'Active').length;
-  const inDevelopmentModels = sampleModels.filter(model => model.status === 'In Development').length;
-  const validatedModels = sampleModels.filter(model => model.validationStatus === 'Fully Validated').length;
-  
-  // Formatted stats for the StandardTable
-  const tableStats = [
-    { label: 'Total', value: sampleModels.length },
-    { label: 'Active', value: activeModels, color: '#52c41a' },
-    { label: 'In Development', value: inDevelopmentModels, color: '#1890ff' },
-    { label: 'Validated', value: validatedModels, color: '#722ed1' }
-  ];
-  
+
+  // Calculate stats for dashboard cards
+  const totalModels = filteredModels.length;
+  const activeModels = filteredModels.filter(model => model.status === 'Active').length;
+  const inDevModels = filteredModels.filter(model => model.status === 'In Development').length;
+  const validatedModels = filteredModels.filter(model => model.validationStatus === 'Fully Validated').length;
+
   // Expandable row render for expanded model details
   const expandedRowRender = (record: SimulationModel) => (
     <div style={{ padding: '0 48px' }}>
@@ -239,18 +316,111 @@ const ModelsTab: React.FC = () => {
       </p>
     </div>
   );
-  
+
   return (
-    <StandardTable
-      title="Analysis Models"
-      data={sampleModels}
-      columns={columns}
-      loading={false}
-      expandedRowRender={expandedRowRender}
-      searchableFields={['id', 'name', 'description', 'type']}
-      stats={tableStats}
-      refreshData={() => console.log('Refreshing models...')}
-    />
+    <div className="full-width-table-container">
+      <style>{tableStyles}</style>
+      <div style={{ display: 'flex', alignItems: 'flex-start', marginTop: '16px', marginBottom: '16px' }}>
+        <div style={{ display: 'flex', gap: '12px' }}>
+          <div className="dashboard-card card-all-simulations" style={{ padding: '12px 16px', backgroundColor: '#14364F' }}>
+            <div style={{ fontSize: '14px', fontWeight: 'normal', marginBottom: '4px', color: 'white' }}>All Models</div>
+            <div style={{ fontSize: '14px', fontWeight: 'normal', color: 'white' }}>{totalModels} in last {timeFrame} weeks</div>
+          </div>
+          
+          <div className="dashboard-card card-function" style={{ padding: '12px 16px' }}>
+            <div style={{ fontSize: '14px', fontWeight: 'normal', marginBottom: '4px' }}>Active</div>
+            <div style={{ fontSize: '14px', fontWeight: 'normal' }}>{activeModels}</div>
+          </div>
+          
+          <div className="dashboard-card card-logical" style={{ padding: '12px 16px' }}>
+            <div style={{ fontSize: '14px', fontWeight: 'normal', marginBottom: '4px' }}>In Development</div>
+            <div style={{ fontSize: '14px', fontWeight: 'normal' }}>{inDevModels}</div>
+          </div>
+          
+          <div className="dashboard-card card-parameter" style={{ padding: '12px 16px' }}>
+            <div style={{ fontSize: '14px', fontWeight: 'normal', marginBottom: '4px' }}>Validated</div>
+            <div style={{ fontSize: '14px', fontWeight: 'normal' }}>{validatedModels}</div>
+          </div>
+        </div>
+
+        <div style={{ flex: 1, marginLeft: '24px' }}>
+          <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '4px' }}>
+            <div style={{ 
+              display: 'flex',
+              alignItems: 'center',
+              opacity: dateFilterEnabled ? 1 : 0.5,
+              transition: 'opacity 0.3s'
+            }}>
+              Time Period: {timeFrame} weeks
+              <div style={{ display: 'flex', alignItems: 'center', marginLeft: '16px' }}>
+                <span style={{ marginRight: '8px', fontSize: '13px', color: '#666' }}>
+                  Date filtering {dateFilterEnabled ? 'enabled' : 'disabled'}
+                </span>
+                <Switch 
+                  checkedChildren="On" 
+                  unCheckedChildren="Off" 
+                  defaultChecked={dateFilterEnabled}
+                  onChange={handleToggleDateFilter}
+                  size="small"
+                  style={{ backgroundColor: dateFilterEnabled ? '#2C668A' : undefined }}
+                />
+              </div>
+            </div>
+            
+            <div style={{ display: 'flex', alignItems: 'center' }}>
+              <Input 
+                prefix={<SearchOutlined />} 
+                placeholder="Search"
+                style={{ width: '200px', marginRight: '8px' }}
+                onChange={(e) => {
+                  setSearchText(e.target.value);
+                  filterModels(timeFrame, e.target.value);
+                }}
+                value={searchText}
+              />
+              <Button 
+                icon={<ReloadOutlined />} 
+                onClick={() => filterModels(timeFrame, searchText)}
+              >
+                Refresh
+              </Button>
+            </div>
+          </div>
+          
+          <Slider 
+            marks={sliderMarks}
+            min={1}
+            max={52}
+            value={timeFrame}
+            onChange={handleTimeFrameChange}
+            style={{ 
+              width: '100%',
+              opacity: dateFilterEnabled ? 1 : 0.5,
+              transition: 'opacity 0.3s',
+              marginRight: '10px'
+            }}
+            disabled={!dateFilterEnabled}
+            trackStyle={{ backgroundColor: '#2C668A' }}
+            handleStyle={{ borderColor: '#2C668A', backgroundColor: '#2C668A' }}
+          />
+        </div>
+      </div>
+
+      <Table
+        columns={columns}
+        dataSource={filteredModels}
+        pagination={{ pageSize: 25, position: ['bottomRight'] }}
+        size="middle"
+        rowKey="id"
+        className="models-table-with-borders full-width-table"
+        bordered={false}
+        style={{ marginTop: 0 }}
+        expandable={{
+          expandedRowRender: expandedRowRender,
+          expandRowByClick: false
+        }}
+      />
+    </div>
   );
 };
 
