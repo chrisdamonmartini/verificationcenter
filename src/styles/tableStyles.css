@@ -64,7 +64,7 @@
 
 /* Table header styling */
 .common-table .ant-table-thead > tr > th {
-  background-color: #f7f7f7;
+  background-color: #E6E6E6 !important;
   color: #333;
   font-weight: 600;
   border-bottom: 1px solid #e8e8e8;
@@ -335,4 +335,181 @@
   border: none;
   border-top: 1px solid #e8e8e8;
   border-radius: 0;
+}
+
+/* Add these styles to match the Change Awareness table */
+.ant-tabs-tabpane {
+  padding: 0 !important;
+}
+
+.ant-table-thead > tr > th {
+  background-color: #E6E6E6 !important;
+  color: #333;
+  font-weight: 500;
+  padding: 10px 16px;
+  border-bottom: 1px solid #e8e8e8;
+}
+
+.ant-table-cell {
+  padding: 10px 16px !important;
+}
+
+.ant-table-row:hover > td {
+  background-color: #f0f7ff !important;
+}
+
+.ant-table-wrapper {
+  border-radius: 4px;
+  overflow: hidden;
+}
+
+/* Adjust pagination alignment */
+.ant-pagination {
+  margin: 16px 8px !important;
+}
+
+/* Add style for the status counts row */
+.status-counts {
+  margin-bottom: 8px;
+  font-size: 14px;
+  display: flex;
+  align-items: center;
+}
+
+.status-counts span {
+  margin-right: 20px;
+}
+
+.status-counts span:last-child {
+  margin-right: 0;
+}
+
+/* Text styling and spacing */
+.table-title {
+  font-size: 16px;
+  font-weight: 500;
+  margin: 0;
+  padding: 0;
+}
+
+/* Add these styles for the full-width tables */
+
+/* Full-width table container - with proper margins */
+.full-width-table-container {
+  margin: 0; 
+  width: 100%;
+  overflow: hidden;
+  padding: 0 16px;
+}
+
+/* Table header container */
+.table-header-container {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 0 16px 8px 16px;
+}
+
+/* Table actions */
+.table-actions {
+  display: flex;
+  gap: 8px;
+}
+
+/* Status counts for full width */
+.full-width-table-container .status-counts {
+  padding: 0;
+  margin-bottom: 12px;
+}
+
+/* Full width table styling */
+.full-width-table {
+  margin: 0;
+}
+
+.full-width-table .ant-table-thead > tr > th {
+  background-color: #E6E6E6 !important;
+  font-weight: 500;
+  color: #333;
+  border-bottom: 1.5px solid #e0e0e0 !important;
+  border-right: 1.5px solid #e0e0e0 !important;
+  padding: 6px 16px !important;
+  height: 24px !important;
+}
+
+.full-width-table .ant-table-thead > tr > th:last-child {
+  border-right: none !important;
+}
+
+.full-width-table .ant-table-tbody > tr > td {
+  border-bottom: 1.5px solid #e0e0e0 !important;
+  border-right: 1.5px solid #e0e0e0 !important;
+  padding: 6px 16px !important;
+  height: 24px !important;
+}
+
+.full-width-table .ant-table-tbody > tr > td:last-child {
+  border-right: none !important;
+}
+
+.full-width-table .ant-table-container {
+  border: 1.5px solid #e0e0e0 !important;
+  border-radius: 2px;
+}
+
+.full-width-table .ant-table-container table {
+  border-collapse: separate;
+  border-spacing: 0;
+}
+
+.full-width-table .ant-table-cell-fix-left,
+.full-width-table .ant-table-cell-fix-right {
+  background: #fff;
+}
+
+/* Override the global styles for full-width tables */
+.full-width-table tr th:first-child,
+.full-width-table tr td:first-child {
+  padding-left: 16px !important;
+}
+
+.full-width-table tr th:last-child,
+.full-width-table tr td:last-child {
+  padding-right: 16px !important;
+}
+
+/* Table title spacing */
+.full-width-table-container .table-title {
+  margin: 16px 0 8px 0 !important;
+}
+
+/* Fix pagination alignment for full width tables */
+.full-width-table-container .ant-pagination {
+  margin-right: 0 !important;
+}
+
+/* Full width table cell padding */
+.full-width-table .ant-table-cell {
+  padding: 6px 16px !important;
+  vertical-align: middle;
+}
+
+/* Setting the first column to have no left padding */
+.full-width-table tr th:first-child,
+.full-width-table tr td:first-child {
+  padding-left: 16px !important;
+}
+
+/* Setting the last column to have no right padding */
+.full-width-table tr th:last-child,
+.full-width-table tr td:last-child {
+  padding-right: 16px !important;
+}
+
+.full-width-table .ant-table-tbody > tr:hover > td {
+  background-color: #f0f7ff !important;
+}
+
+.full-width-table .ant-table-tbody > tr {
+  transition: background 0.3s;
 } 

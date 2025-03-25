@@ -15,6 +15,8 @@ import SimulationRuns from '../Simulation/SimulationRuns';
 import ContentPanel from '../common/ContentPanel';
 import TabWithIcon from '../common/TabWithIcon';
 import useColors from '../../hooks/useColors';
+import SimulationsTab from './tabs/SimulationsTab';
+import SimulationIcon from '../../icons/typeCAEModel48.svg';
 
 const { TabPane } = Tabs;
 
@@ -100,6 +102,13 @@ const AnalysisMain: React.FC = () => {
             key="automation"
           >
             <AutomationTab />
+          </TabPane>
+
+          <TabPane 
+            tab={<TabWithIcon icon={AnalysisIcon} label="Simulations" />}
+            key="simulations"
+          >
+            <SimulationsTab />
           </TabPane>
 
           <TabPane 
