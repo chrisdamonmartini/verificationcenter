@@ -23,6 +23,7 @@ interface AutomationWorkflow {
   cpuUsage: number;
   memoryUsage: number;
   results?: string;
+  type: string;
 }
 
 // Function to get relative date from March 24, 2025
@@ -34,93 +35,193 @@ const getRelativeDate = (daysAgo: number): string => {
 const sampleAutomation: AutomationWorkflow[] = [
   {
     id: 'AUTO-801',
-    name: 'Load Analysis Workflow',
-    description: 'Automated workflow for structural load analysis using FEM models',
+    name: 'Hypersonic Free Flight Simulation',
+    description: 'Operating scenario from MBSE (Cameo, ARISE, and/or Simulink), provides input to both CFD, thermal, and structural models for assessment. Results from combined thermal and pressure state in FE model determine system margin.',
     status: 'Completed',
     progress: 100,
-    schedule: 'Daily',
+    schedule: 'Weekly',
     nextRun: '2025-01-16',
     lastRun: getRelativeDate(3),
-    owner: 'Process Automation',
+    owner: 'Hypersonics Team',
     environmentId: 'ENV-101',
     environmentName: 'High Performance Cluster',
-    modelIds: ['MDL-701'],
-    duration: '3h 45m',
+    modelIds: ['MDL-701', 'MDL-705'],
+    duration: '14h 20m',
     cpuUsage: 85,
     memoryUsage: 72,
-    results: 'https://results.example.com/AUTO-801'
+    results: 'https://results.example.com/AUTO-801',
+    type: 'CFD Simulation'
   },
   {
     id: 'AUTO-802',
-    name: 'Aerodynamic Performance Analysis',
-    description: 'Automated CFD analysis for performance evaluation',
+    name: 'Standard Integrated LOS Jitter',
+    description: 'Integration of Simulink servo simulation, FE flex-body simulation, thermal disturbances, flow disturbances, and optical prescription. Tools work together in tightly integrated physical modeling simulation.',
     status: 'Running',
     progress: 65,
     schedule: 'Weekly',
     nextRun: '2025-01-22',
     lastRun: getRelativeDate(7),
-    owner: 'Aero Team',
+    owner: 'Optical Systems',
     environmentId: 'ENV-102',
     environmentName: 'Cloud Compute Environment',
     modelIds: ['MDL-702'],
     duration: '8h 10m (estimated)',
     cpuUsage: 92,
     memoryUsage: 86,
-    results: undefined
+    results: undefined,
+    type: 'Integrated Simulation'
   },
   {
     id: 'AUTO-803',
-    name: 'Thermal Analysis Sequence',
-    description: 'Multi-stage thermal analysis workflow for engine components',
+    name: 'Wavefront Error Assessment',
+    description: 'Integration of Simulink servo simulation, FE flex-body simulation, thermal disturbances, flow disturbances, and optical prescription. Assesses wavefront error in SigFit for integrated assessment.',
     status: 'Scheduled',
     progress: 0,
     schedule: 'On Demand',
     nextRun: '2025-01-17',
     lastRun: getRelativeDate(14),
-    owner: 'Thermal Team',
+    owner: 'Optical Systems',
     environmentId: 'ENV-101',
     environmentName: 'High Performance Cluster',
     modelIds: ['MDL-703'],
-    duration: '2h 30m (estimated)',
+    duration: '5h 45m (estimated)',
     cpuUsage: 0,
     memoryUsage: 0,
-    results: undefined
+    results: undefined,
+    type: 'Optical Analysis'
   },
   {
     id: 'AUTO-804',
-    name: 'Fatigue Analysis Job',
-    description: 'Batch processing for fatigue life prediction across multiple load cases',
+    name: 'CCA Analysis',
+    description: 'Convergence of ECAD and CAD information, thermal assessment, and structural assessment. Integrated process to ensure electronic and mechanical design compatibility.',
     status: 'Failed',
     progress: 38,
     schedule: 'Weekly',
     nextRun: '2025-01-20',
     lastRun: getRelativeDate(10),
-    owner: 'Materials Team',
+    owner: 'Systems Integration',
     environmentId: 'ENV-103',
     environmentName: 'Local Compute Environment',
     modelIds: ['MDL-704'],
-    duration: '1h 20m (terminated)',
+    duration: '3h 40m (terminated)',
     cpuUsage: 0,
     memoryUsage: 0,
-    results: 'https://results.example.com/AUTO-804-error'
+    results: 'https://results.example.com/AUTO-804-error',
+    type: 'Integration Analysis'
   },
   {
     id: 'AUTO-805',
-    name: 'Control System Simulation',
-    description: 'Simulation of flight control system response under various scenarios',
+    name: 'Body-Integrated Antenna Performance',
+    description: 'Simulation of EM/RF performance as a function of thermal state, body deflection state, and RF/EM elements. Integrates RF tool such as ANSYS HFSS with thermal and structural tools.',
     status: 'Paused',
     progress: 45,
     schedule: 'Daily',
     nextRun: 'Paused',
     lastRun: getRelativeDate(9),
-    owner: 'Controls Team',
+    owner: 'RF Systems',
     environmentId: 'ENV-102',
     environmentName: 'Cloud Compute Environment',
     modelIds: ['MDL-705'],
-    duration: '1h 15m (paused)',
+    duration: '6h 15m (paused)',
     cpuUsage: 0,
     memoryUsage: 0,
-    results: undefined
+    results: undefined,
+    type: 'RF Simulation'
+  },
+  {
+    id: 'AUTO-806',
+    name: 'Store Separation Event',
+    description: 'Whether canister launch, bomb-rack, eject launch, or rail launch - simulation is comprised of force/pressure time histories from physical modeling or MBSE domain. Results provide derived requirements for verification.',
+    status: 'Completed',
+    progress: 100,
+    schedule: 'Weekly',
+    nextRun: '2025-01-21',
+    lastRun: getRelativeDate(5),
+    owner: 'Structures Team',
+    environmentId: 'ENV-101',
+    environmentName: 'High Performance Cluster',
+    modelIds: ['MDL-702', 'MDL-704'],
+    duration: '10h 30m',
+    cpuUsage: 78,
+    memoryUsage: 65,
+    results: 'https://results.example.com/AUTO-806',
+    type: 'Dynamic Simulation'
+  },
+  {
+    id: 'AUTO-807',
+    name: 'Fire Control Optical Bed Isolation',
+    description: 'Combined Physical Modeling (systems servo simulation) and structural modeling, influenced by Cameo, ARISE, or vibroacoustic environments to establish proper isolation selection/placement.',
+    status: 'Running',
+    progress: 52,
+    schedule: 'On Demand',
+    nextRun: '2025-01-25',
+    lastRun: getRelativeDate(2),
+    owner: 'Optical Systems',
+    environmentId: 'ENV-102',
+    environmentName: 'Cloud Compute Environment',
+    modelIds: ['MDL-701', 'MDL-703'],
+    duration: '7h 45m (estimated)',
+    cpuUsage: 88,
+    memoryUsage: 74,
+    results: undefined,
+    type: 'Optical Analysis'
+  },
+  {
+    id: 'AUTO-808',
+    name: 'Container Analysis',
+    description: 'Receives CAD geometry restrictions, functional requirements from CAMED, and derives store mitigations through structural simulations.',
+    status: 'Scheduled',
+    progress: 0,
+    schedule: 'Weekly',
+    nextRun: '2025-01-18',
+    lastRun: getRelativeDate(21),
+    owner: 'Mechanical Design',
+    environmentId: 'ENV-103',
+    environmentName: 'Local Compute Environment',
+    modelIds: ['MDL-704'],
+    duration: '4h 20m (estimated)',
+    cpuUsage: 0,
+    memoryUsage: 0,
+    results: undefined,
+    type: 'Structural Analysis'
+  },
+  {
+    id: 'AUTO-809',
+    name: 'CAS/CCU Simulation',
+    description: 'Integrated system simulation of servo behavior of mechanisms. Thermal and structural simulation of influences on bearings and links from thermal and load inputs.',
+    status: 'Completed',
+    progress: 100,
+    schedule: 'Daily',
+    nextRun: '2025-01-17',
+    lastRun: getRelativeDate(1),
+    owner: 'Mechanisms Team',
+    environmentId: 'ENV-101',
+    environmentName: 'High Performance Cluster',
+    modelIds: ['MDL-702', 'MDL-705'],
+    duration: '9h 10m',
+    cpuUsage: 82,
+    memoryUsage: 70,
+    results: 'https://results.example.com/AUTO-809',
+    type: 'Integrated Simulation'
+  },
+  {
+    id: 'AUTO-810',
+    name: 'Missile Free Flight Loads',
+    description: 'Receive operational points for store from CAMEO. Derive aero loads for static loads and dynamic loads and pass these results to CAMEO as specification for structural tools.',
+    status: 'Running',
+    progress: 35,
+    schedule: 'Weekly',
+    nextRun: '2025-01-23',
+    lastRun: getRelativeDate(4),
+    owner: 'Structures Team',
+    environmentId: 'ENV-102',
+    environmentName: 'Cloud Compute Environment',
+    modelIds: ['MDL-701', 'MDL-704'],
+    duration: '12h 15m (estimated)',
+    cpuUsage: 94,
+    memoryUsage: 82,
+    results: undefined,
+    type: 'Aero-Structural Simulation'
   }
 ];
 
@@ -150,10 +251,11 @@ const AutomationTab: React.FC = () => {
   const [dateFilterEnabled, setDateFilterEnabled] = useState<boolean>(true);
   const [searchText, setSearchText] = useState<string>('');
   const [filteredWorkflows, setFilteredWorkflows] = useState<AutomationWorkflow[]>(sampleAutomation);
+  const [selectedType, setSelectedType] = useState<string | null>(null);
 
-  // Filter workflows based on time frame and search text
-  const filterWorkflows = (weeks: number, text: string) => {
-    console.log('Filtering workflows with timeframe:', weeks, 'weeks and search:', text);
+  // Filter workflows based on time frame, search text, and type
+  const filterWorkflows = (weeks: number, text: string, type: string | null = null) => {
+    console.log('Filtering workflows with timeframe:', weeks, 'weeks, search:', text, 'type:', type);
     let filtered = [...sampleAutomation];
     
     // Apply date filter if weeks > 0 (date filtering enabled)
@@ -174,9 +276,16 @@ const AutomationTab: React.FC = () => {
         workflow.name.toLowerCase().includes(searchLower) ||
         workflow.description.toLowerCase().includes(searchLower) ||
         workflow.owner.toLowerCase().includes(searchLower) ||
-        workflow.environmentName.toLowerCase().includes(searchLower)
+        workflow.environmentName.toLowerCase().includes(searchLower) ||
+        workflow.type.toLowerCase().includes(searchLower)
       );
       console.log('After text filtering:', filtered.length, 'workflows remain');
+    }
+    
+    // Apply type filter if type is provided
+    if (type) {
+      filtered = filtered.filter(workflow => workflow.type === type);
+      console.log('After type filtering:', filtered.length, 'workflows remain');
     }
     
     setFilteredWorkflows(filtered);
@@ -184,8 +293,18 @@ const AutomationTab: React.FC = () => {
 
   // Update filtered data when dependencies change
   useEffect(() => {
-    filterWorkflows(timeFrame, searchText);
-  }, [timeFrame, dateFilterEnabled, searchText]);
+    filterWorkflows(timeFrame, searchText, selectedType);
+  }, [timeFrame, dateFilterEnabled, searchText, selectedType]);
+
+  // Handle type filter click
+  const handleTypeFilterClick = (type: string) => {
+    if (selectedType === type) {
+      // If clicking the already selected type, clear the filter
+      setSelectedType(null);
+    } else {
+      setSelectedType(type);
+    }
+  };
 
   // Status tag renderer - simplified to just text without tags
   const getStatusTag = (status: string) => {
@@ -243,7 +362,7 @@ const AutomationTab: React.FC = () => {
     setTimeFrame(value);
     // Only update filtered data if date filtering is enabled
     if (dateFilterEnabled) {
-      filterWorkflows(value, searchText);
+      filterWorkflows(value, searchText, selectedType);
     }
   };
 
@@ -251,10 +370,10 @@ const AutomationTab: React.FC = () => {
   const handleToggleDateFilter = (checked: boolean) => {
     setDateFilterEnabled(checked);
     if (checked) {
-      filterWorkflows(timeFrame, searchText);
+      filterWorkflows(timeFrame, searchText, selectedType);
     } else {
       // When disabling date filter, show all workflows with text filter only
-      filterWorkflows(0, searchText); // Pass 0 to indicate no date filtering
+      filterWorkflows(0, searchText, selectedType); // Pass 0 to indicate no date filtering
     }
   };
   
@@ -277,6 +396,17 @@ const AutomationTab: React.FC = () => {
           <span>{text}</span>
         </Space>
       ),
+    },
+    {
+      title: 'Type',
+      dataIndex: 'type',
+      key: 'type',
+      width: 150,
+      filters: Array.from(new Set(sampleAutomation.map(workflow => workflow.type))).map(type => ({
+        text: type,
+        value: type,
+      })),
+      onFilter: (value, record) => record.type === value,
     },
     {
       title: 'Status',
@@ -316,13 +446,13 @@ const AutomationTab: React.FC = () => {
       title: 'Environment',
       dataIndex: 'environmentName',
       key: 'environmentName',
-      width: 200,
+      width: 180,
     },
     {
       title: 'Duration',
       dataIndex: 'duration',
       key: 'duration',
-      width: 150,
+      width: 120,
     },
     {
       title: 'Actions',
@@ -352,25 +482,102 @@ const AutomationTab: React.FC = () => {
     },
   ];
   
-  // Expandable row render function
+  // Expandable row render function with enhanced workflow details
   const expandedRowRender = (record: AutomationWorkflow) => (
     <div style={{ padding: '0 48px' }}>
-      <p style={{ margin: '8px 0' }}><strong>Description:</strong> {record.description}</p>
-      <div style={{ display: 'flex', gap: '24px', margin: '16px 0' }}>
-        <div>
-          <p><strong>Owner:</strong> {record.owner}</p>
-          <p><strong>Last Run:</strong> {record.lastRun}</p>
-        </div>
-        <div>
-          <p><strong>Models:</strong> {record.modelIds.join(', ')}</p>
-          <p><strong>Environment ID:</strong> {record.environmentId}</p>
-        </div>
-        {record.status === 'Running' && (
-          <div>
-            <p><strong>CPU Usage:</strong> {record.cpuUsage}%</p>
-            <p><strong>Memory Usage:</strong> {record.memoryUsage}%</p>
+      <h4 style={{ marginBottom: '12px', fontSize: '15px' }}>Workflow Details</h4>
+      
+      <div style={{ marginBottom: '16px' }}>
+        <strong>Description:</strong> 
+        <p style={{ margin: '8px 0' }}>{record.description}</p>
+      </div>
+      
+      <div style={{ display: 'flex', gap: '24px', marginBottom: '16px' }}>
+        <div style={{ flex: 2 }}>
+          <h5 style={{ fontSize: '14px', marginBottom: '8px' }}>Workflow Components</h5>
+          <div style={{ 
+            padding: '12px',
+            background: '#f5f5f5',
+            borderRadius: '4px',
+            border: '1px solid #e8e8e8'
+          }}>
+            <div style={{ display: 'flex', flexDirection: 'column', gap: '12px' }}>
+              <div style={{ 
+                padding: '8px 12px', 
+                background: '#fff', 
+                border: '1px solid #d9d9d9', 
+                borderRadius: '4px',
+                position: 'relative'
+              }}>
+                <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
+                  <strong>Input Processing</strong>
+                  <Tag color="blue">MBSE/Cameo</Tag>
+                </div>
+                <p style={{ margin: '4px 0 0 0', fontSize: '12px' }}>Requirements and parameters from system model</p>
+                <div style={{ position: 'absolute', bottom: '-12px', left: '50%', transform: 'translateX(-50%)' }}>↓</div>
+              </div>
+              
+              <div style={{ 
+                padding: '8px 12px', 
+                background: '#fff', 
+                border: '1px solid #d9d9d9', 
+                borderRadius: '4px',
+                position: 'relative'
+              }}>
+                <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
+                  <strong>Simulation Execution</strong>
+                  <Tag color="green">{record.type}</Tag>
+                </div>
+                <p style={{ margin: '4px 0 0 0', fontSize: '12px' }}>Primary analysis using specialized tools</p>
+                <div style={{ position: 'absolute', bottom: '-12px', left: '50%', transform: 'translateX(-50%)' }}>↓</div>
+              </div>
+              
+              <div style={{ 
+                padding: '8px 12px', 
+                background: '#fff', 
+                border: '1px solid #d9d9d9', 
+                borderRadius: '4px',
+                position: 'relative'
+              }}>
+                <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
+                  <strong>Results Processing</strong>
+                  <Tag color="orange">Post-Processing</Tag>
+                </div>
+                <p style={{ margin: '4px 0 0 0', fontSize: '12px' }}>Data analysis and derived requirements generation</p>
+                <div style={{ position: 'absolute', bottom: '-12px', left: '50%', transform: 'translateX(-50%)' }}>↓</div>
+              </div>
+              
+              <div style={{ 
+                padding: '8px 12px', 
+                background: '#fff', 
+                border: '1px solid #d9d9d9', 
+                borderRadius: '4px'
+              }}>
+                <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
+                  <strong>Output Integration</strong>
+                  <Tag color="purple">System Integration</Tag>
+                </div>
+                <p style={{ margin: '4px 0 0 0', fontSize: '12px' }}>Return results to system model and verification database</p>
+              </div>
+            </div>
           </div>
-        )}
+        </div>
+        
+        <div style={{ flex: 1 }}>
+          <h5 style={{ fontSize: '14px', marginBottom: '8px' }}>Execution Details</h5>
+          <div>
+            <p><strong>Owner:</strong> {record.owner}</p>
+            <p><strong>Last Run:</strong> {record.lastRun}</p>
+            <p><strong>Environment ID:</strong> {record.environmentId}</p>
+            <p><strong>Models:</strong> {record.modelIds.join(', ')}</p>
+            {record.status === 'Running' && (
+              <>
+                <p><strong>CPU Usage:</strong> {record.cpuUsage}%</p>
+                <p><strong>Memory Usage:</strong> {record.memoryUsage}%</p>
+              </>
+            )}
+          </div>
+        </div>
       </div>
     </div>
   );
@@ -382,10 +589,23 @@ const AutomationTab: React.FC = () => {
   const scheduledWorkflows = filteredWorkflows.filter(workflow => workflow.status === 'Scheduled').length;
   const failedWorkflows = filteredWorkflows.filter(workflow => workflow.status === 'Failed').length;
   const pausedWorkflows = filteredWorkflows.filter(workflow => workflow.status === 'Paused').length;
+  
+  // Get counts by workflow type
+  const typeCounts = filteredWorkflows.reduce((acc, workflow) => {
+    acc[workflow.type] = (acc[workflow.type] || 0) + 1;
+    return acc;
+  }, {} as Record<string, number>);
+  
+  // Get the top 3 most common workflow types
+  const topWorkflowTypes = Object.entries(typeCounts)
+    .sort((a, b) => b[1] - a[1])
+    .slice(0, 3);
 
   return (
     <div className="full-width-table-container">
       <style>{tableStyles}</style>
+      
+      {/* Primary Statistics */}
       <div style={{ display: 'flex', alignItems: 'flex-start', marginTop: '16px', marginBottom: '16px' }}>
         <div style={{ display: 'flex', gap: '12px', flexWrap: 'wrap', maxWidth: '60%' }}>
           <div className="dashboard-card card-all-simulations" style={{ padding: '12px 16px', backgroundColor: '#14364F' }}>
@@ -450,13 +670,13 @@ const AutomationTab: React.FC = () => {
                 style={{ width: '200px', marginRight: '8px' }}
                 onChange={(e) => {
                   setSearchText(e.target.value);
-                  filterWorkflows(timeFrame, e.target.value);
+                  filterWorkflows(timeFrame, e.target.value, selectedType);
                 }}
                 value={searchText}
               />
               <Button 
                 icon={<ReloadOutlined />} 
-                onClick={() => filterWorkflows(timeFrame, searchText)}
+                onClick={() => filterWorkflows(timeFrame, searchText, selectedType)}
               >
                 Refresh
               </Button>
@@ -479,6 +699,42 @@ const AutomationTab: React.FC = () => {
             trackStyle={{ backgroundColor: '#2C668A' }}
             handleStyle={{ borderColor: '#2C668A', backgroundColor: '#2C668A' }}
           />
+        </div>
+      </div>
+      
+      {/* Workflow Type Statistics */}
+      <div style={{ marginBottom: '16px' }}>
+        <div style={{ fontSize: '14px', fontWeight: 'bold', marginBottom: '8px' }}>
+          Top Workflow Types
+          {selectedType && (
+            <Button 
+              type="link" 
+              size="small" 
+              onClick={() => setSelectedType(null)}
+              style={{ marginLeft: '8px', fontSize: '12px' }}
+            >
+              Clear Filter
+            </Button>
+          )}
+        </div>
+        <div style={{ display: 'flex', gap: '12px' }}>
+          {topWorkflowTypes.map(([type, count]) => (
+            <div 
+              key={type} 
+              className="dashboard-card" 
+              style={{ 
+                padding: '12px 16px', 
+                backgroundColor: selectedType === type ? '#bae7ff' : '#f0f7ff',
+                border: '1px solid #bae0ff',
+                borderRadius: '4px',
+                cursor: 'pointer'
+              }}
+              onClick={() => handleTypeFilterClick(type)}
+            >
+              <div style={{ fontSize: '14px', fontWeight: 'normal', marginBottom: '4px' }}>{type}</div>
+              <div style={{ fontSize: '14px', fontWeight: 'normal', color: '#1890ff' }}>{count} workflows</div>
+            </div>
+          ))}
         </div>
       </div>
 
