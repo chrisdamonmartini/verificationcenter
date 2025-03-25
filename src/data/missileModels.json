@@ -1,0 +1,432 @@
+[
+  {
+    "id": "MDL-701",
+    "name": "Wing FEM",
+    "description": "Finite Element Model of wing structure for load analysis with detailed components for wing structure, including spars, ribs, and skin panels.",
+    "type": "Structural",
+    "version": "3.2",
+    "status": "Active",
+    "fidelity": "High",
+    "owner": "Analysis Team",
+    "lastModified": "2025-03-19",
+    "validationStatus": "Fully Validated",
+    "tags": ["Wing", "Structural", "FEM"],
+    "applicableRequirements": ["SR-201", "SR-202"],
+    "meshDetails": {
+      "nodeCount": 568423,
+      "elementCount": 524890,
+      "elementTypes": ["QUAD4", "TRIA3", "HEX8", "BEAM"],
+      "refinementRegions": ["Leading Edge", "Root Junction", "Control Surfaces"]
+    },
+    "materialModels": [
+      {"name": "Al-7075-T6", "region": "Main Wing Structure"},
+      {"name": "Ti-6Al-4V", "region": "High Load Attachment Points"},
+      {"name": "CFRP Composite", "region": "Skin Panels"}
+    ],
+    "boundaryConditions": ["Fixed at root", "Free at tip", "Connected to fuselage FEM"],
+    "loadCases": ["1g Level Flight", "2.5g Pull-up", "Ultimate Load", "Flutter Analysis"],
+    "solver": "Nastran",
+    "validationReports": ["VR-701-001", "VR-701-002"],
+    "fileLocation": "/models/structural/wing_fem_v3.2.bdf"
+  },
+  {
+    "id": "MDL-702",
+    "name": "Aerodynamic Model",
+    "description": "CFD model for aerodynamic analysis under various flight conditions with high-fidelity mesh resolution around control surfaces.",
+    "type": "Aerodynamic",
+    "version": "2.1",
+    "status": "Active",
+    "fidelity": "Medium",
+    "owner": "Aerodynamics",
+    "lastModified": "2025-03-22",
+    "validationStatus": "Partially Validated",
+    "tags": ["Aero", "CFD", "Flight"],
+    "applicableRequirements": ["SR-103", "SR-205"],
+    "meshDetails": {
+      "cellCount": 12870000,
+      "meshType": "Hybrid unstructured",
+      "boundaryLayerResolution": "y+ < 1",
+      "farfieldDistance": "100 chord lengths",
+      "refinementRegions": ["Leading Edges", "Wing-Body Junction", "Control Surfaces"]
+    },
+    "flightConditions": [
+      {"machNumber": 0.85, "altitude": "35000 ft", "angleOfAttack": "0-8 deg"},
+      {"machNumber": 0.5, "altitude": "15000 ft", "angleOfAttack": "0-12 deg"},
+      {"machNumber": 1.2, "altitude": "30000 ft", "angleOfAttack": "0-6 deg"}
+    ],
+    "turbulenceModel": "Spalart-Allmaras",
+    "solver": "Fluent 2023.1",
+    "validationData": ["Wind Tunnel Test WT-203", "Flight Test FT-111"],
+    "dataExtractionPoints": ["Wing CP", "Control Surface Hinge Moments", "Integrated Forces"],
+    "fileLocation": "/models/aerodynamic/aircraft_cfd_v2.1.case"
+  },
+  {
+    "id": "MDL-703",
+    "name": "Thermal Analysis Model",
+    "description": "Model for thermal analysis of engine components with coupled conduction, convection, and radiation effects",
+    "type": "Thermal",
+    "version": "1.5",
+    "status": "In Development",
+    "fidelity": "Medium",
+    "owner": "Thermal Team",
+    "lastModified": "2025-03-14",
+    "validationStatus": "Not Validated",
+    "tags": ["Thermal", "Engine", "Heat Transfer"],
+    "applicableRequirements": ["SR-301", "SR-302"],
+    "physicsModels": [
+      {"type": "Conduction", "regions": "All solid components"},
+      {"type": "Convection", "regions": "Internal fluid passages, External surfaces"},
+      {"type": "Radiation", "regions": "Combustion chamber, Exhaust components"}
+    ],
+    "materials": [
+      {"name": "Inconel 718", "region": "Combustion chamber"},
+      {"name": "Ti-6Al-4V", "region": "Fan blades"},
+      {"name": "CMC", "region": "High-temperature components"}
+    ],
+    "operatingConditions": [
+      {"name": "Idle", "temperature": "400-800K"},
+      {"name": "Cruise", "temperature": "600-1200K"},
+      {"name": "Max Power", "temperature": "800-1800K"}
+    ],
+    "analysisTypes": [
+      "Steady State Thermal",
+      "Transient Thermal for Engine Start",
+      "Thermal Cycling"
+    ],
+    "solver": "Abaqus Thermal",
+    "developmentStatus": "Undergoing mesh refinement studies for convergence",
+    "fileLocation": "/models/thermal/engine_thermal_v1.5.inp"
+  },
+  {
+    "id": "MDL-704",
+    "name": "Fatigue Analysis Model",
+    "description": "Model for fatigue life prediction of critical components with damage accumulation calculations",
+    "type": "Durability",
+    "version": "2.0",
+    "status": "Active",
+    "fidelity": "High",
+    "owner": "Materials Team",
+    "lastModified": "2025-03-16",
+    "validationStatus": "Fully Validated",
+    "tags": ["Fatigue", "Durability", "Lifecycle"],
+    "applicableRequirements": ["SR-401", "SR-403"],
+    "fatigueApproach": "Strain-Life (ε-N)",
+    "materialModels": [
+      {"material": "Al-7075-T6", "model": "Modified Morrow with Mean Stress Correction"},
+      {"material": "Ti-6Al-4V", "model": "Smith-Watson-Topper"},
+      {"material": "CFRP", "model": "Progressive Damage Model"}
+    ],
+    "loadHistories": [
+      "Standard Mission Profile",
+      "Severe Turbulence",
+      "Ground-Air-Ground Cycles"
+    ],
+    "inspectionIntervals": "1000 flight hours",
+    "criticalLocations": [
+      "Wing-Fuselage Attachment",
+      "Engine Mount Lugs",
+      "Landing Gear Attachment Points"
+    ],
+    "safetyFactors": {
+      "scatter": 2,
+      "material": 1.15,
+      "loading": 1.2
+    },
+    "validationTests": ["Coupon Tests", "Component Tests", "Full-Scale Fatigue Test"],
+    "solver": "AFGROW/NASGRO with Custom Modules",
+    "fileLocation": "/models/durability/critical_components_v2.0.afgrow"
+  },
+  {
+    "id": "MDL-705",
+    "name": "System Dynamics Model",
+    "description": "Control system dynamics model for flight control surfaces with actuator dynamics and aeroservoelastic effects",
+    "type": "Controls",
+    "version": "1.8",
+    "status": "Active",
+    "fidelity": "Medium",
+    "owner": "Controls Team",
+    "lastModified": "2025-03-12",
+    "validationStatus": "Partially Validated",
+    "tags": ["Controls", "Dynamics", "Feedback"],
+    "applicableRequirements": ["SR-501", "SR-502"],
+    "controlSurfaces": [
+      {"name": "Ailerons", "actuatorType": "Electrohydraulic", "rateLimit": "60 deg/s"},
+      {"name": "Elevators", "actuatorType": "Electrohydraulic", "rateLimit": "40 deg/s"},
+      {"name": "Rudder", "actuatorType": "Electrohydraulic", "rateLimit": "30 deg/s"},
+      {"name": "Spoilers", "actuatorType": "Electrohydraulic", "rateLimit": "80 deg/s"}
+    ],
+    "controlLaws": [
+      {"mode": "Normal", "type": "MIMO with feedback linearization"},
+      {"mode": "Direct", "type": "Mechanical backup"},
+      {"mode": "Degraded", "type": "Reduced authority"}
+    ],
+    "systemBandwidth": "15 Hz",
+    "simulationScenarios": [
+      "Nominal Operations",
+      "Crosswind Landing",
+      "Engine Failure Response",
+      "Severe Turbulence"
+    ],
+    "interfaceSystems": [
+      "Flight Management Computer",
+      "Air Data System",
+      "Hydraulic System"
+    ],
+    "validationMethods": [
+      "Hardware-in-the-Loop Testing",
+      "Pilot-in-the-Loop Simulation",
+      "Flight Test Correlation"
+    ],
+    "solver": "Simulink/Matlab",
+    "fileLocation": "/models/controls/flight_control_system_v1.8.slx"
+  },
+  {
+    "id": "MDL-706",
+    "name": "Hypersonic CFD Model",
+    "description": "High-fidelity computational fluid dynamics model for hypersonic flow analysis with thermochemical nonequilibrium",
+    "type": "Aerodynamic",
+    "version": "2.3",
+    "status": "Active",
+    "fidelity": "High",
+    "owner": "Hypersonics Group",
+    "lastModified": "2025-03-10",
+    "validationStatus": "Partially Validated",
+    "tags": ["Hypersonic", "CFD", "Thermochemistry"],
+    "applicableRequirements": ["SR-601", "SR-602", "SR-605"],
+    "flightRegime": {
+      "machNumber": "5.0-12.0",
+      "altitudeRange": "20-50 km",
+      "reynoldsNumber": "1e5-1e7"
+    },
+    "physicsModels": [
+      {"type": "Thermochemical Nonequilibrium", "species": ["N2", "O2", "NO", "N", "O", "NO+", "e-"]},
+      {"type": "Turbulence", "model": "SST with compressibility corrections"},
+      {"type": "Wall Catalysis", "model": "Finite-rate surface reactions"}
+    ],
+    "meshDetails": {
+      "cellCount": 25000000,
+      "type": "Structured with shock alignment",
+      "wallSpacing": "y+ < 0.5",
+      "adaptiveMesh": true
+    },
+    "numericalMethods": {
+      "spatialScheme": "MUSCL 3rd order with entropy fix",
+      "timeIntegration": "Implicit dual-time stepping",
+      "fluxFunction": "AUSM+-up"
+    },
+    "solver": "US3D",
+    "validationData": ["X-51A flight test", "LENS-XX shock tunnel data"],
+    "computationalResources": "240 cores, 48 hour run time per case",
+    "fileLocation": "/models/aerodynamic/hypersonic_cfd_v2.3.us3d"
+  },
+  {
+    "id": "MDL-707",
+    "name": "Multi-Stage Propulsion Model",
+    "description": "Model for analyzing multi-stage rocket propulsion systems including solid and liquid propellant stages",
+    "type": "Propulsion",
+    "version": "3.1",
+    "status": "Active",
+    "fidelity": "High",
+    "owner": "Propulsion Systems",
+    "lastModified": "2025-03-08",
+    "validationStatus": "Fully Validated",
+    "tags": ["Propulsion", "Multi-stage", "Rocket"],
+    "applicableRequirements": ["SR-701", "SR-702", "SR-703"],
+    "propulsionStages": [
+      {
+        "stageNumber": 1,
+        "type": "Solid Rocket Motor",
+        "propellant": "HTPB/AP/Al",
+        "thrust": "1.2 MN (vac)",
+        "burnTime": "120 s",
+        "isp": "285 s (vac)"
+      },
+      {
+        "stageNumber": 2,
+        "type": "Liquid Bipropellant",
+        "propellant": "LOX/RP-1",
+        "thrust": "450 kN (vac)",
+        "burnTime": "180 s",
+        "isp": "320 s (vac)"
+      },
+      {
+        "stageNumber": 3,
+        "type": "Liquid Bipropellant",
+        "propellant": "LOX/LH2",
+        "thrust": "120 kN (vac)",
+        "burnTime": "350 s",
+        "isp": "450 s (vac)"
+      }
+    ],
+    "performanceParameters": {
+      "totaldV": "9.8 km/s",
+      "payloadCapacity": "1200 kg to LEO",
+      "massRatio": 10.4
+    },
+    "analysisCapabilities": [
+      "Thrust profile optimization",
+      "Stage sizing and mass distribution",
+      "Thermal analysis of propellant tanks",
+      "Feed system pressure drop analysis",
+      "Combustion stability analysis"
+    ],
+    "validationTests": [
+      "Static fire tests of all stages",
+      "Subscale hot-fire testing",
+      "Flight correlation with telemetry data"
+    ],
+    "solver": "RPA/ROCETS with proprietary modules",
+    "fileLocation": "/models/propulsion/multistage_rocket_v3.1.rpa"
+  },
+  {
+    "id": "MDL-708",
+    "name": "Guidance Navigation Control Model",
+    "description": "High-fidelity GNC model for missile systems with advanced target tracking and terminal guidance",
+    "type": "Controls",
+    "version": "4.2",
+    "status": "Active",
+    "fidelity": "High",
+    "owner": "GNC Team",
+    "lastModified": "2025-03-05",
+    "validationStatus": "Fully Validated",
+    "tags": ["GNC", "Guidance", "Navigation", "Target Tracking"],
+    "applicableRequirements": ["SR-801", "SR-802", "SR-803", "SR-804"],
+    "guidanceModes": [
+      {"name": "Midcourse", "algorithm": "Proportional Navigation"},
+      {"name": "Terminal", "algorithm": "Augmented Proportional Navigation"},
+      {"name": "Endgame", "algorithm": "Impact Point Prediction"}
+    ],
+    "navigationSystems": [
+      {"type": "INS", "accuracy": "0.01 deg/hr drift"},
+      {"type": "GPS", "accuracy": "3m CEP"},
+      {"type": "RF Seeker", "accuracy": "0.5 mrad", "trackingRange": "25 km"}
+    ],
+    "controlActuators": [
+      {"type": "Aerodynamic Fins", "bandwidth": "25 Hz", "authority": "40 degrees"},
+      {"type": "Thrust Vector Control", "bandwidth": "30 Hz", "authority": "12 degrees"}
+    ],
+    "filterAlgorithms": [
+      "Extended Kalman Filter for state estimation",
+      "Unscented Kalman Filter for target tracking",
+      "Complementary filters for sensor fusion"
+    ],
+    "simulationScenarios": [
+      "Direct approach",
+      "High-G evasive target",
+      "Multiple target discrimination",
+      "ECM environment"
+    ],
+    "performanceMetrics": {
+      "circularErrorProbable": "< 3m",
+      "maxInterceptG": 50,
+      "trackingAccuracy": "< 1 mrad"
+    },
+    "validationMethods": [
+      "Hardware-in-the-loop testing",
+      "6-DOF flight simulation correlation",
+      "Field test data correlation"
+    ],
+    "solver": "Simulink/Matlab with custom C++ modules",
+    "fileLocation": "/models/controls/gnc_missile_v4.2.slx"
+  },
+  {
+    "id": "MDL-709",
+    "name": "RF Seeker Model",
+    "description": "Detailed RF seeker model with signal processing, target tracking, and electronic countermeasures simulation",
+    "type": "Electromagnetic",
+    "version": "2.5",
+    "status": "Active",
+    "fidelity": "High",
+    "owner": "RF Systems",
+    "lastModified": "2025-03-01",
+    "validationStatus": "Partially Validated",
+    "tags": ["RF", "Seeker", "Radar", "ECM"],
+    "applicableRequirements": ["SR-901", "SR-902", "SR-905"],
+    "radarParameters": {
+      "frequency": "X-band (8-12 GHz)",
+      "peakPower": "55 kW",
+      "pulseWidth": "0.1-5 µs",
+      "pulseRepetitionFrequency": "10-100 kHz",
+      "antennaType": "Phased array",
+      "beamWidth": "3 degrees",
+      "scanPatterns": ["Conical", "Raster", "Spiral"]
+    },
+    "signalProcessing": [
+      {"type": "Doppler Processing", "resolution": "10 m/s"},
+      {"type": "Range Processing", "resolution": "3 m"},
+      {"type": "CFAR Detection", "falseAlarmRate": "1e-6"}
+    ],
+    "trackingAlgorithms": [
+      "Alpha-Beta Filter",
+      "Extended Kalman Filter",
+      "Multiple Hypothesis Tracking"
+    ],
+    "ecmCapabilities": [
+      "Barrage Jamming Analysis",
+      "Spot Jamming Analysis",
+      "Chaff/Decoy Simulation"
+    ],
+    "targetModels": [
+      {"type": "Point target", "RCS": "-10 to 20 dBsm"},
+      {"type": "Extended target", "RCS": "Statistical model"},
+      {"type": "Multiple targets", "resolution": "Swerling models"}
+    ],
+    "validationData": [
+      "Anechoic chamber measurements",
+      "Hardware-in-the-loop testing",
+      "Flight test correlation"
+    ],
+    "solver": "Custom RF simulation code with MATLAB",
+    "fileLocation": "/models/electromagnetic/rf_seeker_v2.5.mat"
+  },
+  {
+    "id": "MDL-710",
+    "name": "Warhead Lethality Model",
+    "description": "Analysis model for fragmentation warhead effects including blast, fragmentation patterns, and target damage assessment",
+    "type": "Lethality",
+    "version": "1.7",
+    "status": "In Development",
+    "fidelity": "Medium",
+    "owner": "Lethality Analysis",
+    "lastModified": "2025-02-25",
+    "validationStatus": "Partially Validated",
+    "tags": ["Warhead", "Fragmentation", "Lethality", "Blast"],
+    "applicableRequirements": ["SR-1001", "SR-1002", "SR-1003"],
+    "warheadParameters": {
+      "type": "Controlled fragmentation",
+      "explosive": "PBXN-109",
+      "mass": "20 kg",
+      "casingMaterial": "Hardened steel with scored pattern",
+      "initiationSystem": "Multi-point electronic"
+    },
+    "fragmentationAnalysis": {
+      "fragmentCount": "~12,000",
+      "fragmentMassDistribution": "Log-normal (0.5-5g)",
+      "initialVelocity": "1800-2200 m/s",
+      "spatialDistribution": "Controlled pattern with polar bias"
+    },
+    "blastEffects": {
+      "peakOverpressure": "Function of distance",
+      "impulse": "Calculated from TNT equivalence",
+      "damageThresholds": "Multiple component-specific criteria"
+    },
+    "targetModels": [
+      {"type": "Aircraft", "vulnerabilityAreas": ["Flight control", "Propulsion", "Fuel system"]},
+      {"type": "Ground vehicle", "vulnerabilityAreas": ["Mobility", "Firepower", "Communications"]},
+      {"type": "Structure", "vulnerabilityAreas": ["Support elements", "Critical equipment"]}
+    ],
+    "killCriteriaMethods": [
+      "Component damage accumulation",
+      "Critical component analysis",
+      "Pk/Pss calculation methodology"
+    ],
+    "validationTests": [
+      "Arena testing",
+      "Component damage testing",
+      "Controlled detonation experiments"
+    ],
+    "developmentFocus": "Improving fragment distribution prediction accuracy",
+    "solver": "AJEM/COVART with custom modules",
+    "fileLocation": "/models/lethality/fragmentation_warhead_v1.7.ajem"
+  }
+] 

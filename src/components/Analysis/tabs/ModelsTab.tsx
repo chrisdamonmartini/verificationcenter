@@ -5,6 +5,7 @@ import type { ColumnsType } from 'antd/es/table';
 import ModelIcon from '../../../icons/typeCAEModel48.svg';
 import { StandardTable } from '../../common/StandardTable';
 import moment from 'moment';
+import missileModelsData from '../../../data/missileModels.json';
 
 // Types for simulation models
 interface SimulationModel {
@@ -20,6 +21,57 @@ interface SimulationModel {
   validationStatus: 'Not Validated' | 'Partially Validated' | 'Fully Validated';
   tags: string[];
   applicableRequirements: string[];
+  // Additional fields that may be in the enriched data
+  solver?: string;
+  fileLocation?: string;
+  meshDetails?: any;
+  materialModels?: any[];
+  physicsModels?: any[];
+  materials?: any[];
+  boundaryConditions?: string[];
+  loadCases?: string[];
+  validationReports?: string[];
+  flightConditions?: any[];
+  turbulenceModel?: string;
+  validationData?: string[];
+  dataExtractionPoints?: string[];
+  operatingConditions?: any[];
+  analysisTypes?: string[];
+  developmentStatus?: string;
+  fatigueApproach?: string;
+  loadHistories?: string[];
+  inspectionIntervals?: string[];
+  criticalLocations?: string[];
+  safetyFactors?: any;
+  validationTests?: string[];
+  controlSurfaces?: any[];
+  controlLaws?: any[];
+  systemBandwidth?: string;
+  simulationScenarios?: string[];
+  interfaceSystems?: string[];
+  validationMethods?: string[];
+  // Missile specific fields
+  flightRegime?: any;
+  numericalMethods?: any;
+  computationalResources?: string;
+  propulsionStages?: any[];
+  performanceParameters?: any;
+  analysisCapabilities?: string[];
+  guidanceModes?: any[];
+  navigationSystems?: any[];
+  controlActuators?: any[];
+  filterAlgorithms?: string[];
+  performanceMetrics?: any;
+  radarParameters?: any;
+  signalProcessing?: any[];
+  trackingAlgorithms?: string[];
+  ecmCapabilities?: string[];
+  targetModels?: any[];
+  warheadParameters?: any;
+  fragmentationAnalysis?: any;
+  blastEffects?: any;
+  killCriteriaMethods?: string[];
+  developmentFocus?: string;
 }
 
 // Function to get relative date from March 24, 2025
@@ -109,6 +161,9 @@ const sampleModels: SimulationModel[] = [
   }
 ];
 
+// Combine sample models with missile models from the JSON file
+const combinedModels: SimulationModel[] = [...sampleModels, ...missileModelsData];
+
 // Add the CSS styles at the top of the file after the imports
 const tableStyles = `
 .models-table-with-borders {
@@ -134,12 +189,12 @@ const ModelsTab: React.FC = () => {
   const [timeFrame, setTimeFrame] = useState<number>(8);
   const [dateFilterEnabled, setDateFilterEnabled] = useState<boolean>(true);
   const [searchText, setSearchText] = useState<string>('');
-  const [filteredModels, setFilteredModels] = useState<SimulationModel[]>(sampleModels);
+  const [filteredModels, setFilteredModels] = useState<SimulationModel[]>(combinedModels);
 
   // Filter models based on time frame and search text
   const filterModels = (weeks: number, text: string) => {
     console.log('Filtering models with timeframe:', weeks, 'weeks and search:', text);
-    let filtered = [...sampleModels];
+    let filtered = [...combinedModels];
     
     // Apply date filter if weeks > 0 (date filtering enabled)
     if (weeks > 0) {
@@ -298,24 +353,288 @@ const ModelsTab: React.FC = () => {
   const validatedModels = filteredModels.filter(model => model.validationStatus === 'Fully Validated').length;
 
   // Expandable row render for expanded model details
-  const expandedRowRender = (record: SimulationModel) => (
-    <div style={{ padding: '0 48px' }}>
-      <p style={{ margin: '8px 0' }}><strong>Description:</strong> {record.description}</p>
-      <p style={{ margin: '8px 0' }}><strong>Version:</strong> {record.version}</p>
-      <p style={{ margin: '8px 0' }}>
-        <strong>Tags:</strong>{' '}
-        {record.tags.map(tag => (
-          <Tag key={tag} style={{ margin: '0 4px 4px 0', padding: '0 6px', height: '18px', lineHeight: '18px' }}>{tag}</Tag>
-        ))}
-      </p>
-      <p style={{ margin: '8px 0' }}>
-        <strong>Applicable Requirements:</strong>{' '}
-        {record.applicableRequirements.map(req => (
-          <Tag key={req} color="blue" style={{ margin: '0 4px 4px 0', padding: '0 6px', height: '18px', lineHeight: '18px' }}>{req}</Tag>
-        ))}
-      </p>
-    </div>
-  );
+  const expandedRowRender = (record: SimulationModel) => {
+    // Helper to render property lists
+    const renderPropertyList = (items: any[] | undefined) => {
+      if (!items || items.length === 0) return <span>Not available</span>;
+      return (
+        <div style={{ display: 'flex', flexWrap: 'wrap', gap: '4px' }}>
+          {items.map((item, index) => {
+            // Handle complex objects or simple strings
+            const displayText = typeof item === 'string' ? item : JSON.stringify(item).replace(/[{}]/g, '');
+            return (
+              <Tag key={index} style={{ margin: '0 4px 4px 0', padding: '0 6px', height: '22px', lineHeight: '22px' }}>
+                {displayText}
+              </Tag>
+            );
+          })}
+        </div>
+      );
+    };
+
+    // Helper to render JSON sections
+    const renderJsonSection = (obj: any | undefined, title: string) => {
+      if (!obj) return null;
+      
+      return (
+        <div style={{ marginBottom: '16px' }}>
+          <h4 style={{ fontSize: '14px', marginBottom: '8px' }}>{title}</h4>
+          <div style={{ fontSize: '13px', marginLeft: '8px' }}>
+            {Object.entries(obj).map(([key, value]) => {
+              const displayValue = Array.isArray(value) 
+                ? value.join(', ') 
+                : typeof value === 'object' ? JSON.stringify(value) : value;
+              
+              return (
+                <div key={key} style={{ marginBottom: '4px' }}>
+                  <strong>{key}:</strong> {displayValue}
+                </div>
+              );
+            })}
+          </div>
+        </div>
+      );
+    };
+
+    return (
+      <div style={{ padding: '0 16px 16px 16px' }}>
+        <Row gutter={[24, 16]}>
+          <Col span={24}>
+            <h3 style={{ fontSize: '16px', marginBottom: '8px' }}>Description</h3>
+            <p style={{ fontSize: '14px' }}>{record.description}</p>
+          </Col>
+          
+          <Col span={24} md={12}>
+            <div style={{ marginBottom: '16px' }}>
+              <h3 style={{ fontSize: '16px', marginBottom: '8px' }}>Basic Information</h3>
+              <div style={{ fontSize: '14px' }}>
+                <div><strong>ID:</strong> {record.id}</div>
+                <div><strong>Version:</strong> {record.version}</div>
+                <div><strong>Status:</strong> {record.status}</div>
+                <div><strong>Fidelity:</strong> {record.fidelity}</div>
+                <div><strong>Owner:</strong> {record.owner}</div>
+                <div><strong>Last Modified:</strong> {record.lastModified}</div>
+                <div><strong>Validation Status:</strong> {record.validationStatus}</div>
+                {record.solver && <div><strong>Solver:</strong> {record.solver}</div>}
+                {record.fileLocation && <div><strong>File Location:</strong> {record.fileLocation}</div>}
+              </div>
+            </div>
+            
+            <div style={{ marginBottom: '16px' }}>
+              <h3 style={{ fontSize: '16px', marginBottom: '8px' }}>Tags</h3>
+              <div style={{ display: 'flex', flexWrap: 'wrap', gap: '4px' }}>
+                {record.tags.map(tag => (
+                  <Tag key={tag} style={{ margin: '0 4px 4px 0', padding: '0 6px', height: '22px', lineHeight: '22px' }}>
+                    {tag}
+                  </Tag>
+                ))}
+              </div>
+            </div>
+            
+            <div style={{ marginBottom: '16px' }}>
+              <h3 style={{ fontSize: '16px', marginBottom: '8px' }}>Applicable Requirements</h3>
+              <div style={{ display: 'flex', flexWrap: 'wrap', gap: '4px' }}>
+                {record.applicableRequirements.map(req => (
+                  <Tag key={req} color="blue" style={{ margin: '0 4px 4px 0', padding: '0 6px', height: '22px', lineHeight: '22px' }}>
+                    {req}
+                  </Tag>
+                ))}
+              </div>
+            </div>
+          </Col>
+          
+          <Col span={24} md={12}>
+            {/* Render type-specific details */}
+            {record.type === 'Structural' && (
+              <>
+                {renderJsonSection(record.meshDetails, 'Mesh Details')}
+                
+                <div style={{ marginBottom: '16px' }}>
+                  <h3 style={{ fontSize: '16px', marginBottom: '8px' }}>Material Models</h3>
+                  {renderPropertyList(record.materialModels)}
+                </div>
+                
+                <div style={{ marginBottom: '16px' }}>
+                  <h3 style={{ fontSize: '16px', marginBottom: '8px' }}>Boundary Conditions</h3>
+                  {renderPropertyList(record.boundaryConditions)}
+                </div>
+                
+                <div style={{ marginBottom: '16px' }}>
+                  <h3 style={{ fontSize: '16px', marginBottom: '8px' }}>Load Cases</h3>
+                  {renderPropertyList(record.loadCases)}
+                </div>
+              </>
+            )}
+            
+            {record.type === 'Aerodynamic' && (
+              <>
+                {renderJsonSection(record.meshDetails, 'Mesh Details')}
+                {renderJsonSection(record.flightRegime, 'Flight Regime')}
+                
+                <div style={{ marginBottom: '16px' }}>
+                  <h3 style={{ fontSize: '16px', marginBottom: '8px' }}>Flight Conditions</h3>
+                  {renderPropertyList(record.flightConditions)}
+                </div>
+                
+                {record.turbulenceModel && (
+                  <div style={{ marginBottom: '16px' }}>
+                    <h3 style={{ fontSize: '16px', marginBottom: '8px' }}>Turbulence Model</h3>
+                    <div>{record.turbulenceModel}</div>
+                  </div>
+                )}
+                
+                <div style={{ marginBottom: '16px' }}>
+                  <h3 style={{ fontSize: '16px', marginBottom: '8px' }}>Validation Data</h3>
+                  {renderPropertyList(record.validationData)}
+                </div>
+              </>
+            )}
+            
+            {record.type === 'Thermal' && (
+              <>
+                <div style={{ marginBottom: '16px' }}>
+                  <h3 style={{ fontSize: '16px', marginBottom: '8px' }}>Physics Models</h3>
+                  {renderPropertyList(record.physicsModels)}
+                </div>
+                
+                <div style={{ marginBottom: '16px' }}>
+                  <h3 style={{ fontSize: '16px', marginBottom: '8px' }}>Materials</h3>
+                  {renderPropertyList(record.materials)}
+                </div>
+                
+                <div style={{ marginBottom: '16px' }}>
+                  <h3 style={{ fontSize: '16px', marginBottom: '8px' }}>Operating Conditions</h3>
+                  {renderPropertyList(record.operatingConditions)}
+                </div>
+                
+                <div style={{ marginBottom: '16px' }}>
+                  <h3 style={{ fontSize: '16px', marginBottom: '8px' }}>Analysis Types</h3>
+                  {renderPropertyList(record.analysisTypes)}
+                </div>
+              </>
+            )}
+            
+            {record.type === 'Durability' && (
+              <>
+                {record.fatigueApproach && (
+                  <div style={{ marginBottom: '16px' }}>
+                    <h3 style={{ fontSize: '16px', marginBottom: '8px' }}>Fatigue Approach</h3>
+                    <div>{record.fatigueApproach}</div>
+                  </div>
+                )}
+                
+                <div style={{ marginBottom: '16px' }}>
+                  <h3 style={{ fontSize: '16px', marginBottom: '8px' }}>Material Models</h3>
+                  {renderPropertyList(record.materialModels)}
+                </div>
+                
+                <div style={{ marginBottom: '16px' }}>
+                  <h3 style={{ fontSize: '16px', marginBottom: '8px' }}>Load Histories</h3>
+                  {renderPropertyList(record.loadHistories)}
+                </div>
+                
+                <div style={{ marginBottom: '16px' }}>
+                  <h3 style={{ fontSize: '16px', marginBottom: '8px' }}>Critical Locations</h3>
+                  {renderPropertyList(record.criticalLocations)}
+                </div>
+                
+                {renderJsonSection(record.safetyFactors, 'Safety Factors')}
+              </>
+            )}
+            
+            {record.type === 'Controls' && (
+              <>
+                <div style={{ marginBottom: '16px' }}>
+                  <h3 style={{ fontSize: '16px', marginBottom: '8px' }}>Control Surfaces</h3>
+                  {renderPropertyList(record.controlSurfaces)}
+                </div>
+                
+                <div style={{ marginBottom: '16px' }}>
+                  <h3 style={{ fontSize: '16px', marginBottom: '8px' }}>Control Laws</h3>
+                  {renderPropertyList(record.controlLaws)}
+                </div>
+                
+                {record.systemBandwidth && (
+                  <div style={{ marginBottom: '16px' }}>
+                    <h3 style={{ fontSize: '16px', marginBottom: '8px' }}>System Bandwidth</h3>
+                    <div>{record.systemBandwidth}</div>
+                  </div>
+                )}
+                
+                <div style={{ marginBottom: '16px' }}>
+                  <h3 style={{ fontSize: '16px', marginBottom: '8px' }}>Simulation Scenarios</h3>
+                  {renderPropertyList(record.simulationScenarios)}
+                </div>
+                
+                <div style={{ marginBottom: '16px' }}>
+                  <h3 style={{ fontSize: '16px', marginBottom: '8px' }}>Guidance Modes</h3>
+                  {renderPropertyList(record.guidanceModes)}
+                </div>
+              </>
+            )}
+            
+            {record.type === 'Propulsion' && (
+              <>
+                <div style={{ marginBottom: '16px' }}>
+                  <h3 style={{ fontSize: '16px', marginBottom: '8px' }}>Propulsion Stages</h3>
+                  {renderPropertyList(record.propulsionStages)}
+                </div>
+                
+                {renderJsonSection(record.performanceParameters, 'Performance Parameters')}
+                
+                <div style={{ marginBottom: '16px' }}>
+                  <h3 style={{ fontSize: '16px', marginBottom: '8px' }}>Analysis Capabilities</h3>
+                  {renderPropertyList(record.analysisCapabilities)}
+                </div>
+              </>
+            )}
+            
+            {record.type === 'Electromagnetic' && (
+              <>
+                {renderJsonSection(record.radarParameters, 'Radar Parameters')}
+                
+                <div style={{ marginBottom: '16px' }}>
+                  <h3 style={{ fontSize: '16px', marginBottom: '8px' }}>Signal Processing</h3>
+                  {renderPropertyList(record.signalProcessing)}
+                </div>
+                
+                <div style={{ marginBottom: '16px' }}>
+                  <h3 style={{ fontSize: '16px', marginBottom: '8px' }}>Tracking Algorithms</h3>
+                  {renderPropertyList(record.trackingAlgorithms)}
+                </div>
+                
+                <div style={{ marginBottom: '16px' }}>
+                  <h3 style={{ fontSize: '16px', marginBottom: '8px' }}>ECM Capabilities</h3>
+                  {renderPropertyList(record.ecmCapabilities)}
+                </div>
+              </>
+            )}
+            
+            {record.type === 'Lethality' && (
+              <>
+                {renderJsonSection(record.warheadParameters, 'Warhead Parameters')}
+                {renderJsonSection(record.fragmentationAnalysis, 'Fragmentation Analysis')}
+                {renderJsonSection(record.blastEffects, 'Blast Effects')}
+                
+                <div style={{ marginBottom: '16px' }}>
+                  <h3 style={{ fontSize: '16px', marginBottom: '8px' }}>Kill Criteria Methods</h3>
+                  {renderPropertyList(record.killCriteriaMethods)}
+                </div>
+              </>
+            )}
+            
+            {/* Add a catch-all for any type not explicitly handled */}
+            {!['Structural', 'Aerodynamic', 'Thermal', 'Durability', 'Controls', 'Propulsion', 'Electromagnetic', 'Lethality'].includes(record.type) && (
+              <div style={{ marginBottom: '16px' }}>
+                <h3 style={{ fontSize: '16px', marginBottom: '8px' }}>Additional Details</h3>
+                <div>Expand model data to view more details for this type.</div>
+              </div>
+            )}
+          </Col>
+        </Row>
+      </div>
+    );
+  };
 
   return (
     <div className="full-width-table-container">
