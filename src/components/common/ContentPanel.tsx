@@ -1,5 +1,5 @@
 import React from 'react';
-import { Card } from 'antd';
+import '../../styles/containerStyles.css';
 
 type ContentPanelProps = {
   children: React.ReactNode;
@@ -10,11 +10,11 @@ type ContentPanelProps = {
 };
 
 /**
- * ContentPanel - A TeamCenter-style container component for content sections
+ * ContentPanel - A standardized container component
  * 
  * This component provides a standardized container with styling consistent
- * with TeamCenter's UI design language. It includes a raised effect, proper
- * background colors, and optional title formatting.
+ * with the UI design language used across the application. It includes 
+ * a raised effect, proper background colors, and optional title formatting.
  */
 const ContentPanel: React.FC<ContentPanelProps> = ({
   children,
@@ -26,35 +26,15 @@ const ContentPanel: React.FC<ContentPanelProps> = ({
   return (
     <div 
       className={`content-panel ${className}`}
-      style={{
-        backgroundColor: '#f9f9f9', // Lighter gray background (was #f5f5f5)
-        boxShadow: '0 2px 6px rgba(0, 0, 0, 0.08)', // Subtle shadow for raised effect
-        borderRadius: '4px',
-        margin: '0 0 8px 0',
-        overflow: 'hidden',
-        border: '1px solid #e8e8e8',
-        ...style
-      }}
+      style={style}
     >
       {title && (
-        <div 
-          style={{
-            padding: '6px 8px',
-            borderBottom: '1px solid #e8e8e8',
-            backgroundColor: '#fafafa',
-            display: 'flex',
-            justifyContent: 'space-between',
-            alignItems: 'center',
-            fontWeight: 500,
-            fontSize: '14px',
-            color: '#454545'
-          }}
-        >
-          <div>{title}</div>
-          {headerExtra && <div>{headerExtra}</div>}
+        <div className="content-panel-header">
+          <div className="content-panel-title">{title}</div>
+          {headerExtra && <div className="content-panel-extra">{headerExtra}</div>}
         </div>
       )}
-      <div style={{ padding: '8px' }}>
+      <div className="content-panel-body">
         {children}
       </div>
     </div>

@@ -21,7 +21,7 @@ import SimulationIcon from '../../icons/typeCAEModel48.svg';
 const { TabPane } = Tabs;
 
 const AnalysisMain: React.FC = () => {
-  const [activeTab, setActiveTab] = useState<string>('analyses');
+  const [activeTab, setActiveTab] = useState<string>('simulations');
   const colors = useColors();
   
   // Add styles for tabs using the color palette
@@ -84,6 +84,13 @@ const AnalysisMain: React.FC = () => {
           className="changes-tabs"
         >
           <TabPane 
+            tab={<TabWithIcon icon={AnalysisIcon} label="Simulations" />}
+            key="simulations"
+          >
+            <SimulationsTab />
+          </TabPane>
+
+          <TabPane 
             tab={<TabWithIcon icon={AnalysisIcon} label="Analyses" />}
             key="analyses"
           >
@@ -102,13 +109,6 @@ const AnalysisMain: React.FC = () => {
             key="automation"
           >
             <AutomationTab />
-          </TabPane>
-
-          <TabPane 
-            tab={<TabWithIcon icon={AnalysisIcon} label="Simulations" />}
-            key="simulations"
-          >
-            <SimulationsTab />
           </TabPane>
 
           <TabPane 

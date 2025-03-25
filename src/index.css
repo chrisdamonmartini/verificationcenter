@@ -2,6 +2,11 @@
 @import 'tailwindcss/components';
 @import 'tailwindcss/utilities';
 
+/* Import standardized component styles */
+@import './styles/tableStyles.css';
+@import './styles/tabStyles.css';
+@import './styles/containerStyles.css';
+
 body {
   margin: 0;
   font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Roboto', 'Oxygen',
@@ -11,7 +16,7 @@ body {
   -moz-osx-font-smoothing: grayscale;
 }
 
-/* Custom styles */
+/* Custom scrollbar */
 .custom-scrollbar::-webkit-scrollbar {
   width: 8px;
 }
@@ -29,9 +34,60 @@ body {
   background: #555;
 }
 
-/* Component background colors to match the design */
+/* Component background colors */
 .bg-card {
   background-color: white;
+}
+
+/* Base styles for code */
+code {
+  font-family: source-code-pro, Menlo, Monaco, Consolas, 'Courier New',
+    monospace;
+}
+
+/* Animation definitions */
+@keyframes gradientBG {
+  0% {
+    background-position: 0% 50%;
+  }
+  50% {
+    background-position: 100% 50%;
+  }
+  100% {
+    background-position: 0% 50%;
+  }
+}
+
+@keyframes blink {
+  0% { opacity: 1; }
+  50% { opacity: 0.3; }
+  100% { opacity: 1; }
+}
+
+.blinking-marker {
+  animation: blink 2s infinite;
+}
+
+/* Custom marker styles */
+.custom-div-icon {
+  background: transparent;
+  border: none;
+}
+
+.marker-pin {
+  width: 30px;
+  height: 30px;
+  border-radius: 50% 50% 50% 0;
+  position: relative;
+  transform: rotate(-45deg);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.marker-pin i {
+  transform: rotate(45deg);
+  font-size: 16px;
 }
 
 /* Global table styling for consistency */
@@ -244,54 +300,4 @@ body {
   .primary-button {
     @apply px-4 py-2 bg-blue-600 hover:bg-blue-700 text-white rounded-md transition-colors;
   }
-}
-
-/* Custom animations */
-@keyframes gradientBG {
-  0% {
-    background-position: 0% 50%;
-  }
-  50% {
-    background-position: 100% 50%;
-  }
-  100% {
-    background-position: 0% 50%;
-  }
-}
-
-@keyframes blink {
-  0% { opacity: 1; }
-  50% { opacity: 0.3; }
-  100% { opacity: 1; }
-}
-
-.blinking-marker {
-  animation: blink 2s infinite;
-}
-
-code {
-  font-family: source-code-pro, Menlo, Monaco, Consolas, 'Courier New',
-    monospace;
-}
-
-/* Custom marker styles */
-.custom-div-icon {
-  background: transparent;
-  border: none;
-}
-
-.marker-pin {
-  width: 30px;
-  height: 30px;
-  border-radius: 50% 50% 50% 0;
-  position: relative;
-  transform: rotate(-45deg);
-  display: flex;
-  align-items: center;
-  justify-content: center;
-}
-
-.marker-pin i {
-  transform: rotate(45deg);
-  font-size: 16px;
 } 

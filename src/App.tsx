@@ -60,6 +60,8 @@ import AnalysisDetail from './components/Analysis/AnalysisDetail';
 import AnalysisMain from './components/Analysis/AnalysisMain';
 // Import Simulation component
 import SimulationMain from './components/Simulation/SimulationMain';
+// Import the StyleGuide component
+import StyleGuide from './components/StyleGuide';
 
 // Define a type for requirements
 interface Requirement {
@@ -404,6 +406,10 @@ function App() {
       // Analysis
       case 'analysis':
         return <Analyses />;
+        
+      // Style Guide
+      case 'style-guide':
+        return <StyleGuide />;
         
       default:
         return (

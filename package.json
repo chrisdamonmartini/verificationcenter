@@ -41,8 +41,8 @@
     "web-vitals": "^2.1.4"
   },
   "scripts": {
-    "predeploy": "npm run build",
-    "deploy": "gh-pages -d build",
+    "predeploy": "npm run build && copy CNAME build\\",
+    "deploy": "gh-pages -d build -b gh-pages",
     "start": "set PORT=3001 && react-scripts start",
     "build": "react-scripts build",
     "test": "react-scripts test",
@@ -72,5 +72,5 @@
     "@types/react-resizable": "^3.0.8",
     "gh-pages": "^6.3.0"
   },
-  "homepage": "https://chrisdamonmartini.github.io/verificationcenter/"
+  "homepage": "https://verificationcenter.xcelerator.us/"
 }
