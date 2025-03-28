@@ -54,6 +54,7 @@ export interface StandardChangeTableProps<T extends BaseChange> {
     showDocuments?: boolean;
     customSectionTitle?: string;
     customSectionContent?: (record: T) => React.ReactNode;
+    customExpandedRowRender?: (record: T) => React.ReactNode;
   };
   tableOptions?: {
     idField?: string;
@@ -144,18 +145,26 @@ export function StandardChangeTable<T extends StandardBaseChange>({
   });
 
   // Expanded row component rendering
-  const expandedRowRender = (record: T) => (
-    <StandardExpandedRow
-      record={record}
-      showTechnicalDetails={expandedRowOptions?.showTechnicalDetails}
-      showImpact={expandedRowOptions?.showImpact}
-      showDependencies={expandedRowOptions?.showDependencies}
-      showDocuments={expandedRowOptions?.showDocuments}
-      showCustomSection={!!expandedRowOptions?.customSectionContent}
-      customSectionTitle={expandedRowOptions?.customSectionTitle}
-      customSectionContent={expandedRowOptions?.customSectionContent && expandedRowOptions.customSectionContent(record)}
-    />
-  );
+  const expandedRowRender = (record: T) => {
+    // If there's a custom render function provided, use that
+    if (expandedRowOptions?.customExpandedRowRender) {
+      return expandedRowOptions.customExpandedRowRender(record);
+    }
+    
+    // Otherwise use the standard expanded row component
+    return (
+      <StandardExpandedRow
+        record={record}
+        showTechnicalDetails={expandedRowOptions?.showTechnicalDetails}
+        showImpact={expandedRowOptions?.showImpact}
+        showDependencies={expandedRowOptions?.showDependencies}
+        showDocuments={expandedRowOptions?.showDocuments}
+        showCustomSection={!!expandedRowOptions?.customSectionContent}
+        customSectionTitle={expandedRowOptions?.customSectionTitle}
+        customSectionContent={expandedRowOptions?.customSectionContent && expandedRowOptions.customSectionContent(record)}
+      />
+    );
+  };
 
   return (
     <Card>
