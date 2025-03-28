@@ -72,6 +72,7 @@ import EBOMIcon from '../../icons/typeClass48.svg';
 import CADIcon from '../../icons/typePartComponent48.svg';
 import OverviewIcon from '../../icons/typeFolderCollection48.svg';
 import OperationalScenariosIcon from '../../icons/typeBranchRevision48.svg';
+import ChangeChain from './ChangeChain';
 
 const { Title, Text, Paragraph } = Typography;
 const { TabPane } = Tabs;
@@ -826,6 +827,23 @@ const ChangeAwareness: React.FC = () => {
             key="bom"
           >
             <ImprovedEngineeringBOMChanges />
+          </TabPane>
+
+          <TabPane
+            tab={<span style={{ display: 'flex', alignItems: 'center' }}>
+              <BranchesOutlined 
+                style={{ 
+                  fontSize: '24px', 
+                  marginRight: '8px',
+                  verticalAlign: 'middle', 
+                  display: 'inline-block'
+                }} 
+              />
+              <span>Change Chain</span>
+            </span>}
+            key="changechain"
+          >
+            <ChangeChain />
           </TabPane>
         </Tabs>
       </ContentPanel>
